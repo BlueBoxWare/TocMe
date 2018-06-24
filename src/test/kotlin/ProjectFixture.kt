@@ -34,9 +34,9 @@ internal class ProjectFixture {
 
   val project: Project = ProjectBuilder.builder().withProjectDir(tempDir.root).build()
 
-  val backupDir = "build/tocme/backups/${TocMePlugin.TASK_NAME}/"
+  val backupDir = "build/tocme/backups/${TocMePlugin.INSERT_TOCS_TASK}/"
 
-  private val GRADLE_VERSION = GradleVersion.current().version
+  private val GRADLE_VERSION = GradleVersion.current()
 
   private var latestBuildResult: BuildResult? = null
   private var latestTask: String? = null
@@ -77,7 +77,7 @@ internal class ProjectFixture {
 
   fun file(path: String) = File(tempDir.root, path)
 
-  fun build(taskName: String? = "tocme", vararg extraArguments: String): BuildResult {
+  fun build(taskName: String? = TocMePlugin.INSERT_TOCS_TASK, vararg extraArguments: String): BuildResult {
 
     val args = extraArguments.toMutableList()
     taskName?.let { args.add(taskName) }
@@ -89,8 +89,8 @@ internal class ProjectFixture {
             .withPluginClasspath()
 //            .withDebug(true)
             .withProjectDir(tempDir.root)
-            .withGradleVersion(GRADLE_VERSION)
-            .withArguments(*args.toTypedArray())
+            .withGradleVersion(GRADLE_VERSION.version)
+            .withArguments(*args.toTypedArray(), "--stacktrace")
 
     val result = runner.build()
 
@@ -98,6 +98,13 @@ internal class ProjectFixture {
 
     return result
 
+  }
+
+  // https://github.com/gradle/gradle/issues/1079
+  fun sleepIfNecessary() {
+    if (GRADLE_VERSION < GradleVersion.version("3.5")) {
+      Thread.sleep(2000)
+    }
   }
 
   fun assertFileEquals(

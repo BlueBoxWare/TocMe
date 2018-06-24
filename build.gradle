@@ -32,7 +32,9 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
 
     testCompile "org.jetbrains.spek:spek-api:$spekVersion"
-    testCompile "org.jetbrains.spek:spek-data-driven-extension:$spekVersion"
+    testCompile("org.jetbrains.spek:spek-data-driven-extension:$spekVersion") {
+        exclude group: 'org.jetbrains.kotlin', module: 'kotlin-runtime'
+    }
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testCompile gradleTestKit()
 

@@ -28,12 +28,16 @@ class TocMePlugin: Plugin<Project> {
       throw GradleException("The com.github.blueboxware.tocme plugin requires Gradle version 3.0 or higher")
     }
 
-    project.tasks.create(TASK_NAME, TocMeTask::class.java)
+    val tocmeExtension = project.extensions.create(TOCME_EXTENSION_NAME, TocMeExtension::class.java, project)
+    project.tasks.create(INSERT_TOCS_TASK, TocMeTask::class.java) {
+      it.tocMeExtension = tocmeExtension
+    }
 
   }
 
   companion object {
-    const val TASK_NAME = "tocme"
+    const val TOCME_EXTENSION_NAME = "tocme"
+    const val INSERT_TOCS_TASK = "insertTocs"
   }
 
 }

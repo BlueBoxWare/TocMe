@@ -62,7 +62,7 @@ class TocMeOptionsImpl(private val parent: TocMeOptions?): TocMeOptions {
   override fun style(): TocOptions.ListType = style ?: parent?.style() ?: TocOptions.ListType.HIERARCHY
 
   override fun mode(): Mode = mode ?: parent?.mode() ?: Mode.Normal
-  
+
   override fun levels(): Int = levels ?: parent?.levels() ?: 14
 
   override fun bold(): Boolean = bold ?: parent?.bold() ?: true

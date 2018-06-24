@@ -620,7 +620,9 @@ object TestGradle: Spek({
     on("building twice and changing a default setting in between") {
 
       fixture.build()
+      fixture.sleepIfNecessary()
       fixture.replaceInBuildFile("setextMarkerLength = 2", "setextMarkerLength = 4")
+
       fixture.build()
 
       it("should build again") {
@@ -637,6 +639,7 @@ object TestGradle: Spek({
     on("building twice and changing an output file setting in between") {
 
       fixture.build()
+      fixture.sleepIfNecessary()
       fixture.replaceInBuildFile("setextMarkerLength = 1", "setextMarkerLength = 4")
       fixture.build()
 
