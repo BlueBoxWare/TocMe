@@ -1,0 +1,73 @@
+buildscript {
+    apply from: 'versions.gradle'
+
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+    }
+}
+
+plugins {
+    id 'java'
+    id 'java-gradle-plugin'
+    id 'com.gradle.plugin-publish' version '0.9.10'
+}
+
+group 'com.github.blueboxware'
+version pluginVersion
+
+apply plugin: 'kotlin'
+
+sourceCompatibility = jvmTarget
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile "com.vladsch.flexmark:flexmark:$flexmarkVersion"
+    compile "com.vladsch.flexmark:flexmark-ext-toc:$flexmarkVersion"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+
+    testCompile "org.jetbrains.spek:spek-api:$spekVersion"
+    testCompile "org.jetbrains.spek:spek-data-driven-extension:$spekVersion"
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile gradleTestKit()
+
+    testRuntime "org.jetbrains.spek:spek-junit-platform-engine:$spekVersion"
+    // Needed for the Spek plugin to work correctly
+    testCompile "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.4"
+
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = jvmTarget
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = jvmTarget
+}
+
+gradlePlugin {
+    plugins {
+        gdxPlugin {
+            id = 'com.github.blueboxware.tocme'
+            implementationClass = 'com.github.blueboxware.tocme.TocMePlugin'
+        }
+    }
+}
+
+pluginBundle {
+    website = 'https://github.com/BlueBoxWare/TocMe'
+    vcsUrl = 'https://github.com/BlueBoxWare/TocMe.git'
+    description = 'Plugin to add Table of Contents to markdown documents and keeping them up to date'
+    tags = ['readme', 'table of content', 'toc', 'markdown']
+
+    plugins {
+        TocMe {
+            id = 'com.github.blueboxware.tocme'
+            displayName = 'TocMe'
+        }
+    }
+}

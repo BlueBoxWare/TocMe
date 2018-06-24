@@ -1,0 +1,11 @@
+ext {
+    pluginVersion = '1.0'
+    releasedPluginVersion = '1.0'
+
+    flexmarkVersion = '0.32.22'
+    kotlinVersion = '1.2.50'
+
+    spekVersion = '1.1.5'
+
+    jvmTarget = '1.8'
+}

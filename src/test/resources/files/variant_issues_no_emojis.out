@@ -1,0 +1,78 @@
+# Header 1
+
+## Header 2
+## Header 2
+
+<!-- toc mode=full bold = 'true ' -->
+- __[Header 1](#header-1)__
+  - __[Header 2](#header-2)__
+  - __[Header 2](#header-2-1)__
+    - __[Header 3](#header-3)__
+  - __[Header 2](#header-2-2)__
+  - __[\/{}$#@](#)__
+  - __[\/{}$#@abc__--](#abc__--)__
+- __[ Emoji 1 foo ](#emoji-emoji-123-123-foo-_-)__
+  - __[Duped___underscores___](#duped___underscores___)__
+  - __[Duped-- ---dashes---](#duped------dashes---)__
+- __[No](#no)__
+- __[Setext1](#setext1)__
+- __[Setext2](#setext2)__
+- __[Setext3](#setext3)__
+  - __[SetextA](#setexta)__
+  - __[SetextB](#setextb)__
+  - __[SetextC](#setextc)__
+<!-- /toc -->
+
+<!-- toc mode=local-->
+- __[Header 3](#header-3)__
+<!-- /toc -->
+
+### Header 3
+
+## Header 2
+
+<!-- toc -->
+  - __[\/{}$#@](#)__
+  - __[\/{}$#@abc__--](#abc__--)__
+- __[ Emoji 1 foo ](#emoji-emoji-123-123-foo-_-)__
+  - __[Duped___underscores___](#duped___underscores___)__
+  - __[Duped-- ---dashes---](#duped------dashes---)__
+- __[No](#no)__
+- __[Setext1](#setext1)__
+- __[Setext2](#setext2)__
+- __[Setext3](#setext3)__
+  - __[SetextA](#setexta)__
+  - __[SetextB](#setextb)__
+  - __[SetextC](#setextc)__
+<!-- /toc -->
+
+## \/{}[]$#@
+## \/{}[]$#@abc__--
+
+# :emoji: Emoji :123: 1:23: foo :_-+:
+
+###No Space
+
+## Duped___underscores___
+## Duped-- ---dashes---
+# No
+
+Setext1
+=
+
+Setext2
+==
+
+Setext3
+===
+
+SetextA
+-
+
+SetextB
+--
+
+SetextC
+---
+
+
