@@ -17,6 +17,7 @@ package com.github.blueboxware.tocme.util
  */
 
 import com.github.blueboxware.tocme.TocMeOptions
+import com.github.blueboxware.tocme.TocMePlugin
 import com.vladsch.flexmark.ast.Document
 import com.vladsch.flexmark.ast.Heading
 import com.vladsch.flexmark.ast.HtmlCommentBlock
@@ -460,7 +461,20 @@ internal fun Project.backupFiles(subdir: String, files: Collection<File>) =
           DirectoryScanner.getDefaultExcludes().forEach { DirectoryScanner.removeDefaultExclude(it) }
           DirectoryScanner.addDefaultExclude("_Dummy McDummface_")
 
-          val backupdir = File(buildDir, "$BACKUP_DIR$subdir/")
+          val timeStamp = System.currentTimeMillis()
+
+          val backupParentDir = "$buildDir/$BACKUP_DIR$subdir/"
+          val backupdir = file("$backupParentDir$timeStamp/")
+
+          file(backupParentDir)
+                  .listFiles()
+                  ?.mapNotNull { file -> file.name.toLongOrNull()?.let { it to file } }
+                  ?.sortedByDescending { it.first }
+                  ?.drop(TocMePlugin.NR_OF_BACKUPS)
+                  ?.forEach {
+                    logger.info("Removing old backups from " + it.second.relativeToOrSelf(projectDir).path)
+                    delete(it.second)
+                  }
 
           project.copy {
             it.duplicatesStrategy = DuplicatesStrategy.FAIL
