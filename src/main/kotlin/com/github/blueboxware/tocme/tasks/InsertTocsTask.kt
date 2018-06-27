@@ -1,12 +1,9 @@
-package com.github.blueboxware.tocme
+package com.github.blueboxware.tocme.tasks
 
+import com.github.blueboxware.tocme.TocMeOptions
 import com.github.blueboxware.tocme.util.backupFiles
 import com.github.blueboxware.tocme.util.insertTocs
-import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.OutputFiles
-import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.TaskAction
 import java.io.File
 
@@ -25,13 +22,11 @@ import java.io.File
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-open class TocMeTask: DefaultTask() {
+open class InsertTocsTask: TocMeTask() {
 
   init {
     description = "Creates and/or updates TOCs in markdown documents"
   }
-
-  internal lateinit var tocMeExtension: TocMeExtension
 
   @TaskAction
   fun generateTocs() {
@@ -54,12 +49,12 @@ open class TocMeTask: DefaultTask() {
 
   private fun doInsertTocs(inputFile: File, outputFile: File, options: TocMeOptions) {
 
-    val relativeInputFile = inputFile.relativeToOrSelf(project.rootDir)
+    val relativeInputPath = inputFile.relativeToOrSelf(project.rootDir).path
 
-    val (result, warnings, error) = insertTocs(inputFile, outputFile, options)
+    val (result, warnings, error) = insertTocs(inputFile, outputFile, options, writeChanges = true)
 
     if (error != null) {
-      throw GradleException(relativeInputFile.path + ": " + error)
+      throw GradleException("$relativeInputPath: $error")
     }
 
     if (result != null) {
@@ -67,16 +62,8 @@ open class TocMeTask: DefaultTask() {
     }
 
     warnings.forEach { msg ->
-      logger.warn(relativeInputFile.path + ": " + msg)
+      logger.warn("$relativeInputPath: $msg")
     }
   }
-
-  @OutputFiles
-  @SkipWhenEmpty
-  @Suppress("MemberVisibilityCanBePrivate")
-  fun getOutputFiles() = tocMeExtension.getOutputFiles()
-
-  @Input
-  private fun getOptionsAsString() = tocMeExtension.getOptionsAsString()
 
 }

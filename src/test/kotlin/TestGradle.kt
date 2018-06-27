@@ -1,3 +1,4 @@
+import org.gradle.language.base.plugins.LifecycleBasePlugin
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.given
 import org.jetbrains.spek.api.dsl.it
@@ -36,6 +37,65 @@ object TestGradle: Spek({
     fixture.destroy()
   }
 
+  given("no spec") {
+
+    beforeEachTest {
+      fixture.buildFile("")
+    }
+
+    on("checking") {
+
+      fixture.buildCheck()
+
+      it("should report no source") {
+        fixture.assertBuildNoSourceAfter33()
+      }
+
+    }
+
+    on("building") {
+
+      fixture.build()
+
+      it("should report no source") {
+        fixture.assertBuildNoSourceAfter33()
+      }
+
+    }
+
+  }
+
+  given("an empty spec") {
+
+    beforeEachTest {
+      fixture.buildFile("""
+        tocme {
+        }
+      """.trimIndent())
+    }
+
+    on("checking") {
+
+      fixture.buildCheck()
+
+      it("should report no source") {
+        fixture.assertBuildNoSourceAfter33()
+      }
+
+    }
+
+    on("building") {
+
+      fixture.build()
+
+      it("should report no source") {
+        fixture.assertBuildNoSourceAfter33()
+      }
+
+    }
+
+  }
+
   given("a trivial build file") {
 
     beforeEachTest {
@@ -44,6 +104,35 @@ object TestGradle: Spek({
           doc(file("files/gdx.md"))
         }
       """.trimIndent())
+    }
+
+    on("checking") {
+
+      fixture.buildCheck()
+
+      it("should report the TOC is out of date") {
+        fixture.assertCheckOutputFileIsOutOfDate("gdx.md")
+      }
+
+      it("should have not made any changes") {
+        fixture.assertFileEquals("files/gdx.md", "files/gdx.md")
+      }
+
+    }
+
+    on("checking twice") {
+
+      fixture.buildCheck()
+      fixture.buildCheck()
+
+      it("should report the TOC is out of date") {
+        fixture.assertCheckOutputFileIsOutOfDate("gdx.md")
+      }
+
+      it("should have not made any changes") {
+        fixture.assertFileEquals("files/gdx.md", "files/gdx.md")
+      }
+
     }
 
     on("building") {
@@ -61,6 +150,15 @@ object TestGradle: Spek({
 
     }
 
+    on("checking after building") {
+      fixture.build()
+      fixture.buildCheck()
+
+      it("should not report the TOC is out of date") {
+        fixture.assertCheckOutputNothingIsOutOfDate()
+      }
+    }
+
     on("building twice") {
 
       fixture.build()
@@ -68,6 +166,34 @@ object TestGradle: Spek({
 
       it("should be up to date the second time") {
         fixture.assertBuildUpToDate()
+      }
+
+    }
+
+    on("checking after building and changing the input doc (unchanged TOC)") {
+
+      fixture.build()
+      fixture.file("files/gdx.md").let { file ->
+        file.writeText(file.readText().replace("Table of Contents", "TOC"))
+      }
+      fixture.buildCheck()
+
+      it("should not report the TOC is out of date") {
+        fixture.assertCheckOutputNothingIsOutOfDate()
+      }
+
+    }
+
+    on("checking after building and changing the input doc (changed TOC)") {
+
+      fixture.build()
+      fixture.file("files/gdx.md").let { file ->
+        file.writeText(file.readText().replace("Getting started", "Getting stopped"))
+      }
+      fixture.buildCheck()
+
+      it("should report the TOC is out of date") {
+        fixture.assertCheckOutputFileIsOutOfDate("gdx.md")
       }
 
     }
@@ -86,6 +212,18 @@ object TestGradle: Spek({
 
     }
 
+    on("checking after building and changing the default settings") {
+
+      fixture.build()
+      fixture.replaceInBuildFile("tocme {", "tocme {\nbold=false\n")
+      fixture.buildCheck()
+
+      it("should report the TOC is out of date") {
+        fixture.assertCheckOutputFileIsOutOfDate("gdx.md")
+      }
+
+    }
+
     on("building twice and changing default settings in between") {
 
       fixture.build()
@@ -98,6 +236,18 @@ object TestGradle: Spek({
 
       it("should create the correct output") {
         fixture.assertFileEquals("files/gdx.default_nobold.out", "files/gdx.md")
+      }
+
+    }
+
+    on("checking after building and changing the input file's default settings") {
+
+      fixture.build()
+      fixture.replaceInBuildFile("))", """)) { numbered=true }""")
+      fixture.buildCheck()
+
+      it("should report the TOC is out of date") {
+        fixture.assertCheckOutputFileIsOutOfDate("gdx.md")
       }
 
     }
@@ -436,6 +586,32 @@ object TestGradle: Spek({
       """)
     }
 
+    on("checking") {
+
+      fixture.buildCheck()
+
+      it("should report the tocs are out of date") {
+        fixture.assertCheckOutputFileIsOutOfDate("gdx.out")
+        fixture.assertCheckOutputFileIsOutOfDate("gdx_numbered.out")
+        fixture.assertCheckOutputFileIsOutOfDate("gdx_flat.out")
+        fixture.assertCheckOutputFileIsOutOfDate("nerdfonts_reversed_plain.out")
+        fixture.assertCheckOutputFileIsOutOfDate("react.default_flat_reversed_local.out")
+        fixture.assertCheckOutputFileIsOutOfDate("react.default_sorted_full.out")
+      }
+
+    }
+
+    on("checking after building") {
+
+      fixture.build()
+      fixture.buildCheck()
+
+      it("should report nothing out of date") {
+        fixture.assertCheckOutputNothingIsOutOfDate()
+      }
+
+    }
+
     on("building") {
 
       fixture.build()
@@ -636,6 +812,21 @@ object TestGradle: Spek({
 
     }
 
+    on("checking after building and changing an output file setting in between") {
+
+      fixture.build()
+      fixture.sleepIfNecessary()
+      fixture.replaceInBuildFile("setextMarkerLength = 1", "setextMarkerLength = 4")
+      fixture.buildCheck()
+
+      it("should report the file is out of date") {
+        fixture.assertCheckOutputFileIsOutOfDate("out2.md")
+        fixture.assertCheckOutputFileIsNotOutOfDate("out1.md")
+        fixture.assertCheckOutputFileIsNotOutOfDate("react.md")
+      }
+
+    }
+
     on("building twice and changing an output file setting in between") {
 
       fixture.build()
@@ -689,6 +880,35 @@ object TestGradle: Spek({
       """.trimIndent())
     }
 
+    on("checking") {
+
+      fixture.buildCheck()
+
+      it("should report the error") {
+        fixture.assertOutputContains("input.md: Opening toc tag found on line 2 while previous toc tag (on line 1) wasn't closed yet")
+      }
+
+      it("should not report the toc is out of date") {
+        fixture.assertCheckOutputNothingIsOutOfDate()
+      }
+
+      it("should build successfully") {
+        fixture.assertBuildSuccess()
+      }
+
+    }
+
+    on("checking twice") {
+
+      fixture.buildCheck()
+      fixture.buildCheck()
+
+      it("should report the error the second time too") {
+        fixture.assertOutputContains("input.md: Opening toc tag found on line 2 while previous toc tag (on line 1) wasn't closed yet")
+      }
+
+    }
+
     on("building") {
 
       val error = try {
@@ -699,7 +919,7 @@ object TestGradle: Spek({
       }
 
       it("should exit with an error") {
-        assertTrue(error?.contains(Regex("""input\.md.*opening toc tag.*line 2.*on line 1.*wasn't closed""")) == true, error)
+        assertTrue(error?.contains(Regex("""input\.md.*Opening toc tag.*line 2.*on line 1.*wasn't closed""")) == true, error)
       }
 
     }
@@ -729,13 +949,36 @@ object TestGradle: Spek({
       """.trimIndent())
     }
 
+    on("checking") {
+
+      fixture.buildCheck()
+
+      it("should report the warning") {
+        fixture.assertOutputContains("input.md: line 1: Unknown option: 'foo'")
+        fixture.assertOutputContains("line 3: Invalid argument for parameter style: 'boo'")
+      }
+
+      it("should not complain about current content") {
+        fixture.assertOutputContainsNot("current content")
+      }
+
+      it("should build successfully") {
+        fixture.assertBuildSuccess()
+      }
+
+      it("should report the toc is out of date") {
+        fixture.assertCheckOutputFileIsOutOfDate("input.md")
+      }
+
+    }
+
     on("building") {
 
       fixture.build()
 
       it("should produce the expected warnings") {
-        fixture.assertOutputContains("input.md: line 1: unknown option: 'foo'")
-        fixture.assertOutputContains("line 3: invalid argument for parameter style: 'boo'")
+        fixture.assertOutputContains("input.md: line 1: Unknown option: 'foo'")
+        fixture.assertOutputContains("line 3: Invalid argument for parameter style: 'boo'")
         fixture.assertOutputContains("current content between the toc tags on line 5 and line 7")
       }
 
@@ -794,6 +1037,30 @@ object TestGradle: Spek({
         fixture.assertFileEquals("files/variant_issues.levels1-2.out", "out1.md")
         fixture.assertFileEquals("files/variant_issues.out", "out2.md")
         fixture.assertFileEquals("files/react.levels1-4.out", "files/react.md")
+      }
+
+    }
+
+  }
+
+  given("a build file with java plugin") {
+
+    beforeEachTest {
+      fixture.buildFile("""
+        apply plugin: 'java'
+
+        tocme {
+          doc(file("files/gdx.md"))
+        }
+      """.trimIndent())
+    }
+
+    on("running the assemble task") {
+
+      fixture.build(LifecycleBasePlugin.ASSEMBLE_TASK_NAME)
+
+      it("should report the toc is out of date") {
+        fixture.assertCheckOutputFileIsOutOfDate("gdx.md")
       }
 
     }

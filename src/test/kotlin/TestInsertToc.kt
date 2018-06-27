@@ -1,5 +1,5 @@
 import com.github.blueboxware.tocme.TocMeOptions
-import com.github.blueboxware.tocme.Variant
+import com.github.blueboxware.tocme.util.Variant
 import com.github.blueboxware.tocme.util.TocMeOptionsImpl
 import com.github.blueboxware.tocme.util.insertTocs
 import com.vladsch.flexmark.parser.Parser
@@ -212,7 +212,13 @@ internal object TestInsertToc: Spek({
       }
       val tempFile = createTempFile()
 
-      val (result, warnings, error) = insertTocs(File(TEST_DATA_FILES_DIR, "variant_issues.md"), tempFile, tocmeOptions)
+      val (result, warnings, error) =
+              insertTocs(
+                      File(TEST_DATA_FILES_DIR, "variant_issues.md"),
+                      tempFile,
+                      tocmeOptions,
+                      writeChanges = true
+              )
 
 
       tempFile.delete()
@@ -268,7 +274,7 @@ internal object TestInsertToc: Spek({
         removeEmojis = true
       }
 
-      val (_, warnings, error) = insertTocs(File(TEST_DATA_FILES_DIR, file), tempFile, tocmeOptions)
+      val (_, warnings, error) = insertTocs(File(TEST_DATA_FILES_DIR, file), tempFile, tocmeOptions, writeChanges = true)
 
       it("generates no errors") {
         assertNull(error, "Unexpected error: $error")

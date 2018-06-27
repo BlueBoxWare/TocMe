@@ -1,4 +1,4 @@
-package com.github.blueboxware.tocme
+package com.github.blueboxware.tocme.util
 
 
 /*

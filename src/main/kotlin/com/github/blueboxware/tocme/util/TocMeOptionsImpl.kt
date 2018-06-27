@@ -1,8 +1,6 @@
 package com.github.blueboxware.tocme.util
 
-import com.github.blueboxware.tocme.Mode
 import com.github.blueboxware.tocme.TocMeOptions
-import com.github.blueboxware.tocme.Variant
 import com.vladsch.flexmark.ext.toc.internal.TocOptions
 import com.vladsch.flexmark.html.HtmlRenderer.*
 import com.vladsch.flexmark.parser.Parser.*

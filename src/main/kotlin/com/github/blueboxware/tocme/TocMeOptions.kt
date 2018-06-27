@@ -1,5 +1,7 @@
 package com.github.blueboxware.tocme
 
+import com.github.blueboxware.tocme.util.Mode
+import com.github.blueboxware.tocme.util.Variant
 import com.vladsch.flexmark.ext.toc.internal.TocOptions
 import com.vladsch.flexmark.util.options.DataHolder
 

@@ -12,6 +12,7 @@ buildscript {
 plugins {
     id 'java'
     id 'java-gradle-plugin'
+    id 'maven-publish'
     id 'com.gradle.plugin-publish' version '0.9.10'
 }
 

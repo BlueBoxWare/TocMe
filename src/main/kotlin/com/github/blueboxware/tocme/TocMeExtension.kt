@@ -1,7 +1,9 @@
 package com.github.blueboxware.tocme
 
+import com.github.blueboxware.tocme.util.Mode
 import com.github.blueboxware.tocme.util.TocMeGradleOptions
 import com.github.blueboxware.tocme.util.TocMeOptionsImpl
+import com.github.blueboxware.tocme.util.Variant
 import com.vladsch.flexmark.ext.toc.internal.TocLevelsOptionParser
 import com.vladsch.flexmark.ext.toc.internal.TocOptions
 import com.vladsch.flexmark.util.options.ParsedOptionStatus

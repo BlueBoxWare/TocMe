@@ -46,9 +46,9 @@ Put the following "markers" in the markdown document at the location where the T
 
 :warning:  Don't remove these markers after the TOC is inserted: they are also used to keep the TOC up to date.
 
-## Add the `tocme` task
+## Add the `tocme` specification
 
-Add the `tocme` task to `build.gradle`. For example, if you want a TOC in the file `README.md`:
+Add the `tocme` specification to `build.gradle`. For example, if you want a TOC in the file `README.md`:
 
 ```gradle
 tocme {
@@ -58,11 +58,11 @@ tocme {
 }
 ```
 
-## Run the `tocme` task
+## Run the `insertTocs` task
 
-Run the `tocme` Gradle task.
+Run the `insertTocs` Gradle task.
 
-This will insert the TOC in the specified document. When you run the `tocme` task again after changing the document, it will update the
+This will insert the TOC in the specified document. When you run the `insertTocs` task again after changing the document, it will update the
 TOC if necessary (to make updating possible, you should not remove the `<!-- toc -->` and `<!-- /toc -->` markers from the document after
 the TOC is inserted).
 
@@ -90,7 +90,7 @@ tocme {
 ```
 
 ### Backups
-Backups of all files which are changed or overwritten by the `tocme` task are created in `build/tocme/backups/` before making changes.
+Backups of all files which are changed or overwritten by the `insertTocs` task are created in `build/tocme/backups/` before making changes.
 
 # Options
 
@@ -138,7 +138,7 @@ tocme {
 
 ### Specifying options
 
-In the tocme task, default options can be specified for all documents:
+In the `tocme` specification, default options can be specified for all documents:
 
 ```gradle
 tocme {
@@ -190,7 +190,7 @@ tocme {
 
 When the same option is specified multiple times with different values, the value specified in the `<!-- toc -->` marker takes preference,
 next the one specified for the output file, followed by the the value specified for the input file and lastly the value specified as default
-for the `tocme` task.
+for the `tocme` specification.
 
 ### Available options
 The following options can be used in `build.gradle`:

@@ -1,8 +1,11 @@
 package com.github.blueboxware.tocme
 
+import com.github.blueboxware.tocme.tasks.CheckTocsTask
+import com.github.blueboxware.tocme.tasks.InsertTocsTask
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.language.base.plugins.LifecycleBasePlugin
 import org.gradle.util.GradleVersion
 
 /*
@@ -29,15 +32,31 @@ class TocMePlugin: Plugin<Project> {
     }
 
     val tocmeExtension = project.extensions.create(TOCME_EXTENSION_NAME, TocMeExtension::class.java, project)
-    project.tasks.create(INSERT_TOCS_TASK, TocMeTask::class.java) {
+
+    project.tasks.create(INSERT_TOCS_TASK, InsertTocsTask::class.java) {
       it.tocMeExtension = tocmeExtension
+    }
+
+    project.tasks.create(CHECK_TOCS_TASK, CheckTocsTask::class.java) { checkTask ->
+      checkTask.tocMeExtension = tocmeExtension
+      project.afterEvaluate {
+        project.tasks.findByName(LifecycleBasePlugin.ASSEMBLE_TASK_NAME)?.let { assembleTask ->
+          assembleTask.dependsOn += checkTask
+        }
+      }
     }
 
   }
 
   companion object {
     const val TOCME_EXTENSION_NAME = "tocme"
+    
     const val INSERT_TOCS_TASK = "insertTocs"
+    const val CHECK_TOCS_TASK = "checkTocs"
+
+    const val TASK_GROUP = "documentation"
+
+    const val OUT_OF_DATE_MSG = "Table of Contents is out of date. Run the $INSERT_TOCS_TASK task to update."
   }
 
 }

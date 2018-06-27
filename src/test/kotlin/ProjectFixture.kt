@@ -1,4 +1,3 @@
-
 import com.github.blueboxware.tocme.TocMePlugin
 import com.vladsch.flexmark.ast.Document
 import org.gradle.api.Project
@@ -10,6 +9,7 @@ import org.gradle.util.GradleVersion
 import org.junit.rules.TemporaryFolder
 import java.io.File
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 /*
@@ -77,6 +77,8 @@ internal class ProjectFixture {
 
   fun file(path: String) = File(tempDir.root, path)
 
+  fun buildCheck(vararg extraArguments: String) = build(TocMePlugin.CHECK_TOCS_TASK, *extraArguments)
+
   fun build(taskName: String? = TocMePlugin.INSERT_TOCS_TASK, vararg extraArguments: String): BuildResult {
 
     val args = extraArguments.toMutableList()
@@ -90,7 +92,7 @@ internal class ProjectFixture {
 //            .withDebug(true)
             .withProjectDir(tempDir.root)
             .withGradleVersion(GRADLE_VERSION.version)
-            .withArguments(*args.toTypedArray(), "--stacktrace")
+            .withArguments(*args.toTypedArray())
 
     val result = runner.build()
 
@@ -134,6 +136,21 @@ internal class ProjectFixture {
             assertTrue(output.output.contains(str), "String '$str' not found in output. Output:\n" + output.output)
           }
 
+  @Suppress("MemberVisibilityCanBePrivate")
+  fun assertOutputContainsNot(str: String) =
+          latestBuildResult?.let { output ->
+            assertFalse(output.output.contains(str), "String '$str' found in output. Output:\n" + output.output)
+          }
+
+  fun assertCheckOutputFileIsOutOfDate(fileName: String) =
+          assertOutputContains("$fileName: ${TocMePlugin.OUT_OF_DATE_MSG}")
+
+  fun assertCheckOutputFileIsNotOutOfDate(fileName: String) =
+          assertOutputContainsNot("$fileName: ${TocMePlugin.OUT_OF_DATE_MSG}")
+
+  fun assertCheckOutputNothingIsOutOfDate() =
+          assertOutputContainsNot(TocMePlugin.OUT_OF_DATE_MSG)
+
   fun assertBuildSuccess(task: String? = latestTask) =
           assertTaskOutcome(TaskOutcome.SUCCESS, task)
 
@@ -144,9 +161,14 @@ internal class ProjectFixture {
   fun assertBuildUpToDate(task: String? = latestTask) =
           assertTaskOutcome(TaskOutcome.UP_TO_DATE, task)
 
-  @Suppress("unused")
   fun assertBuildNoSource(task: String? = latestTask) =
           assertTaskOutcome(TaskOutcome.NO_SOURCE, task)
+
+  fun assertBuildNoSourceAfter33(task: String? = latestTask) =
+          if (GRADLE_VERSION < GradleVersion.version("3.4"))
+            assertBuildUpToDate(task)
+          else
+            assertBuildNoSource()
 
   private fun assertTaskOutcome(expectedOutcome: TaskOutcome, task: String? = latestTask) =
           task?.let { actualTask ->

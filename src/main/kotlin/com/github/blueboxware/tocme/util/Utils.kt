@@ -16,9 +16,7 @@ package com.github.blueboxware.tocme.util
  * limitations under the License.
  */
 
-import com.github.blueboxware.tocme.Mode
 import com.github.blueboxware.tocme.TocMeOptions
-import com.github.blueboxware.tocme.Variant
 import com.vladsch.flexmark.ast.Document
 import com.vladsch.flexmark.ast.Heading
 import com.vladsch.flexmark.ast.HtmlCommentBlock
@@ -67,7 +65,12 @@ private const val INDENT = "  "
 
 private const val BACKUP_DIR = "tocme/backups/"
 
-internal fun insertTocs(inputFile: File, outputFile: File?, options: TocMeOptions): Triple<String?, List<String>, String?> {
+internal fun insertTocs(
+        inputFile: File,
+        outputFile: File?,
+        options: TocMeOptions,
+        writeChanges: Boolean = false
+): Triple<String?, List<String>, String?> {
 
   val parserOptions = options.toParserOptions()
 
@@ -77,11 +80,13 @@ internal fun insertTocs(inputFile: File, outputFile: File?, options: TocMeOption
 
   val (result, warnings, error) = document.insertTocs(
           options,
-          checkCurrentContent = inputFile == outputFile
+          checkCurrentContent = writeChanges && inputFile == outputFile
   )
 
-  result?.let { txt ->
-    outputFile?.writeText(txt)
+  if (writeChanges) {
+    result?.let { txt ->
+      outputFile?.writeText(txt)
+    }
   }
 
   return Triple(result, warnings, error)
@@ -112,7 +117,7 @@ internal fun Document.insertTocs(options: TocMeOptions, checkCurrentContent: Boo
     checkBounds(startTag, endTag) { return Triple(null, warnings, "something went horribly wrong") }
 
     if (checkCurrentContent && !checkCurrentContent(startTag, endTag)) {
-      warnings.add("it doesn't look like the current content between the ${options.tag()} tags on line ${startTag.lineNumber()} and line ${endTag.lineNumber()} is a toc. Not making changes here, just in case.")
+      warnings.add("It doesn't look like the current content between the ${options.tag()} tags on line ${startTag.lineNumber()} and line ${endTag.lineNumber()} is a toc. Not making changes here, just in case.")
       return@forEach
     }
 
@@ -237,8 +242,8 @@ private fun parseArgs(options: TocMeOptions, text: String): Pair<TocMeOptions, L
                     when {
                       value.toLowerCase() == "true" -> true
                       value.toLowerCase() == "false" -> false
-                      value.isBlank() -> warnings.add("no value specified for option '$key'")
-                      else -> warnings.add("option '$key' should be 'true' or 'false'")
+                      value.isBlank() -> warnings.add("No value specified for option '$key'")
+                      else -> warnings.add("Option '$key' should be 'true' or 'false'")
                     }
 
             when (key) {
@@ -252,9 +257,9 @@ private fun parseArgs(options: TocMeOptions, text: String): Pair<TocMeOptions, L
                 else -> {
                   warnings.add(
                           if (value.isBlank()) {
-                            "missing argument for parameter $OPT_STYLE"
+                            "Missing argument for parameter $OPT_STYLE"
                           } else {
-                            "invalid argument for parameter $OPT_STYLE: '$value'"
+                            "Invalid argument for parameter $OPT_STYLE: '$value'"
                           } + ". Valid arguments are: $STYLE_VALUES."
                   )
                 }
@@ -266,7 +271,7 @@ private fun parseArgs(options: TocMeOptions, text: String): Pair<TocMeOptions, L
 
               OPT_LEVELS -> {
                 if (value.isBlank()) {
-                  warnings.add("missing argument for parameter levels")
+                  warnings.add("Missing argument for parameter levels")
                 } else {
 
                   TocLevelsOptionParser(OPT_LEVELS).parseOption(CharSubSequence.of(value), TocOptions(), null).let { result ->
@@ -290,17 +295,17 @@ private fun parseArgs(options: TocMeOptions, text: String): Pair<TocMeOptions, L
                 else -> {
                   warnings.add(
                           if (value.isBlank()) {
-                            "missing argument for parameter $OPT_MODE"
+                            "Missing argument for parameter $OPT_MODE"
                           } else {
-                            "invalid argument for parameter $OPT_STYLE: '$value'"
+                            "Invalid argument for parameter $OPT_STYLE: '$value'"
                           } + ". Valid arguments are: $MODE_VALUES."
                   )
                 }
               }
 
-              OPT_VARIANT -> warnings.add("the option '$OPT_VARIANT' can only be specified in Gradle, not in the '${options.tag()}' tag")
+              OPT_VARIANT -> warnings.add("The option '$OPT_VARIANT' can only be specified in Gradle, not in the '${options.tag()}' tag")
 
-              else -> warnings.add("unknown option: '$key'")
+              else -> warnings.add("Unknown option: '$key'")
 
             }
 
@@ -336,13 +341,13 @@ private fun Document.collectTags(tagName: String): Pair<Map<Tag, Tag>?, String?>
 
     if (tag.isStartTag) {
       if (startTag != null) {
-        return Pair(null, "opening $tagName tag found on line ${tag.lineNumber()} while previous $tagName tag (on line ${startTag?.lineNumber()}) wasn't closed yet")
+        return Pair(null, "Opening $tagName tag found on line ${tag.lineNumber()} while previous $tagName tag (on line ${startTag?.lineNumber()}) wasn't closed yet")
       } else {
         startTag = tag
       }
     } else if (tag.isEndTag) {
       if (startTag == null) {
-        return Pair(null, "closing $tagName tag on line ${tag.lineNumber()} does not have a corresponding opening tag")
+        return Pair(null, "Closing $tagName tag on line ${tag.lineNumber()} does not have a corresponding opening tag")
       }
       startTag?.let {
         result[it] = tag
@@ -353,7 +358,7 @@ private fun Document.collectTags(tagName: String): Pair<Map<Tag, Tag>?, String?>
   }
 
   startTag?.let {
-    return Pair(null, "opening $tagName tag on line ${it.lineNumber()} does not have a corresponding closing tag")
+    return Pair(null, "Opening $tagName tag on line ${it.lineNumber()} does not have a corresponding closing tag")
   }
 
   return Pair(result, null)
