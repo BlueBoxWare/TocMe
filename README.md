@@ -81,7 +81,7 @@ Repeat the `doc` directive and/or use `docs`:
 ```gradle
 tocme {
 
-    doc("README.md)
+    doc("README.md")
     doc(file("doc/reference.md"))
 
     docs("doc/intro.md", "doc/notes.md")
@@ -129,7 +129,7 @@ tocme {
         output("notes.md")
     }
 
-    doc("readme.md") {
+    doc("README.md") {
         outputs("readme_with_toc.md", "doc/readme.md")
     }
 
@@ -146,7 +146,7 @@ tocme {
     bold = false
     variant = Kramdown
 
-    doc("readme.md")
+    doc("README.md")
     doc("notes.md")
 
 }
@@ -157,7 +157,7 @@ or for a specific input document:
 ```gradle
 tocme {
 
-    doc("readme.md")
+    doc("README.md")
 
     doc("notes.md") {
         numbered = true

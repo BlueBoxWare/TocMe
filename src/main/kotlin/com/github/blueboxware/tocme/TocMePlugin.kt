@@ -50,7 +50,7 @@ class TocMePlugin: Plugin<Project> {
 
   companion object {
     const val TOCME_EXTENSION_NAME = "tocme"
-    
+
     const val INSERT_TOCS_TASK = "insertTocs"
     const val CHECK_TOCS_TASK = "checkTocs"
 

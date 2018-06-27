@@ -1,6 +1,7 @@
+
 import com.github.blueboxware.tocme.TocMeOptions
-import com.github.blueboxware.tocme.util.Variant
 import com.github.blueboxware.tocme.util.TocMeOptionsImpl
+import com.github.blueboxware.tocme.util.Variant
 import com.github.blueboxware.tocme.util.insertTocs
 import com.vladsch.flexmark.parser.Parser
 import com.vladsch.flexmark.parser.ParserEmulationProfile
@@ -892,49 +893,5 @@ internal object TestInsertToc: Spek({
     }
 
   }
-
-//  given("one document") {
-//
-//    val doc = """
-//      ## Header1
-//      # Header2
-//      <!-- toc  mode=local levels=1-6 bold=true plain=false numbered=false-->
-//        - __[Header3](#header3)__
-//        - __[Header4](#header4)__
-//          - __[Header5](#header5)__
-//        - __[Header6](#header6)__
-//      - __[Header7](#header7)__
-//      <!--/toc-->
-//      ### Header3
-//      ### Header4
-//      #### Header5
-//      ### Header6
-//      ## Header7
-//      # Header8
-//      ### Header9
-//      # Header10
-//    """.trimIndent()
-//
-//    on("inserting a toc", with = *arrayOf(data(doc, expected = doc))) { doc, expected ->
-//
-//      val variant = Variant.GitHubDoc
-//
-//      val parserOptions = MutableDataSet()
-//      variant.setIn(parserOptions)
-//
-//      val tocMeOptions = TocMeOptionsImpl(null).apply { this.variant = variant }
-//
-//      val parser = Parser.builder(parserOptions).build()
-//
-//      val document = parser.parse(doc)
-//      val (result, warnings, error) = document.insertTocs(tocMeOptions, checkCurrentContent = true)
-//
-//      it("should create the correct output") {
-//        ProjectFixture.assertTextEquals(expected, result!!)
-//      }
-//
-//    }
-//
-//  }
 
 })
