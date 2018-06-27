@@ -57,7 +57,7 @@ class TocMePlugin: Plugin<Project> {
     const val TASK_GROUP = "documentation"
 
     const val OUT_OF_DATE_MSG = "Table of Contents is out of date. Run the $INSERT_TOCS_TASK task to update."
-    
+
     const val NR_OF_BACKUPS = 10
   }
 

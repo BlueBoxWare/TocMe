@@ -30,14 +30,15 @@ import kotlin.test.assertTrue
  */
 internal class ProjectFixture {
 
+  private val GRADLE_VERSION = GradleVersion.current()
+  private val TEST_RELEASED_VERSION = false
+
   private val tempDir = TemporaryFolder().apply { create() }
   private val buildFile = tempDir.newFile("build.gradle")
 
   val project: Project = ProjectBuilder.builder().withProjectDir(tempDir.root).build()
 
   val backupDir = "build/tocme/backups/${TocMePlugin.INSERT_TOCS_TASK}/"
-
-  private val GRADLE_VERSION = GradleVersion.current()
 
   private var latestBuildResult: BuildResult? = null
   private var latestTask: String? = null
@@ -47,7 +48,7 @@ internal class ProjectFixture {
   private val header = """
 
         plugins {
-          id 'com.github.blueboxware.tocme' version '${getCurrentPluginVersion()}'
+          id 'com.github.blueboxware.tocme' version '${getPluginVersion(TEST_RELEASED_VERSION)}'
         }
 
   """.trimIndent()
@@ -89,11 +90,15 @@ internal class ProjectFixture {
 
     val runner = GradleRunner
             .create()
-            .withPluginClasspath()
 //            .withDebug(true)
             .withProjectDir(tempDir.root)
             .withGradleVersion(GRADLE_VERSION.version)
             .withArguments(*args.toTypedArray())
+
+    @Suppress("ConstantConditionIf")
+    if (!TEST_RELEASED_VERSION) {
+      runner.withPluginClasspath()
+    }
 
     val result = runner.build()
 
@@ -134,12 +139,12 @@ internal class ProjectFixture {
 
   fun assertOutputContains(str: String) =
           latestBuildResult?.output?.let { output ->
-            assertTrue(output.contains(str), "String '$str' not found in output. Output:\n" + output)
+            assertTrue(output.contains(str), "String '$str' not found in output. Output:\n$output")
           }
 
   fun assertOutputContainsNot(str: String) =
           latestBuildResult?.output?.let { output ->
-            assertFalse(output.contains(str), "String '$str' found in output. Output:\n" + output)
+            assertFalse(output.contains(str), "String '$str' found in output. Output:\n$output")
           }
 
   fun assertOutputContainsNot(regex: Regex) =
@@ -166,7 +171,7 @@ internal class ProjectFixture {
   fun assertBuildUpToDate(task: String? = latestTask) =
           assertTaskOutcome(TaskOutcome.UP_TO_DATE, task)
 
-  fun assertBuildNoSource(task: String? = latestTask) =
+  private fun assertBuildNoSource(task: String? = latestTask) =
           assertTaskOutcome(TaskOutcome.NO_SOURCE, task)
 
   fun assertBuildNoSourceAfter33(task: String? = latestTask) =
@@ -186,10 +191,13 @@ internal class ProjectFixture {
 
   companion object {
 
-    private val CURRENT_VERSION_REGEX = Regex("""pluginVersion\s*=\s*'([^']+)'""")
+    private const val CURRENT_VERSION = "pluginVersion"
+    private const val RELEASED_VERSION = "releasedPluginVersion"
+    private fun versionRegex(testReleasedVersion: Boolean) =
+            Regex("""${if (testReleasedVersion) RELEASED_VERSION else CURRENT_VERSION}\s*=\s*'([^']+)'""")
 
-    internal fun getCurrentPluginVersion() =
-            CURRENT_VERSION_REGEX.find(File("versions.gradle").readText())?.groupValues?.getOrNull(1)
+    internal fun getPluginVersion(testReleasedVersion: Boolean) =
+            versionRegex(testReleasedVersion).find(File("versions.gradle").readText())?.groupValues?.getOrNull(1)
                     ?: throw AssertionError()
 
     internal fun assertTextEquals(

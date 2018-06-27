@@ -1,4 +1,3 @@
-
 import com.github.blueboxware.tocme.TocMeOptions
 import com.github.blueboxware.tocme.util.TocMeOptionsImpl
 import com.github.blueboxware.tocme.util.Variant
