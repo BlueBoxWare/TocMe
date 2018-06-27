@@ -10,6 +10,7 @@ import org.junit.rules.TemporaryFolder
 import java.io.File
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 /*
@@ -132,14 +133,18 @@ internal class ProjectFixture {
           }
 
   fun assertOutputContains(str: String) =
-          latestBuildResult?.let { output ->
-            assertTrue(output.output.contains(str), "String '$str' not found in output. Output:\n" + output.output)
+          latestBuildResult?.output?.let { output ->
+            assertTrue(output.contains(str), "String '$str' not found in output. Output:\n" + output)
           }
 
-  @Suppress("MemberVisibilityCanBePrivate")
   fun assertOutputContainsNot(str: String) =
-          latestBuildResult?.let { output ->
-            assertFalse(output.output.contains(str), "String '$str' found in output. Output:\n" + output.output)
+          latestBuildResult?.output?.let { output ->
+            assertFalse(output.contains(str), "String '$str' found in output. Output:\n" + output)
+          }
+
+  fun assertOutputContainsNot(regex: Regex) =
+          latestBuildResult?.output?.let { output ->
+            assertNull(regex.find(output))
           }
 
   fun assertCheckOutputFileIsOutOfDate(fileName: String) =

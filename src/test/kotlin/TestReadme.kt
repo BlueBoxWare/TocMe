@@ -27,41 +27,71 @@ object TestReadme: Spek({
 
   beforeEachTest {
     fixture = ProjectFixture()
-    File(fixture.project.rootDir, "doc").mkdir()
-    listOf(
-            "README.md",
-            "doc/reference.md",
-            "doc/intro.md",
-            "doc/notes.md",
-            "notes.in.md",
-            "notes.md",
-            "notes.src.md"
-    ).forEach {
-      fixture.createFile(it, "")
-    }
   }
 
   afterEachTest {
     fixture.destroy()
   }
 
-  val tests = File("README.md").readText().let { readmeTxt ->
-    Regex("""```gradle(.*?)```""", RegexOption.DOT_MATCHES_ALL).findAll(readmeTxt).map { it.groupValues[1] }.map { content ->
+  fun loadTests(type: String) = File("README.md.src").readText().let { readmeTxt ->
+    Regex("""```$type(.*?)```""", RegexOption.DOT_MATCHES_ALL).findAll(readmeTxt).map { it.groupValues[1] }.map { content ->
       data<String, String?>(content, expected = null)
     }
   }.toList().toTypedArray()
 
-  given("a fragment from the README") {
+  given("a Gradle fragment from the README") {
 
-    on("building (%s)", with = *tests) { content, expected ->
+    beforeEachTest {
+      File(fixture.project.rootDir, "doc").mkdir()
+      listOf(
+              "README.md",
+              "doc/reference.md",
+              "doc/intro.md",
+              "doc/notes.md",
+              "notes.in.md",
+              "notes.md",
+              "notes.src.md"
+      ).forEach {
+        fixture.createFile(it, "")
+      }
+    }
+
+    on("building (%s)", with = *loadTests("gradle")) { content, expected ->
 
       fixture.buildFile(content)
-      val output = fixture.build()
-
-      println(output.output)
+      fixture.build()
 
       it("should succeed") {
         fixture.assertBuildSuccess()
+      }
+
+    }
+
+  }
+
+  given("a MarkDown fragment from the README") {
+
+    beforeEachTest {
+      fixture.buildFile("""
+        tocme {
+          doc("test.md")
+        }
+      """.trimIndent())
+    }
+
+    on("building (%s)", with = *loadTests("markdown")) { content, expected ->
+
+      fixture.createFile("test.md", content)
+      val result = fixture.build()
+
+      println(result.output)
+
+      it("should succeed") {
+        fixture.assertBuildSuccess()
+      }
+
+      it("should generate no warnings") {
+        fixture.assertOutputContainsNot(Regex("^test.md:", RegexOption.MULTILINE))
       }
 
     }
