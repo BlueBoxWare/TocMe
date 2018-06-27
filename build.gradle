@@ -74,3 +74,16 @@ pluginBundle {
         }
     }
 }
+
+task createReadme {
+
+    inputs.file("README.md.src")
+    inputs.file("versions.gradle")
+
+    outputs.file("README.md")
+
+    file("README.md").text = file("README.md.src").text.replaceAll("<releasedPluginVersion>", releasedPluginVersion)
+
+    tasks.getByName(LifecycleBasePlugin.ASSEMBLE_TASK_NAME).dependsOn += delegate
+
+}
