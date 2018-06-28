@@ -110,7 +110,7 @@ internal object TestInsertToc: Spek({
       val document = parser.parse(input)
       val (result, warnings, error) = document.insertTocs(tocMeOptions, checkCurrentContent = true)
 
-      val warningRegex = expected.lines().first().let { Regex(".*$it.*") }
+      val warningRegex = expected.lines().first().let { Regex(".*$it.*", RegexOption.IGNORE_CASE) }
 
       it("generates no errors") {
         assertNull(error, "Unexpected error: $error")
@@ -149,7 +149,7 @@ internal object TestInsertToc: Spek({
       val document = parser.parse(input)
       val (_, _, error) = document.insertTocs(tocMeOptions, checkCurrentContent = true)
 
-      val errorRegex = expected.lines().first().let { Regex(".*$it.*") }
+      val errorRegex = expected.lines().first().let { Regex(".*$it.*", RegexOption.IGNORE_CASE) }
 
       it("generates an error") {
         assertNotNull(error, "No error")

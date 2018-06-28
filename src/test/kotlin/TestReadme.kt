@@ -81,9 +81,7 @@ object TestReadme: Spek({
     on("building (%s)", with = *loadTests("markdown")) { content, expected ->
 
       fixture.createFile("test.md", content)
-      val result = fixture.build()
-
-      println(result.output)
+      fixture.build()
 
       it("should succeed") {
         fixture.assertBuildSuccess()
