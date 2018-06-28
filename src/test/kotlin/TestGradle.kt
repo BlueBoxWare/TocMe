@@ -1,3 +1,4 @@
+
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.given
@@ -145,7 +146,9 @@ object TestGradle: Spek({
       }
 
       it("should create a backup") {
-        fixture.assertFileEquals("files/gdx.md", fixture.backupDir + "gdx.md")
+        fixture.project.file(fixture.backupDir).listFiles().first().relativeToOrSelf(fixture.project.rootDir).let {
+          fixture.assertFileEquals("files/gdx.md", it.path + "/gdx.md")
+        }
       }
 
     }
@@ -621,9 +624,12 @@ object TestGradle: Spek({
       }
 
       it("should create backups") {
-        fixture.assertFileEquals("files/gdx.md", fixture.backupDir + "gdx.md")
-        fixture.assertFileEquals("files/variant_issues.md", fixture.backupDir + "variant_issues.md")
-        fixture.assertFileEquals("files/react.md", fixture.backupDir + "react.md")
+        fixture.project.file(fixture.backupDir).listFiles().first().relativeToOrSelf(fixture.project.rootDir).let {
+          fixture.assertFileEquals("files/gdx.md", it.path + "/gdx.md")
+          fixture.assertFileEquals("files/variant_issues.md", it.path + "/variant_issues.md")
+          fixture.assertFileEquals("files/react.md", it.path + "/react.md")
+        }
+
       }
 
       it("should create the correct outputs") {
@@ -659,17 +665,19 @@ object TestGradle: Spek({
       }
 
       it("should create backups") {
-        listOf(
-                "gdx.md",
-                "gdx.out",
-                "gdx_numbered.out",
-                "gdx_flat.out",
-                "nerdfonts_reversed_plain.out",
-                "variant_issues.md",
-                "react.default_flat_reversed_local.out",
-                "react.default_sorted_full.out"
-        ).map { fixture.backupDir + it }.toTypedArray().let {
-          fixture.assertFilesExist(*it)
+        fixture.project.file(fixture.backupDir).listFiles().first().relativeToOrSelf(fixture.project.rootDir).let { backupDir ->
+          listOf(
+                  "gdx.md",
+                  "gdx.out",
+                  "gdx_numbered.out",
+                  "gdx_flat.out",
+                  "nerdfonts_reversed_plain.out",
+                  "variant_issues.md",
+                  "react.default_flat_reversed_local.out",
+                  "react.default_sorted_full.out"
+          ).map { backupDir.path + "/" + it }.toTypedArray().let {
+            fixture.assertFilesExist(*it)
+          }
         }
       }
 
