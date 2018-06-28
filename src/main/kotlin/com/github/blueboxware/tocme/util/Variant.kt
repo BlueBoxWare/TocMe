@@ -1,10 +1,3 @@
-package com.github.blueboxware.tocme.util
-
-import com.vladsch.flexmark.html.HtmlRenderer
-import com.vladsch.flexmark.parser.ParserEmulationProfile
-import com.vladsch.flexmark.util.options.MutableDataHolder
-
-
 /*
  * Copyright 2018 Blue Box Ware
  *
@@ -20,6 +13,12 @@ import com.vladsch.flexmark.util.options.MutableDataHolder
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.github.blueboxware.tocme.util
+
+import com.vladsch.flexmark.html.HtmlRenderer
+import com.vladsch.flexmark.parser.ParserEmulationProfile
+import com.vladsch.flexmark.util.options.MutableDataHolder
+
 enum class Variant(private val emulationProfile: ParserEmulationProfile) {
   Commonmark(ParserEmulationProfile.COMMONMARK),
   Commonmark26(ParserEmulationProfile.COMMONMARK_0_26),

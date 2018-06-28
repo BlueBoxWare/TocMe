@@ -1,13 +1,3 @@
-package com.github.blueboxware.tocme
-
-import com.github.blueboxware.tocme.tasks.CheckTocsTask
-import com.github.blueboxware.tocme.tasks.InsertTocsTask
-import org.gradle.api.GradleException
-import org.gradle.api.Plugin
-import org.gradle.api.Project
-import org.gradle.language.base.plugins.LifecycleBasePlugin
-import org.gradle.util.GradleVersion
-
 /*
  * Copyright 2018 Blue Box Ware
  *
@@ -23,6 +13,16 @@ import org.gradle.util.GradleVersion
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.github.blueboxware.tocme
+
+import com.github.blueboxware.tocme.tasks.CheckTocsTask
+import com.github.blueboxware.tocme.tasks.InsertTocsTask
+import org.gradle.api.GradleException
+import org.gradle.api.Plugin
+import org.gradle.api.Project
+import org.gradle.language.base.plugins.LifecycleBasePlugin
+import org.gradle.util.GradleVersion
+
 class TocMePlugin: Plugin<Project> {
 
   override fun apply(project: Project) {

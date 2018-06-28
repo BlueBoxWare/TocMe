@@ -1,12 +1,3 @@
-package com.github.blueboxware.tocme.tasks
-
-import com.github.blueboxware.tocme.TocMeExtension
-import com.github.blueboxware.tocme.TocMePlugin
-import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.*
-import java.io.File
-
-
 /*
  * Copyright 2018 Blue Box Ware
  *
@@ -22,6 +13,14 @@ import java.io.File
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.github.blueboxware.tocme.tasks
+
+import com.github.blueboxware.tocme.TocMeExtension
+import com.github.blueboxware.tocme.TocMePlugin
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.*
+import java.io.File
+
 abstract class TocMeTask: DefaultTask() {
 
   init {

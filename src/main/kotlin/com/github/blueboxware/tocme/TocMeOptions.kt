@@ -1,11 +1,3 @@
-package com.github.blueboxware.tocme
-
-import com.github.blueboxware.tocme.util.Mode
-import com.github.blueboxware.tocme.util.Variant
-import com.vladsch.flexmark.ext.toc.internal.TocOptions
-import com.vladsch.flexmark.util.options.DataHolder
-
-
 /*
  * Copyright 2018 Blue Box Ware
  *
@@ -21,6 +13,13 @@ import com.vladsch.flexmark.util.options.DataHolder
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.github.blueboxware.tocme
+
+import com.github.blueboxware.tocme.util.Mode
+import com.github.blueboxware.tocme.util.Variant
+import com.vladsch.flexmark.ext.toc.internal.TocOptions
+import com.vladsch.flexmark.util.options.DataHolder
+
 interface TocMeOptions {
 
   var tag: String?

@@ -1,10 +1,3 @@
-import org.jetbrains.spek.api.Spek
-import org.jetbrains.spek.api.dsl.given
-import org.jetbrains.spek.api.dsl.it
-import org.jetbrains.spek.data_driven.data
-import org.jetbrains.spek.data_driven.on
-import java.io.File
-
 /*
  * Copyright 2018 Blue Box Ware
  *
@@ -20,6 +13,13 @@ import java.io.File
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import org.jetbrains.spek.api.Spek
+import org.jetbrains.spek.api.dsl.given
+import org.jetbrains.spek.api.dsl.it
+import org.jetbrains.spek.data_driven.data
+import org.jetbrains.spek.data_driven.on
+import java.io.File
+
 object TestReadme: Spek({
 
   lateinit var fixture: ProjectFixture

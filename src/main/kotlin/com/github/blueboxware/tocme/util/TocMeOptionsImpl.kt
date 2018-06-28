@@ -1,13 +1,3 @@
-package com.github.blueboxware.tocme.util
-
-import com.github.blueboxware.tocme.TocMeOptions
-import com.vladsch.flexmark.ext.toc.internal.TocOptions
-import com.vladsch.flexmark.html.HtmlRenderer.*
-import com.vladsch.flexmark.parser.Parser.*
-import com.vladsch.flexmark.util.options.DataHolder
-import com.vladsch.flexmark.util.options.MutableDataSet
-
-
 /*
  * Copyright 2018 Blue Box Ware
  *
@@ -23,6 +13,15 @@ import com.vladsch.flexmark.util.options.MutableDataSet
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.github.blueboxware.tocme.util
+
+import com.github.blueboxware.tocme.TocMeOptions
+import com.vladsch.flexmark.ext.toc.internal.TocOptions
+import com.vladsch.flexmark.html.HtmlRenderer.*
+import com.vladsch.flexmark.parser.Parser.*
+import com.vladsch.flexmark.util.options.DataHolder
+import com.vladsch.flexmark.util.options.MutableDataSet
+
 class TocMeOptionsImpl(private val parent: TocMeOptions?): TocMeOptions {
 
   override var tag: String? = null

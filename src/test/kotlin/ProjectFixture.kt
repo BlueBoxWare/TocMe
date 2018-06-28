@@ -1,18 +1,3 @@
-import com.github.blueboxware.tocme.TocMePlugin
-import com.vladsch.flexmark.ast.Document
-import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
-import org.gradle.testkit.runner.BuildResult
-import org.gradle.testkit.runner.GradleRunner
-import org.gradle.testkit.runner.TaskOutcome
-import org.gradle.util.GradleVersion
-import org.junit.rules.TemporaryFolder
-import java.io.File
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
-
 /*
  * Copyright 2018 Blue Box Ware
  *
@@ -28,6 +13,21 @@ import kotlin.test.assertTrue
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import com.github.blueboxware.tocme.TocMePlugin
+import com.vladsch.flexmark.ast.Document
+import org.gradle.api.Project
+import org.gradle.testfixtures.ProjectBuilder
+import org.gradle.testkit.runner.BuildResult
+import org.gradle.testkit.runner.GradleRunner
+import org.gradle.testkit.runner.TaskOutcome
+import org.gradle.util.GradleVersion
+import org.junit.rules.TemporaryFolder
+import java.io.File
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
+
 internal class ProjectFixture {
 
   private val GRADLE_VERSION = GradleVersion.current()

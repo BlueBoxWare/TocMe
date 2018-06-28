@@ -1,11 +1,3 @@
-
-import org.gradle.language.base.plugins.LifecycleBasePlugin
-import org.jetbrains.spek.api.Spek
-import org.jetbrains.spek.api.dsl.given
-import org.jetbrains.spek.api.dsl.it
-import org.jetbrains.spek.api.dsl.on
-import kotlin.test.assertTrue
-
 /*
  * Copyright 2018 Blue Box Ware
  *
@@ -21,6 +13,13 @@ import kotlin.test.assertTrue
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import org.gradle.language.base.plugins.LifecycleBasePlugin
+import org.jetbrains.spek.api.Spek
+import org.jetbrains.spek.api.dsl.given
+import org.jetbrains.spek.api.dsl.it
+import org.jetbrains.spek.api.dsl.on
+import kotlin.test.assertTrue
 
 object TestGradle: Spek({
 

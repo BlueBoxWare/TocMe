@@ -1,6 +1,3 @@
-package com.github.blueboxware.tocme.util
-
-
 /*
  * Copyright 2018 Blue Box Ware
  *
@@ -16,6 +13,8 @@ package com.github.blueboxware.tocme.util
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.github.blueboxware.tocme.util
+
 enum class Mode {
   Normal, Full, Local
 }

@@ -1,8 +1,3 @@
-package com.github.blueboxware.tocme.util
-
-import com.vladsch.flexmark.ast.HtmlCommentBlock
-
-
 /*
  * Copyright 2018 Blue Box Ware
  *
@@ -18,6 +13,10 @@ import com.vladsch.flexmark.ast.HtmlCommentBlock
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.github.blueboxware.tocme.util
+
+import com.vladsch.flexmark.ast.HtmlCommentBlock
+
 internal class Tag(
         val container: HtmlCommentBlock,
         val tag: String,

@@ -1,13 +1,3 @@
-package com.github.blueboxware.tocme.util
-
-import com.github.blueboxware.tocme.TocMeOptions
-import groovy.lang.Closure
-import org.gradle.api.Project
-import org.gradle.api.tasks.Input
-import org.gradle.util.ConfigureUtil
-import java.io.File
-
-
 /*
  * Copyright 2018 Blue Box Ware
  *
@@ -23,6 +13,15 @@ import java.io.File
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.github.blueboxware.tocme.util
+
+import com.github.blueboxware.tocme.TocMeOptions
+import groovy.lang.Closure
+import org.gradle.api.Project
+import org.gradle.api.tasks.Input
+import org.gradle.util.ConfigureUtil
+import java.io.File
+
 class TocMeGradleOptions(
         val project: Project,
         defaultOptions: TocMeOptions,

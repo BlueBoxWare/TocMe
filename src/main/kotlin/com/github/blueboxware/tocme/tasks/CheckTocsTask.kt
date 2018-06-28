@@ -1,12 +1,3 @@
-package com.github.blueboxware.tocme.tasks
-
-import com.github.blueboxware.tocme.TocMeOptions
-import com.github.blueboxware.tocme.TocMePlugin
-import com.github.blueboxware.tocme.util.insertTocs
-import org.gradle.api.tasks.TaskAction
-import java.io.File
-
-
 /*
  * Copyright 2018 Blue Box Ware
  *
@@ -22,6 +13,14 @@ import java.io.File
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.github.blueboxware.tocme.tasks
+
+import com.github.blueboxware.tocme.TocMeOptions
+import com.github.blueboxware.tocme.TocMePlugin
+import com.github.blueboxware.tocme.util.insertTocs
+import org.gradle.api.tasks.TaskAction
+import java.io.File
+
 open class CheckTocsTask: TocMeTask() {
 
   init {
