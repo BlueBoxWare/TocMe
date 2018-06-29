@@ -66,6 +66,8 @@ This will insert the TOC in the specified document. When you run the `insertTocs
 TOC if necessary (to make updating possible, you should not remove the `<!-- toc -->` and `<!-- /toc -->` markers from the document after
 the TOC is inserted).
 
+To only check if the TOCs are up to date, without making any changes, run the `checkTocs` task.
+
 # Notes
 
 ### Multiple TOCs in one document
@@ -94,7 +96,7 @@ Backups of all files which are changed or overwritten by the `insertTocs` task a
 
 # Options
 
-## In the document itself
+## In the markdown document itself
 You can put a number of space-separated options in the opening markers in a document:
 
 ```markdown
@@ -120,7 +122,7 @@ The following options are available:
 ### Output files
 
 Instead of having the TOC put in the input file, you can specify one or more output files. The new documents, with the TOC(s), are written to the
-specified output files, leaving the input file alone:
+specified output files, leaving the input file unchanged:
 
 ```gradle
 tocme {
