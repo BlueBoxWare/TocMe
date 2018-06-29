@@ -14,6 +14,7 @@ plugins {
     id 'java-gradle-plugin'
     id 'maven-publish'
     id 'com.gradle.plugin-publish' version '0.9.10'
+    id 'com.github.blueboxware.tocme' version '1.0'
 }
 
 group 'com.github.blueboxware'
@@ -76,6 +77,10 @@ pluginBundle {
     }
 }
 
+tocme {
+    doc(file('README.md.src'))
+}
+
 task createReadme {
 
     inputs.file("README.md.src")
@@ -85,6 +90,6 @@ task createReadme {
 
     file("README.md").text = file("README.md.src").text.replaceAll("<releasedPluginVersion>", releasedPluginVersion)
 
-    tasks.getByName(LifecycleBasePlugin.ASSEMBLE_TASK_NAME).dependsOn += delegate
+    dependsOn += tasks.getByName('insertTocs')
 
 }

@@ -7,13 +7,14 @@ This plugin uses the great and powerful [flexmark-java](https://github.com/vsch/
 - __[Getting started](#getting-started)__
   - __[Add the plugin](#add-the-plugin)__
   - __[Prepare the markdown document](#prepare-the-markdown-document)__
-  - __[Add the tocme task](#add-the-tocme-task)__
-  - __[Run the tocme task](#run-the-tocme-task)__
+  - __[Add the tocme specification](#add-the-tocme-specification)__
+  - __[Run the insertTocs task](#run-the-inserttocs-task)__
 - __[Notes](#notes)__
     - __[Multiple TOCs in one document](#multiple-tocs-in-one-document)__
     - __[Putting TOCs in multiple documents](#putting-tocs-in-multiple-documents)__
+    - __[Backups](#backups)__
 - __[Options](#options)__
-  - __[In the document itself](#in-the-document-itself)__
+  - __[In the markdown document itself](#in-the-markdown-document-itself)__
   - __[In Gradle](#in-gradle)__
     - __[Output files](#output-files)__
     - __[Specifying options](#specifying-options)__
@@ -104,7 +105,6 @@ You can put a number of space-separated options in the opening markers in a docu
 <!-- /toc -->
 
 ```
-
 
 The following options are available:
 

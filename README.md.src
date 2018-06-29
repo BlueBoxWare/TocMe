@@ -7,13 +7,14 @@ This plugin uses the great and powerful [flexmark-java](https://github.com/vsch/
 - __[Getting started](#getting-started)__
   - __[Add the plugin](#add-the-plugin)__
   - __[Prepare the markdown document](#prepare-the-markdown-document)__
-  - __[Add the tocme task](#add-the-tocme-task)__
-  - __[Run the tocme task](#run-the-tocme-task)__
+  - __[Add the tocme specification](#add-the-tocme-specification)__
+  - __[Run the insertTocs task](#run-the-inserttocs-task)__
 - __[Notes](#notes)__
     - __[Multiple TOCs in one document](#multiple-tocs-in-one-document)__
     - __[Putting TOCs in multiple documents](#putting-tocs-in-multiple-documents)__
+    - __[Backups](#backups)__
 - __[Options](#options)__
-  - __[In the document itself](#in-the-document-itself)__
+  - __[In the markdown document itself](#in-the-markdown-document-itself)__
   - __[In Gradle](#in-gradle)__
     - __[Output files](#output-files)__
     - __[Specifying options](#specifying-options)__
@@ -66,6 +67,8 @@ This will insert the TOC in the specified document. When you run the `insertTocs
 TOC if necessary (to make updating possible, you should not remove the `<!-- toc -->` and `<!-- /toc -->` markers from the document after
 the TOC is inserted).
 
+To only check if the TOCs are up to date, without making any changes, run the `checkTocs` task.
+
 # Notes
 
 ### Multiple TOCs in one document
@@ -94,7 +97,7 @@ Backups of all files which are changed or overwritten by the `insertTocs` task a
 
 # Options
 
-## In the document itself
+## In the markdown document itself
 You can put a number of space-separated options in the opening markers in a document:
 
 ```markdown
@@ -102,7 +105,6 @@ You can put a number of space-separated options in the opening markers in a docu
 <!-- /toc -->
 
 ```
-
 
 The following options are available:
 
@@ -120,7 +122,7 @@ The following options are available:
 ### Output files
 
 Instead of having the TOC put in the input file, you can specify one or more output files. The new documents, with the TOC(s), are written to the
-specified output files, leaving the input file alone:
+specified output files, leaving the input file unchanged:
 
 ```gradle
 tocme {

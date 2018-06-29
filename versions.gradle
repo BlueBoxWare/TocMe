@@ -1,5 +1,5 @@
 ext {
-    pluginVersion = '1.0'
+    pluginVersion = '1.1'
     releasedPluginVersion = '1.0'
 
     flexmarkVersion = '0.32.22'
