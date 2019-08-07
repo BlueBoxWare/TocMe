@@ -73,6 +73,7 @@ pluginBundle {
         TocMe {
             id = 'com.github.blueboxware.tocme'
             displayName = 'TocMe'
+            version = pluginVersion
         }
     }
 }

@@ -1,6 +1,6 @@
 ext {
     pluginVersion = '1.1'
-    releasedPluginVersion = '1.0'
+    releasedPluginVersion = '1.1'
 
     flexmarkVersion = '0.32.22'
     kotlinVersion = '1.2.50'

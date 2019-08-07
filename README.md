@@ -20,6 +20,7 @@ This plugin uses the great and powerful [flexmark-java](https://github.com/vsch/
     - __[Specifying options](#specifying-options)__
     - __[Available options](#available-options)__
 - __[Changelog](#changelog)__
+  - __[1.1](#11)__
   - __[1.0](#10)__
 <!-- /toc -->
 
@@ -31,7 +32,7 @@ Add the plugin to your project's `build.gradle`:
 
 ```groovy
 plugins {
-  id "com.github.blueboxware.tocme" version "1.0"
+  id "com.github.blueboxware.tocme" version "1.1"
 }
 ```
 
@@ -110,12 +111,12 @@ The following options are available:
 
 | Name  | Default | Description |
 | ------------- | ------------- | ------------- |
-| `style`  | `hierarchy`  | The style to use for the TOC. Possible values: `hierarchy`, `flat`, `reversed` (flat in reversed order), `increasing` (flat, alphabetically sorted) or `decreasing` (flat, alphabetically reversed sorted). |
-| `mode`   | `normal`     | Determines which headers to include. Possible values: `normal` (only headers which appear after the TOC), `full` (include headers appearing before the TOC) or `local` (only subheaders of the header above the marker). |
-| `levels` | `1-3`          | Which header levels to include. Examples of possible values: "`1-4`", "`1,2,3,4`" (same), "`1-2,3-4`" (same). |
-| `numbered` | `false`      | When true: number the headers in the TOC. |
-| `bold`   | `true`         | When true: render the headers in the TOC bold. |
-| `plain`  | `false`        | When true: don't make the headers links to their respective sections. |
+| **`style`**  | `hierarchy`  | The style to use for the TOC. Possible values: `hierarchy`, `flat`, `reversed` (flat in reversed order), `increasing` (flat, alphabetically sorted) or `decreasing` (flat, alphabetically reversed sorted). |
+| **`mode`**   | `normal`     | Determines which headers to include. Possible values: `normal` (only headers which appear after the TOC), `full` (include headers appearing before the TOC) or `local` (only subheaders of the header above the marker). |
+| **`levels`** | `1-3`          | Which header levels to include. Examples of possible values: "`1-4`", "`1,2,3,4`" (same), "`1-2,3-4`" (same). |
+| **`numbered`** | `false`      | When true: number the headers in the TOC. |
+| **`bold`**   | `true`         | When true: render the headers in the TOC bold. |
+| **`plain`**  | `false`        | When true: don't make the headers links to their respective sections. |
 
 ## In Gradle
 
@@ -229,6 +230,9 @@ The following options can be used in `build.gradle`:
 in `dashChars`, which are replaced by a dash, and characters in `allowedChars`, which are not removed or replaced but left as is.
 
 # Changelog
+
+## 1.1
+* `checkTocs` now fails the build if there are out of date TOCS.
 
 ## 1.0
 * Initial version
