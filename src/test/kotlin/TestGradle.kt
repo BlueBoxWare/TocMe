@@ -108,7 +108,7 @@ object TestGradle: Spek({
 
     on("checking") {
 
-      fixture.buildCheck()
+      fixture.buildCheck(shouldFail = true)
 
       it("should report the TOC is out of date") {
         fixture.assertCheckOutputFileIsOutOfDate("gdx.md")
@@ -122,8 +122,8 @@ object TestGradle: Spek({
 
     on("checking twice") {
 
-      fixture.buildCheck()
-      fixture.buildCheck()
+      fixture.buildCheck(shouldFail = true)
+      fixture.buildCheck(shouldFail = true)
 
       it("should report the TOC is out of date") {
         fixture.assertCheckOutputFileIsOutOfDate("gdx.md")
@@ -192,7 +192,7 @@ object TestGradle: Spek({
       fixture.file("files/gdx.md").let { file ->
         file.writeText(file.readText().replace("Getting started", "Getting stopped"))
       }
-      fixture.buildCheck()
+      fixture.buildCheck(shouldFail = true)
 
       it("should report the TOC is out of date") {
         fixture.assertCheckOutputFileIsOutOfDate("gdx.md")
@@ -218,7 +218,7 @@ object TestGradle: Spek({
 
       fixture.build()
       fixture.replaceInBuildFile("tocme {", "tocme {\nbold=false\n")
-      fixture.buildCheck()
+      fixture.buildCheck(shouldFail = true)
 
       it("should report the TOC is out of date") {
         fixture.assertCheckOutputFileIsOutOfDate("gdx.md")
@@ -246,7 +246,7 @@ object TestGradle: Spek({
 
       fixture.build()
       fixture.replaceInBuildFile("))", """)) { numbered=true }""")
-      fixture.buildCheck()
+      fixture.buildCheck(shouldFail = true)
 
       it("should report the TOC is out of date") {
         fixture.assertCheckOutputFileIsOutOfDate("gdx.md")
@@ -590,7 +590,7 @@ object TestGradle: Spek({
 
     on("checking") {
 
-      fixture.buildCheck()
+      fixture.buildCheck(shouldFail = true)
 
       it("should report the tocs are out of date") {
         fixture.assertCheckOutputFileIsOutOfDate("gdx.out")
@@ -824,7 +824,7 @@ object TestGradle: Spek({
       fixture.build()
       fixture.sleepIfNecessary()
       fixture.replaceInBuildFile("setextMarkerLength = 1", "setextMarkerLength = 4")
-      fixture.buildCheck()
+      fixture.buildCheck(shouldFail = true)
 
       it("should report the file is out of date") {
         fixture.assertCheckOutputFileIsOutOfDate("out2.md")
@@ -958,7 +958,7 @@ object TestGradle: Spek({
 
     on("checking") {
 
-      fixture.buildCheck()
+      fixture.buildCheck(shouldFail = true)
 
       it("should report the warning") {
         fixture.assertOutputContains("input.md: line 1: Unknown option: 'foo'")
@@ -969,8 +969,8 @@ object TestGradle: Spek({
         fixture.assertOutputContainsNot("current content")
       }
 
-      it("should build successfully") {
-        fixture.assertBuildSuccess()
+      it("should build unsuccessfully") {
+        fixture.assertBuildFailure()
       }
 
       it("should report the toc is out of date") {
@@ -1064,7 +1064,7 @@ object TestGradle: Spek({
 
     on("running the assemble task") {
 
-      fixture.build(LifecycleBasePlugin.ASSEMBLE_TASK_NAME)
+      fixture.build(LifecycleBasePlugin.ASSEMBLE_TASK_NAME, shouldFail = true)
 
       it("should report the toc is out of date") {
         fixture.assertCheckOutputFileIsOutOfDate("gdx.md")

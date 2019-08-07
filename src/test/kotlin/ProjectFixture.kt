@@ -79,9 +79,14 @@ internal class ProjectFixture {
 
   fun file(path: String) = File(tempDir.root, path)
 
-  fun buildCheck(vararg extraArguments: String) = build(TocMePlugin.CHECK_TOCS_TASK, *extraArguments)
+  fun buildCheck(vararg extraArguments: String, shouldFail: Boolean = false) =
+          build(TocMePlugin.CHECK_TOCS_TASK, shouldFail, *extraArguments)
 
-  fun build(taskName: String? = TocMePlugin.INSERT_TOCS_TASK, vararg extraArguments: String): BuildResult {
+  fun build(
+          taskName: String? = TocMePlugin.INSERT_TOCS_TASK,
+          shouldFail: Boolean = false,
+          vararg extraArguments: String
+  ): BuildResult {
 
     val args = extraArguments.toMutableList()
     taskName?.let { args.add(taskName) }
@@ -100,7 +105,12 @@ internal class ProjectFixture {
       runner.withPluginClasspath()
     }
 
-    val result = runner.build()
+    val result =
+            if (shouldFail) {
+              runner.buildAndFail()
+            } else {
+              runner.build()
+            }
 
     latestBuildResult = result
 

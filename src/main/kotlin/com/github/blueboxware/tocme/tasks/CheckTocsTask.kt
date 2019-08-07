@@ -18,6 +18,7 @@ package com.github.blueboxware.tocme.tasks
 import com.github.blueboxware.tocme.TocMeOptions
 import com.github.blueboxware.tocme.TocMePlugin
 import com.github.blueboxware.tocme.util.insertTocs
+import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
 import java.io.File
 
@@ -32,21 +33,27 @@ open class CheckTocsTask: TocMeTask() {
   @TaskAction
   fun checkTocs() {
 
+    var outOfDate = false
+
     didWork = false
 
     tocMeExtension.getDocs().forEach { (inputFile, options) ->
       if (options.outputFiles.isEmpty()) {
-        doCheckTocs(inputFile, inputFile, options)
+        outOfDate = doCheckTocs(inputFile, inputFile, options) || outOfDate
       } else {
         options.outputFiles.forEach { (outputFile, options) ->
-          doCheckTocs(inputFile, outputFile, options)
+          outOfDate = doCheckTocs(inputFile, outputFile, options) || outOfDate
         }
       }
     }
 
+    if (outOfDate) {
+      throw GradleException("One or more Table of Contents are out of date. Run the ${TocMePlugin.INSERT_TOCS_TASK} task to update.")
+    }
+
   }
 
-  private fun doCheckTocs(inputFile: File, outputFile: File, options: TocMeOptions) {
+  private fun doCheckTocs(inputFile: File, outputFile: File, options: TocMeOptions): Boolean {
 
     didWork = true
 
@@ -56,7 +63,7 @@ open class CheckTocsTask: TocMeTask() {
 
     if (error != null) {
       logger.error("$relativeInputPath: $error")
-      return
+      return false
     }
 
     warnings.forEach { msg ->
@@ -66,7 +73,10 @@ open class CheckTocsTask: TocMeTask() {
     if (!outputFile.exists() || outputFile.readText() != result) {
       val relativeOutputPath = outputFile.relativeToOrSelf(project.rootDir).path
       logger.warn("$relativeOutputPath: ${TocMePlugin.OUT_OF_DATE_MSG}")
+      return true
     }
+
+    return false
 
   }
 
