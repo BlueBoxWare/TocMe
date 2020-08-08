@@ -89,7 +89,7 @@ internal object TestInsertToc: Spek({
         val (result2, warnings2, error2) = document2.insertTocs(tocMeOptions, checkCurrentContent = true)
         assertNull(error2, "Failed to update. Unexpected error: $error2")
         assertTrue(warnings2.isEmpty(), "Failed to update. Unexpected warning(s): \n" + warnings2.joinToString(separator = "\n"))
-        ProjectFixture.assertTextEquals(result!!, result2!!)
+        ProjectFixture.assertTextEquals(result, result2!!)
       }
 
     }
@@ -196,7 +196,7 @@ internal object TestInsertToc: Spek({
         val (result2, warnings2, error2) = document2.insertTocs(TocMeOptionsImpl(null), checkCurrentContent = true)
         assertNull(error2, "Failure on update. Unexpected error: $error2")
         assertTrue(warnings2.isEmpty(), "Failure on update. Unexpected warning(s): \n" + warnings2.joinToString(separator = "\n"))
-        ProjectFixture.assertTextEquals(result!!, result2!!)
+        ProjectFixture.assertTextEquals(result, result2!!)
       }
 
     }

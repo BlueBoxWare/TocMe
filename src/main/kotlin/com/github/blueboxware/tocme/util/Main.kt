@@ -1,3 +1,5 @@
+@file:Suppress("PackageDirectoryMismatch")
+
 import com.github.blueboxware.tocme.util.TocMeOptionsImpl
 import com.github.blueboxware.tocme.util.insertTocs
 import java.io.File

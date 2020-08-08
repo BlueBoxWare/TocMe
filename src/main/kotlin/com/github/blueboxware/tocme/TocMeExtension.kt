@@ -16,11 +16,7 @@
 package com.github.blueboxware.tocme
 
 import com.github.blueboxware.tocme.util.*
-import com.github.blueboxware.tocme.util.parseLevels
-import com.vladsch.flexmark.ext.toc.internal.TocLevelsOptionParser
 import com.vladsch.flexmark.ext.toc.internal.TocOptions
-import com.vladsch.flexmark.util.options.ParsedOptionStatus
-import com.vladsch.flexmark.util.sequence.CharSubSequence
 import groovy.lang.Closure
 import org.gradle.api.GradleException
 import org.gradle.api.Project

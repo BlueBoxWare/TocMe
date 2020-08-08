@@ -27,17 +27,18 @@ abstract class TocMeTask: DefaultTask() {
     group = TocMePlugin.TASK_GROUP
   }
 
+  @get:[Internal]
   internal lateinit var tocMeExtension: TocMeExtension
 
   @OutputFiles
   fun getOutputFiles() = tocMeExtension.getOutputFiles()
 
   @Input
-  private fun getOptionsAsString() = tocMeExtension.getOptionsAsString()
+  internal fun getOptionsAsString() = tocMeExtension.getOptionsAsString()
 
   @InputFiles
   @SkipWhenEmpty
   @Optional
-  fun getInputFiles() = if (!getOutputFiles().isEmpty()) listOf(File("__DummyF1l3__")) else null
+  fun getInputFiles() = if (getOutputFiles().isNotEmpty()) listOf(File("__DummyF1l3__")) else null
 
 }

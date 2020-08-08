@@ -20,7 +20,6 @@ import com.github.blueboxware.tocme.TocMePlugin
 import com.vladsch.flexmark.ast.Heading
 import com.vladsch.flexmark.ast.HtmlCommentBlock
 import com.vladsch.flexmark.ast.util.HeadingCollectingVisitor
-import com.vladsch.flexmark.ext.toc.internal.TocLevelsOptionParser
 import com.vladsch.flexmark.ext.toc.internal.TocOptions
 import com.vladsch.flexmark.formatter.MarkdownWriter
 import com.vladsch.flexmark.html.renderer.HeaderIdGenerator
@@ -29,9 +28,7 @@ import com.vladsch.flexmark.util.ast.Document
 import com.vladsch.flexmark.util.ast.Node
 import com.vladsch.flexmark.util.ast.NodeCollectingVisitor
 import com.vladsch.flexmark.util.ast.TextCollectingVisitor
-import com.vladsch.flexmark.util.options.ParsedOptionStatus
 import com.vladsch.flexmark.util.sequence.BasedSequence
-import com.vladsch.flexmark.util.sequence.CharSubSequence
 import org.apache.tools.ant.DirectoryScanner
 import org.gradle.api.Project
 import org.gradle.api.file.DuplicatesStrategy
@@ -109,10 +106,7 @@ internal fun Document.insertTocs(options: TocMeOptions, checkCurrentContent: Boo
     return Triple(null, warnings, tagError)
   }
 
-  tags?.toList()?.sortedBy { it.first.startOffset }?.reversed()?.forEach {
-
-    val startTag = it.first
-    val endTag = it.second
+  tags?.toList()?.sortedBy { it.first.startOffset }?.reversed()?.forEach { (startTag, endTag) ->
 
     checkBounds(startTag, endTag) { return Triple(null, warnings, "something went horribly wrong") }
 
@@ -235,7 +229,7 @@ private fun parseArgs(options: TocMeOptions, text: String): Pair<TocMeOptions, L
 
   Regex("""\b([^\s=]+)\s*(?:=\s*(["'][^"']*["']|[^\s]+))?""")
           .findAll(text)
-          .map { it.groupValues.let { it[1] to it[2].trim { it.isWhitespace() || it == '"' || it == '\'' } } }
+          .map { matchResult -> matchResult.groupValues.let { it -> it[1] to it[2].trim { it.isWhitespace() || it == '"' || it == '\'' } } }
           .forEach { (key, value) ->
 
             fun boolean(): Boolean? =
@@ -341,8 +335,8 @@ internal fun parseLevels(text: String): Set<Int>? {
 
 private fun HtmlCommentBlock.collectTags(tagName: String) =
         Regex("""<!--+\s*(.*?)\s*--+>""").findAll(chars).mapNotNull { match ->
-          val start = match.range.start
-          val end = match.range.endInclusive + 1
+          val start = match.range.first
+          val end = match.range.last + 1
           if (startOffset + start == 0 || document.chars[startOffset + start - 1] == '\n') {
             Tag.createTag(this, match.groupValues[1], start, end)
           } else {
@@ -427,12 +421,12 @@ private fun renderToc(headings: List<Heading>, headingTexts: List<String>, optio
   if (options.style() == TocOptions.ListType.HIERARCHY) {
     headings.firstOrNull()?.level?.let { firstLevel ->
       headings.minBy { it.level }?.level?.let { minLevel ->
-        (minLevel until firstLevel).forEach { writer.indent() }
+        repeat((minLevel until firstLevel).count()) { writer.indent() }
       }
     }
   }
 
-  for (i in 0 until headings.size) {
+  for (i in headings.indices) {
     val header = headings[i]
     val headerText = headingTexts[i]
     val headerLevel = if (options.style() == TocOptions.ListType.HIERARCHY) {
@@ -499,13 +493,13 @@ internal fun Project.backupFiles(subdir: String, files: Collection<File>) =
                     delete(it.second)
                   }
 
-          project.copy {
-            it.duplicatesStrategy = DuplicatesStrategy.FAIL
-            it.into(backupdir)
-            fileMap.forEach { file, name ->
+          project.copy { copySpec ->
+            copySpec.duplicatesStrategy = DuplicatesStrategy.FAIL
+            copySpec.into(backupdir)
+            fileMap.forEach { (file, name) ->
               if (file.exists()) {
                 logger.lifecycle("Backing up ${file.relativeToOrSelf(projectDir).path} to " + backupdir.relativeToOrSelf(projectDir).path + File.separator + name)
-                it.from(file.parentFile) {
+                copySpec.from(file.parentFile) {
                   it.include(file.name).rename { name }
                 }
               }
@@ -517,7 +511,7 @@ internal fun uniquifyFileNames(files: Collection<File>): Map<File, String> {
 
   val fileMap = mutableMapOf<File, String>()
 
-  files.groupBy { it.name }.forEach { _, sameNameFiles ->
+  files.groupBy { it.name }.forEach { (_, sameNameFiles) ->
     if (sameNameFiles.size == 1) {
       fileMap[sameNameFiles.first()] = sameNameFiles.first().name
     } else {
@@ -537,7 +531,7 @@ internal fun uniquifyFileNames(files: Collection<File>): Map<File, String> {
           }
         }.let { grouped ->
           if (grouped.size == sameNameFiles.size) {
-            grouped.forEach { key, value ->
+            grouped.forEach { (key, value) ->
               fileMap[value.first()] = key
             }
             found = true
@@ -550,7 +544,7 @@ internal fun uniquifyFileNames(files: Collection<File>): Map<File, String> {
     }
   }
 
-  fileMap.toList().groupBy { it.second }.forEach { _, entries ->
+  fileMap.toList().groupBy { it.second }.forEach { (_, entries) ->
     if (entries.size > 1) {
       var count = 1
       entries.forEach { (file, name) ->

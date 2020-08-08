@@ -58,11 +58,11 @@ internal class ProjectFixture {
   }
 
   fun addFile(fileName: String) {
-    project.copy {
-      it.from(testDataDir.absolutePath) {
+    project.copy { copySpec ->
+      copySpec.from(testDataDir.absolutePath) {
         it.include(fileName)
       }
-      it.into(tempDir.root)
+      copySpec.into(tempDir.root)
     }
   }
 

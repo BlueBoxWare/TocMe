@@ -38,7 +38,7 @@ internal class Tag(
               return Tag(
                       container,
                       groupValues[2],
-                      !groupValues[1].isEmpty(),
+                      groupValues[1].isNotEmpty(),
                       groupValues[3],
                       container.startOffset + localStartOffset,
                       container.startOffset + localEndOffset
