@@ -19,8 +19,8 @@ import com.github.blueboxware.tocme.TocMeOptions
 import com.vladsch.flexmark.ext.toc.internal.TocOptions
 import com.vladsch.flexmark.html.HtmlRenderer.*
 import com.vladsch.flexmark.parser.Parser.*
-import com.vladsch.flexmark.util.options.DataHolder
-import com.vladsch.flexmark.util.options.MutableDataSet
+import com.vladsch.flexmark.util.data.DataHolder
+import com.vladsch.flexmark.util.data.MutableDataSet
 
 class TocMeOptionsImpl(private val parent: TocMeOptions?): TocMeOptions {
 
@@ -32,7 +32,7 @@ class TocMeOptionsImpl(private val parent: TocMeOptions?): TocMeOptions {
 
   override var mode: Mode? = null
 
-  override var levels: Int? = null
+  override var levels: Collection<Int>? = null
 
   override var bold: Boolean? = null
   override var numbered: Boolean? = null
@@ -60,7 +60,7 @@ class TocMeOptionsImpl(private val parent: TocMeOptions?): TocMeOptions {
 
   override fun mode(): Mode = mode ?: parent?.mode() ?: Mode.Normal
 
-  override fun levels(): Int = levels ?: parent?.levels() ?: 14
+  override fun levels(): Collection<Int> = levels ?: parent?.levels() ?: setOf(1, 2, 3)
 
   override fun bold(): Boolean = bold ?: parent?.bold() ?: true
   override fun numbered(): Boolean = numbered ?: parent?.numbered() ?: false
@@ -78,9 +78,6 @@ class TocMeOptionsImpl(private val parent: TocMeOptions?): TocMeOptions {
   override fun emptyHeadingWithoutSpace(): Boolean? = emptyHeadingWithoutSpace ?: parent?.emptyHeadingWithoutSpace()
   override fun headingInterruptsItemParagraph(): Boolean? =
           headingInterruptsItemParagraph ?: parent?.headingInterruptsItemParagraph()
-
-  override fun isLevelIncluded(level: Int) =
-          level in 1..6 && levels() and (1 shl level) != 0
 
   override fun toParserOptions(): DataHolder =
           MutableDataSet().apply {
@@ -126,7 +123,7 @@ class TocMeOptionsImpl(private val parent: TocMeOptions?): TocMeOptions {
   fun asString(): String =
           variant.asString() +
                   plain.asString() +
-                  levels.asString() +
+                  levels.toString() +
                   numbered.asString() +
                   style.asString() +
                   bold.asString() +

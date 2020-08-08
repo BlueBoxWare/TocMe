@@ -9,8 +9,8 @@
   - __[Header 2](#header-2-1)__
     - __[Header 3](#header-3)__
   - __[Header 2](#header-2-2)__
-  - __[\/{}$#@](#)__
-  - __[\/{}$#@abc__--](#abc__--)__
+  - __[/{}$#@](#)__
+  - __[/{}$#@abc__--](#abc__--)__
 - __[ Emoji 1 foo ](#emoji-emoji-123-123-foo-_-)__
   - __[Duped___underscores___](#duped___underscores___)__
   - __[Duped-- ---dashes---](#duped------dashes---)__
@@ -32,8 +32,8 @@
 ## Header 2
 
 <!-- toc -->
-  - __[\/{}$#@](#)__
-  - __[\/{}$#@abc__--](#abc__--)__
+  - __[/{}$#@](#)__
+  - __[/{}$#@abc__--](#abc__--)__
 - __[ Emoji 1 foo ](#emoji-emoji-123-123-foo-_-)__
   - __[Duped___underscores___](#duped___underscores___)__
   - __[Duped-- ---dashes---](#duped------dashes---)__

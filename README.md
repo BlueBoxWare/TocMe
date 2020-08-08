@@ -20,6 +20,7 @@ This plugin uses the great and powerful [flexmark-java](https://github.com/vsch/
     - __[Specifying options](#specifying-options)__
     - __[Available options](#available-options)__
 - __[Changelog](#changelog)__
+  - __[1.2](#12)__
   - __[1.1](#11)__
   - __[1.0](#10)__
 <!-- /toc -->
@@ -32,7 +33,7 @@ Add the plugin to your project's `build.gradle`:
 
 ```groovy
 plugins {
-  id "com.github.blueboxware.tocme" version "1.1"
+  id "com.github.blueboxware.tocme" version "1.2"
 }
 ```
 
@@ -203,7 +204,7 @@ The following options can be used in `build.gradle`:
 | **`variant`** | <kbd>enum</kbd> | `GitHub` | The markdown variant to use when parsing the document and creating the TOC. Possible values: `Commonmark`, `Commonmark26` (Commonmark v0.26), `Commonmark27` (v0.27), `Commonmark28` (v0.28), `Kramdown`, `Markdown`, `GitHub`, `GitHubDoc`, `GitLab`, `MultiMarkdown`, `Pegdown` and `PegdownStrict`. |
 | **`style`**  | <kbd>enum</kbd> | `Hierarchy`  | The style to use for the TOC. Possible values: `Hierarchy`, `Flat`, `Reversed` (flat in reversed order), `Increasing` (flat, alphabetically sorted) or `Decreasing` (flat, alphabetically reversed sorted). |
 | **`mode`**   | <kbd>enum</kbd> | `Normal`     | Determines which headers to include. Possible values: `Normal` (only headers which appear after the TOC), `Full` (include headers appearing before the TOC) or `Local` (only subheaders of the header above the marker). |
-| **`levels`** | <kbd>int</kbd> | `14` (levels 1-3) | An integer representing a bit mask of level headers to include (`levels & 1 << header_level`). Use the `levels()` function to specify a string instead: `levels = levels("1,3-5")` |
+| **`levels`** | <kbd>int</kbd> | `[1, 2, 3]` (levels 1-3) | A collection of integers specifying the level numbers to include. Use the `levels()` function to specify a string instead, for example: `levels = levels("1,3-5")` |
 | **`numbered`** | <kbd>bool</kbd> |`false`      | When true: number the headers in the TOC. |
 | **`bold`**   | <kbd>bool</kbd> | `true`         | When true: render the headers in the TOC bold. |
 | **`plain`**  | <kbd>bool</kbd> | `false`        | When true: don't make the headers links to their respective sections. |
@@ -230,6 +231,12 @@ The following options can be used in `build.gradle`:
 in `dashChars`, which are replaced by a dash, and characters in `allowedChars`, which are not removed or replaced but left as is.
 
 # Changelog
+
+## 1.2
+* Changed the way the included levels are specified in Gradle. The `levels` parameter now takes
+a collection of integers.
+* Update to Flexmark 0.62.2
+* Update to Gradle 6.5.1
 
 ## 1.1
 * `checkTocs` now fails the build if there are out of date TOCS.

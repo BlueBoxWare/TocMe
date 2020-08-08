@@ -17,18 +17,18 @@ package com.github.blueboxware.tocme.util
 
 import com.github.blueboxware.tocme.TocMeOptions
 import com.github.blueboxware.tocme.TocMePlugin
-import com.vladsch.flexmark.ast.Document
 import com.vladsch.flexmark.ast.Heading
 import com.vladsch.flexmark.ast.HtmlCommentBlock
-import com.vladsch.flexmark.ast.Node
 import com.vladsch.flexmark.ast.util.HeadingCollectingVisitor
-import com.vladsch.flexmark.ast.util.TextCollectingVisitor
 import com.vladsch.flexmark.ext.toc.internal.TocLevelsOptionParser
 import com.vladsch.flexmark.ext.toc.internal.TocOptions
-import com.vladsch.flexmark.formatter.internal.MarkdownWriter
+import com.vladsch.flexmark.formatter.MarkdownWriter
 import com.vladsch.flexmark.html.renderer.HeaderIdGenerator
 import com.vladsch.flexmark.parser.Parser
-import com.vladsch.flexmark.util.collection.NodeCollectingVisitor
+import com.vladsch.flexmark.util.ast.Document
+import com.vladsch.flexmark.util.ast.Node
+import com.vladsch.flexmark.util.ast.NodeCollectingVisitor
+import com.vladsch.flexmark.util.ast.TextCollectingVisitor
 import com.vladsch.flexmark.util.options.ParsedOptionStatus
 import com.vladsch.flexmark.util.sequence.BasedSequence
 import com.vladsch.flexmark.util.sequence.CharSubSequence
@@ -185,7 +185,7 @@ private fun filterHeadings(
         endHeader: Heading? = null
 ): List<Heading> =
         headings.filter { header ->
-          options.isLevelIncluded(header.level)
+          options.levels().contains(header.level)
                   && (options.isFull() || header.startOffset > endTag.startOffset)
                   && (!options.isLocal() || (header.startOffset > startHeader?.startOffset ?: 0 && header.startOffset < endHeader?.startOffset ?: Int.MAX_VALUE))
         }
@@ -274,15 +274,10 @@ private fun parseArgs(options: TocMeOptions, text: String): Pair<TocMeOptions, L
                   warnings.add("Missing argument for parameter levels")
                 } else {
 
-                  TocLevelsOptionParser(OPT_LEVELS).parseOption(CharSubSequence.of(value), TocOptions(), null).let { result ->
-                    result.second.firstOrNull()?.let { parsedOption ->
-                      parsedOption.messages?.map { it.message }?.forEach {
-                        warnings.add(it)
-                      }
-                      if (parsedOption.optionResult != ParsedOptionStatus.ERROR) {
-                        options.levels = result.first.levels
-                      }
-                    }
+                  parseLevels(value)?.let {
+                    options.levels = it
+                  } ?: run {
+                    warnings.add("Invalid value for parameter levels: '$value'")
                   }
 
                 }
@@ -312,6 +307,35 @@ private fun parseArgs(options: TocMeOptions, text: String): Pair<TocMeOptions, L
           }
 
   return Pair(options, warnings)
+
+}
+
+internal fun parseLevels(text: String): Set<Int>? {
+
+  val levels = mutableSetOf<Int>()
+
+  fun String?.int(): Int? =
+          this?.trim()?.toIntOrNull()
+
+  text.split(',').forEach { item ->
+    if (item.contains('-')) {
+      item.split('-').takeIf { it.size == 2 }?.let {
+        val start = it[0].int() ?: return null
+        val end = it[1].int() ?: return null
+        for (i in 1..10) {
+          if (i in start..end) {
+            levels.add(i)
+          }
+        }
+      }
+    } else {
+      item.int()?.let {
+        levels.add(it)
+      } ?: return null
+    }
+  }
+
+  return levels
 
 }
 
@@ -386,8 +410,8 @@ private fun renderToc(headings: List<Heading>, headingTexts: List<String>, optio
   val headingNumbers = MutableList(7) { 0 }
   val openedItems = MutableList(7) { false }
 
-  val writer = MarkdownWriter(StringBuilder()).apply {
-    indentPrefix = INDENT
+  val writer = MarkdownWriter().apply {
+    setIndentPrefix(INDENT)
   }
 
   fun listOpen(level: Int): String {
@@ -449,7 +473,7 @@ private fun renderToc(headings: List<Heading>, headingTexts: List<String>, optio
 
   writer.line()
 
-  return writer.text
+  return writer.toSequence().toString()
 
 }
 

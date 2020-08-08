@@ -21,7 +21,7 @@ import com.github.blueboxware.tocme.util.Variant
 import com.github.blueboxware.tocme.util.insertTocs
 import com.vladsch.flexmark.parser.Parser
 import com.vladsch.flexmark.parser.ParserEmulationProfile
-import com.vladsch.flexmark.util.options.MutableDataSet
+import com.vladsch.flexmark.util.data.MutableDataSet
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.given
 import org.jetbrains.spek.api.dsl.it
@@ -85,7 +85,7 @@ internal object TestInsertToc: Spek({
       }
 
       it("should 'update' without warnings, errors or actual changes") {
-        val document2 = parser.parse(result)
+        val document2 = parser.parse(result!!)
         val (result2, warnings2, error2) = document2.insertTocs(tocMeOptions, checkCurrentContent = true)
         assertNull(error2, "Failed to update. Unexpected error: $error2")
         assertTrue(warnings2.isEmpty(), "Failed to update. Unexpected warning(s): \n" + warnings2.joinToString(separator = "\n"))
@@ -192,7 +192,7 @@ internal object TestInsertToc: Spek({
       }
 
       it("should 'update' without warnings, errors or actual changes") {
-        val document2 = parser.parse(result)
+        val document2 = parser.parse(result!!)
         val (result2, warnings2, error2) = document2.insertTocs(TocMeOptionsImpl(null), checkCurrentContent = true)
         assertNull(error2, "Failure on update. Unexpected error: $error2")
         assertTrue(warnings2.isEmpty(), "Failure on update. Unexpected warning(s): \n" + warnings2.joinToString(separator = "\n"))

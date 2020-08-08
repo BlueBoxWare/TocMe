@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import com.github.blueboxware.tocme.TocMePlugin
-import com.vladsch.flexmark.ast.Document
+import com.vladsch.flexmark.util.ast.Document
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.gradle.testkit.runner.BuildResult
@@ -98,7 +98,7 @@ internal class ProjectFixture {
 //            .withDebug(true)
             .withProjectDir(tempDir.root)
             .withGradleVersion(GRADLE_VERSION.version)
-            .withArguments(*args.toTypedArray())
+            .withArguments(*args.toTypedArray(), "--stacktrace", "--info")
 
     @Suppress("ConstantConditionIf")
     if (!TEST_RELEASED_VERSION) {

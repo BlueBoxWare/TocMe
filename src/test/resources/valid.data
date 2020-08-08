@@ -822,7 +822,7 @@
     - __[Header3](#header3)__
     - __[Header4](#header4)__
       - __[Header5](#header5)__
-    - __[/\@'"{}a](#a)__
+    - __[/@'"{}a](#a)__
   - __[foobar](#foobar)__
 - __[Header8](#header8)__
   - __[HeaderB](#headerb)__
@@ -928,7 +928,7 @@
     - __[Header3](#header3)__
     - __[Header4](#header4)__
       - __[Header5](#header5)__
-    - __[/\@'"{}A](#a)__
+    - __[/@'"{}A](#a)__
   - __[foobar](#foobar)__
 - __[Header8](#header8)__
   - __[HeaderB](#headerb)__
@@ -990,7 +990,7 @@
     - __Header3__
     - __Header4__
       - __Header5__
-    - __/\@'"{} a__
+    - __/@'"{} a__
   - __foo bar__
 - __Header8__
   - __HeaderB__
@@ -1052,7 +1052,7 @@
     - Header3
     - Header4
       - Header5
-    - /\@'"{} a
+    - /@'"{} a
   - foo bar
 - Header8
   - HeaderB
@@ -1124,7 +1124,7 @@
     - Header3
     - Header4
       - Header5
-    - /\@'"{} a
+    - /@'"{} a
   - foo bar
 - Header8
   - HeaderB
@@ -1385,3 +1385,32 @@ Header4
 - __[Header5](#header5)__
 <!--/toc-->
 ### Header5
+================================================================================================
+## Header1
+# Header2
+### Header3
+### Header4
+<!-- toc  levels=1-10-->
+<!--/toc-->
+#### Header5
+### Header6
+## Header7
+# Header8
+### Header9
+-- 48 ----------------------------------------------
+## Header1
+# Header2
+### Header3
+### Header4
+<!-- toc  levels=1-10-->
+      - __[Header5](#header5)__
+    - __[Header6](#header6)__
+  - __[Header7](#header7)__
+- __[Header8](#header8)__
+    - __[Header9](#header9)__
+<!--/toc-->
+#### Header5
+### Header6
+## Header7
+# Header8
+### Header9

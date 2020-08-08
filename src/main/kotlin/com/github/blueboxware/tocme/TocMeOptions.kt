@@ -18,7 +18,7 @@ package com.github.blueboxware.tocme
 import com.github.blueboxware.tocme.util.Mode
 import com.github.blueboxware.tocme.util.Variant
 import com.vladsch.flexmark.ext.toc.internal.TocOptions
-import com.vladsch.flexmark.util.options.DataHolder
+import com.vladsch.flexmark.util.data.DataHolder
 
 interface TocMeOptions {
 
@@ -30,7 +30,7 @@ interface TocMeOptions {
 
   var mode: Mode?
 
-  var levels: Int?
+  var levels: Collection<Int>?
 
   var bold: Boolean?
   var numbered: Boolean?
@@ -51,7 +51,7 @@ interface TocMeOptions {
   fun tag(): String
   fun style(): TocOptions.ListType
   fun mode(): Mode
-  fun levels(): Int
+  fun levels(): Collection<Int>
   fun bold(): Boolean
   fun numbered(): Boolean
   fun plain(): Boolean
@@ -70,8 +70,6 @@ interface TocMeOptions {
 
   fun isLocal() = mode() == Mode.Local
   fun isFull() = mode() == Mode.Full
-
-  fun isLevelIncluded(level: Int): Boolean
 
   fun parent(): TocMeOptions?
 

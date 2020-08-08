@@ -67,36 +67,6 @@ line 5.*invalid argument for parameter style.*foo
 # Header2
 ### Header3
 ### Header4
-<!-- toc  levels=1-10-->
-<!--/toc-->
-#### Header5
-### Header6
-## Header7
-# Header8
-### Header9
--- 4 ----------------------------------------------
-line 5.*truncated to range
-## Header1
-# Header2
-### Header3
-### Header4
-<!-- toc  levels=1-10-->
-      - __[Header5](#header5)__
-    - __[Header6](#header6)__
-  - __[Header7](#header7)__
-- __[Header8](#header8)__
-    - __[Header9](#header9)__
-<!--/toc-->
-#### Header5
-### Header6
-## Header7
-# Header8
-### Header9
-================================================================================================
-## Header1
-# Header2
-### Header3
-### Header4
 <!-- toc  style-->
 <!--/toc-->
 #### Header5
@@ -104,7 +74,7 @@ line 5.*truncated to range
 ## Header7
 # Header8
 ### Header9
--- 5 ----------------------------------------------
+-- 4 ----------------------------------------------
 line 5.*missing argument for parameter style
 ## Header1
 # Header2
@@ -124,7 +94,7 @@ line 5.*missing argument for parameter style
 ================================================================================================
 <!-- toc style= -->
 <!-- /toc -->
--- 6 ----------------------------------------------
+-- 5 ----------------------------------------------
 line 1.*missing argument for parameter style
 <!-- toc style= -->
 <!-- /toc -->
@@ -132,7 +102,7 @@ line 1.*missing argument for parameter style
 
 <!-- toc levels -->
 <!-- /toc -->
--- 7 ----------------------------------------------
+-- 6 ----------------------------------------------
 line 2.*missing argument for parameter levels
 
 <!-- toc levels -->
@@ -140,21 +110,21 @@ line 2.*missing argument for parameter levels
 ================================================================================================
 <!-- toc mode= -->
 <!-- /toc -->
--- 8 ----------------------------------------------
+-- 7 ----------------------------------------------
 line 1.*missing argument for parameter mode
 <!-- toc mode= -->
 <!-- /toc -->
 ================================================================================================
 <!-- toc bold= -->
 <!-- /toc -->
--- 9 ----------------------------------------------
+-- 8 ----------------------------------------------
 line 1.*no value.*bold
 <!-- toc bold= -->
 <!-- /toc -->
 ================================================================================================
 <!-- toc numbered=foo -->
 <!-- /toc -->
--- 10 ----------------------------------------------
+-- 9 ----------------------------------------------
 line 1.*option.*numbered.*should.*true
 <!-- toc numbered=foo -->
 <!-- /toc -->
@@ -170,8 +140,8 @@ line 1.*option.*numbered.*should.*true
 ## Header7
 # Header8
 ### Header9
--- 11 ----------------------------------------------
-line 5.*levels option.*not an integer
+-- 10 ----------------------------------------------
+line 5.*Invalid value.*parameter levels.*1.-2
 ## Header1
 # Header2
 ### Header3
@@ -181,6 +151,33 @@ line 5.*levels option.*not an integer
   - __[Header7](#header7)__
 - __[Header8](#header8)__
     - __[Header9](#header9)__
+<!--/toc-->
+#### Header5
+### Header6
+## Header7
+# Header8
+### Header9
+================================================================================================
+## Header1
+# Header2
+### Header3
+### Header4
+<!-- toc -->
+a
+<!--/toc-->
+#### Header5
+### Header6
+## Header7
+# Header8
+### Header9
+-- 11 ----------------------------------------------
+current content.*line 5.*line 7
+## Header1
+# Header2
+### Header3
+### Header4
+<!-- toc -->
+a
 <!--/toc-->
 #### Header5
 ### Header6
@@ -220,7 +217,7 @@ a
 ### Header3
 ### Header4
 <!-- toc -->
-a
+# foo
 <!--/toc-->
 #### Header5
 ### Header6
@@ -234,33 +231,6 @@ current content.*line 5.*line 7
 ### Header3
 ### Header4
 <!-- toc -->
-a
-<!--/toc-->
-#### Header5
-### Header6
-## Header7
-# Header8
-### Header9
-================================================================================================
-## Header1
-# Header2
-### Header3
-### Header4
-<!-- toc -->
-# foo
-<!--/toc-->
-#### Header5
-### Header6
-## Header7
-# Header8
-### Header9
--- 14 ----------------------------------------------
-current content.*line 5.*line 7
-## Header1
-# Header2
-### Header3
-### Header4
-<!-- toc -->
 # foo
 <!--/toc-->
 #### Header5
@@ -272,7 +242,7 @@ current content.*line 5.*line 7
 <!-- toc -->
 <!-- tocs -->
 <!-- /toc -->
--- 15 ----------------------------------------------
+-- 14 ----------------------------------------------
 current content.*line 1.*line 3
 <!-- toc -->
 <!-- tocs -->
@@ -281,7 +251,7 @@ current content.*line 1.*line 3
 <!-- toc -->
 <!-- tocs foo-->
 <!-- /toc -->
--- 16 ----------------------------------------------
+-- 15 ----------------------------------------------
 current content.*line 1.*line 3
 <!-- toc -->
 <!-- tocs foo-->
@@ -289,14 +259,14 @@ current content.*line 1.*line 3
 ================================================================================================
 <!-- toc numbered -->
 <!-- /toc -->
--- 17 ----------------------------------------------
+-- 16 ----------------------------------------------
 no value specified.*numbered
 <!-- toc numbered -->
 <!-- /toc -->
 ================================================================================================
 <!-- toc variant -->
 <!-- /toc -->
--- 18 ----------------------------------------------
+-- 17 ----------------------------------------------
 option 'variant' can only be specified
 <!-- toc variant -->
 <!-- /toc -->

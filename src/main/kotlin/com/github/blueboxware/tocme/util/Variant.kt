@@ -17,7 +17,7 @@ package com.github.blueboxware.tocme.util
 
 import com.vladsch.flexmark.html.HtmlRenderer
 import com.vladsch.flexmark.parser.ParserEmulationProfile
-import com.vladsch.flexmark.util.options.MutableDataHolder
+import com.vladsch.flexmark.util.data.MutableDataHolder
 
 enum class Variant(private val emulationProfile: ParserEmulationProfile) {
   Commonmark(ParserEmulationProfile.COMMONMARK),
