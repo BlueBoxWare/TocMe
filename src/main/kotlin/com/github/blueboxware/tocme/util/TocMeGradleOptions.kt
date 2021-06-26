@@ -23,49 +23,49 @@ import org.gradle.util.ConfigureUtil
 import java.io.File
 
 class TocMeGradleOptions(
-        val project: Project,
-        defaultOptions: TocMeOptions,
-        private val inputFileDefaultOptions: TocMeOptionsImpl = TocMeOptionsImpl(defaultOptions)
+  val project: Project,
+  defaultOptions: TocMeOptions,
+  private val inputFileDefaultOptions: TocMeOptionsImpl = TocMeOptionsImpl(defaultOptions)
 ): TocMeOptions by inputFileDefaultOptions {
 
   internal val outputFiles: MutableMap<File, TocMeOptions> = mutableMapOf()
 
   @JvmOverloads
   fun output(outputFile: File, configurationClosure: Closure<in TocMeOptions>? = null) =
-          TocMeOptionsImpl(this).let { options ->
-            ConfigureUtil.configure(configurationClosure, options)
-            outputFiles[outputFile] = options
-          }
+    TocMeOptionsImpl(this).let { options ->
+      ConfigureUtil.configure(configurationClosure, options)
+      outputFiles[outputFile] = options
+    }
 
   fun output(outputFile: File, configurationClosure: TocMeOptions.() -> Unit) =
-          TocMeOptionsImpl(this).let { options ->
-            options.apply(configurationClosure)
-            outputFiles[outputFile] = options
-          }
+    TocMeOptionsImpl(this).let { options ->
+      options.apply(configurationClosure)
+      outputFiles[outputFile] = options
+    }
 
   @JvmOverloads
   @Suppress("unused")
   fun output(outputFile: String, configurationClosure: Closure<in TocMeOptions>? = null) =
-          output(project.file(outputFile), configurationClosure)
+    output(project.file(outputFile), configurationClosure)
 
   fun output(outputFile: String, configurationClosure: TocMeOptions.() -> Unit) =
-          output(project.file(outputFile), configurationClosure)
+    output(project.file(outputFile), configurationClosure)
 
   @Suppress("MemberVisibilityCanBePrivate")
   fun outputs(vararg outputFiles: File) =
-          outputFiles.forEach { output(it) }
+    outputFiles.forEach { output(it) }
 
   @Suppress("unused")
   fun outputs(vararg outputFiles: String) =
-          outputs(*(outputFiles.map { project.file(it) }.toTypedArray()))
+    outputs(*(outputFiles.map { project.file(it) }.toTypedArray()))
 
   @Input
   fun asString(): String =
-          inputFileDefaultOptions.asString() +
-                  SEPARATOR +
-                  outputFiles.map { (file, options) ->
-                    file.hashCode().toString() + SEPARATOR + (options as? TocMeOptionsImpl)?.asString()
-                  }.joinToString(SEPARATOR)
+    inputFileDefaultOptions.asString() +
+            SEPARATOR +
+            outputFiles.map { (file, options) ->
+              file.hashCode().toString() + SEPARATOR + (options as? TocMeOptionsImpl)?.asString()
+            }.joinToString(SEPARATOR)
 
   companion object {
 

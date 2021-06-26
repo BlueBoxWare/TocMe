@@ -68,10 +68,12 @@ object TestGradle: Spek({
   given("an empty spec") {
 
     beforeEachTest {
-      fixture.buildFile("""
+      fixture.buildFile(
+        """
         tocme {
         }
-      """.trimIndent())
+      """.trimIndent()
+      )
     }
 
     on("building") {
@@ -99,11 +101,13 @@ object TestGradle: Spek({
   given("a trivial build file") {
 
     beforeEachTest {
-      fixture.buildFile("""
+      fixture.buildFile(
+        """
         tocme {
           doc(file("files/gdx.md"))
         }
-      """.trimIndent())
+      """.trimIndent()
+      )
     }
 
     on("checking") {
@@ -409,7 +413,8 @@ object TestGradle: Spek({
   given("a spec with a file with emojis in headers") {
 
     beforeEachTest {
-      fixture.buildFile("""
+      fixture.buildFile(
+        """
         tocme {
           doc(file("files/nerdfonts.md")) {
             output("nerdfonts.out") {
@@ -420,7 +425,8 @@ object TestGradle: Spek({
             }
           }
         }
-      """.trimIndent())
+      """.trimIndent()
+      )
     }
 
     on("building") {
@@ -473,7 +479,8 @@ object TestGradle: Spek({
   given("a spec with multiple variants") {
 
     beforeEachTest {
-      fixture.buildFile("""
+      fixture.buildFile(
+        """
 
         tocme {
 
@@ -499,7 +506,8 @@ object TestGradle: Spek({
 
         }
 
-      """)
+      """
+      )
     }
 
     on("building") {
@@ -536,7 +544,8 @@ object TestGradle: Spek({
   given("a more complicated build file") {
 
     beforeEachTest {
-      fixture.buildFile("""
+      fixture.buildFile(
+        """
         tocme {
           bold = true
 
@@ -585,7 +594,8 @@ object TestGradle: Spek({
 
         }
 
-      """)
+      """
+      )
     }
 
     on("checking") {
@@ -664,20 +674,21 @@ object TestGradle: Spek({
       }
 
       it("should create backups") {
-        fixture.project.file(fixture.backupDir).listFiles().maxBy { it.name.toLong() }!!.relativeToOrSelf(fixture.project.rootDir).let { backupDir ->
-          listOf(
-                  "gdx.md",
-                  "gdx.out",
-                  "gdx_numbered.out",
-                  "gdx_flat.out",
-                  "nerdfonts_reversed_plain.out",
-                  "variant_issues.md",
-                  "react.default_flat_reversed_local.out",
-                  "react.default_sorted_full.out"
-          ).map { backupDir.path + "/" + it }.toTypedArray().let {
-            fixture.assertFilesExist(*it)
+        fixture.project.file(fixture.backupDir).listFiles().maxBy { it.name.toLong() }!!
+          .relativeToOrSelf(fixture.project.rootDir).let { backupDir ->
+            listOf(
+              "gdx.md",
+              "gdx.out",
+              "gdx_numbered.out",
+              "gdx_flat.out",
+              "nerdfonts_reversed_plain.out",
+              "variant_issues.md",
+              "react.default_flat_reversed_local.out",
+              "react.default_sorted_full.out"
+            ).map { backupDir.path + "/" + it }.toTypedArray().let {
+              fixture.assertFilesExist(*it)
+            }
           }
-        }
       }
 
     }
@@ -698,7 +709,8 @@ object TestGradle: Spek({
 
   given("a spec with DSL shortcuts") {
     beforeEachTest {
-      fixture.buildFile("""
+      fixture.buildFile(
+        """
         tocme {
           style = Flat
           mode = Local
@@ -738,7 +750,8 @@ object TestGradle: Spek({
 
         }
 
-      """)
+      """
+      )
     }
 
     on("building") {
@@ -756,7 +769,8 @@ object TestGradle: Spek({
   given("a spec with advanced options") {
 
     beforeEachTest {
-      fixture.buildFile("""
+      fixture.buildFile(
+        """
         tocme {
           variant = Commonmark
           setextMarkerLength = 2
@@ -774,7 +788,8 @@ object TestGradle: Spek({
 
         }
 
-      """)
+      """
+      )
     }
 
     on("building") {
@@ -874,17 +889,21 @@ object TestGradle: Spek({
 
     beforeEachTest {
 
-      fixture.createFile("input.md", """
+      fixture.createFile(
+        "input.md", """
         <!-- toc -->
         <!-- toc -->
         <!-- /toc -->
-      """.trimIndent())
+      """.trimIndent()
+      )
 
-      fixture.buildFile("""
+      fixture.buildFile(
+        """
         tocme {
           doc("input.md")
         }
-      """.trimIndent())
+      """.trimIndent()
+      )
     }
 
     on("checking") {
@@ -926,7 +945,10 @@ object TestGradle: Spek({
       }
 
       it("should exit with an error") {
-        assertTrue(error?.contains(Regex("""input\.md.*Opening toc tag.*line 2.*on line 1.*wasn't closed""")) == true, error)
+        assertTrue(
+          error?.contains(Regex("""input\.md.*Opening toc tag.*line 2.*on line 1.*wasn't closed""")) == true,
+          error
+        )
       }
 
     }
@@ -936,7 +958,8 @@ object TestGradle: Spek({
   given("a doc which should produce warnings") {
 
     beforeEachTest {
-      fixture.createFile("input.md", """
+      fixture.createFile(
+        "input.md", """
         <!-- toc foo=bar-->
         <!-- /toc -->
         <!---- toc style=boo --->
@@ -947,13 +970,16 @@ object TestGradle: Spek({
         # Header 1
         Header 2
         ------
-      """.trimIndent())
+      """.trimIndent()
+      )
 
-      fixture.buildFile("""
+      fixture.buildFile(
+        """
         tocme {
           doc("input.md")
         }
-      """.trimIndent())
+      """.trimIndent()
+      )
     }
 
     on("checking") {
@@ -990,7 +1016,8 @@ object TestGradle: Spek({
       }
 
       it("should produce the expected output") {
-        ProjectFixture.assertTextEquals("""
+        ProjectFixture.assertTextEquals(
+          """
           <!-- toc foo=bar-->
           - __[Header 1](#header-1)__
             - __[Header 2](#header-2)__
@@ -1005,7 +1032,8 @@ object TestGradle: Spek({
           # Header 1
           Header 2
           ------
-        """.trimIndent(), fixture.project.file("input.md").readText())
+        """.trimIndent(), fixture.project.file("input.md").readText()
+        )
       }
 
     }
@@ -1015,7 +1043,8 @@ object TestGradle: Spek({
   given("a spec with level specifications") {
 
     beforeEachTest {
-      fixture.buildFile("""
+      fixture.buildFile(
+        """
         tocme {
 
           levels = levels("1-3,4")
@@ -1033,7 +1062,8 @@ object TestGradle: Spek({
           }
 
         }
-      """.trimIndent())
+      """.trimIndent()
+      )
     }
 
     on("building") {
@@ -1053,13 +1083,15 @@ object TestGradle: Spek({
   given("a build file with java plugin") {
 
     beforeEachTest {
-      fixture.buildFile("""
+      fixture.buildFile(
+        """
         apply plugin: 'java'
 
         tocme {
           doc(file("files/gdx.md"))
         }
-      """.trimIndent())
+      """.trimIndent()
+      )
     }
 
     on("running the assemble task") {
