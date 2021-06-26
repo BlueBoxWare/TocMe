@@ -30,6 +30,7 @@ import com.vladsch.flexmark.util.ast.NodeCollectingVisitor
 import com.vladsch.flexmark.util.ast.TextCollectingVisitor
 import com.vladsch.flexmark.util.sequence.BasedSequence
 import org.apache.tools.ant.DirectoryScanner
+import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.file.DuplicatesStrategy
 import java.io.File
@@ -471,43 +472,55 @@ private fun renderToc(headings: List<Heading>, headingTexts: List<String>, optio
 
 }
 
-internal fun Project.backupFiles(subdir: String, files: Collection<File>) =
-        uniquifyFileNames(files).let { fileMap ->
+internal fun Project.backupFiles(subdir: String, files: Collection<File>) {
+  checkInclusion(files)
+  uniquifyFileNames(files).let { fileMap ->
 
-          // https://github.com/gradle/gradle/issues/2986
-          DirectoryScanner.getDefaultExcludes().forEach { DirectoryScanner.removeDefaultExclude(it) }
-          DirectoryScanner.addDefaultExclude("_Dummy McDummface_")
+    val timeStamp = System.currentTimeMillis()
 
-          val timeStamp = System.currentTimeMillis()
+    val backupParentDir = "$buildDir/$BACKUP_DIR$subdir/"
+    val backupdir = file("$backupParentDir$timeStamp/")
 
-          val backupParentDir = "$buildDir/$BACKUP_DIR$subdir/"
-          val backupdir = file("$backupParentDir$timeStamp/")
+    file(backupParentDir)
+      .listFiles()
+      ?.mapNotNull { file -> file.name.toLongOrNull()?.let { it to file } }
+      ?.sortedByDescending { it.first }
+      ?.drop(TocMePlugin.NR_OF_BACKUPS)
+      ?.forEach {
+        logger.info("Removing old backups from " + it.second.relativeToOrSelf(projectDir).path)
+        delete(it.second)
+      }
 
-          file(backupParentDir)
-                  .listFiles()
-                  ?.mapNotNull { file -> file.name.toLongOrNull()?.let { it to file } }
-                  ?.sortedByDescending { it.first }
-                  ?.drop(TocMePlugin.NR_OF_BACKUPS)
-                  ?.forEach {
-                    logger.info("Removing old backups from " + it.second.relativeToOrSelf(projectDir).path)
-                    delete(it.second)
-                  }
-
-          project.copy { copySpec ->
-            copySpec.duplicatesStrategy = DuplicatesStrategy.FAIL
-            copySpec.into(backupdir)
-            fileMap.forEach { (file, name) ->
-              if (file.exists()) {
-                logger.lifecycle("Backing up ${file.relativeToOrSelf(projectDir).path} to " + backupdir.relativeToOrSelf(projectDir).path + File.separator + name)
-                copySpec.from(file.parentFile) {
-                  it.include(file.name).rename { name }
-                }
-              }
-            }
+    project.copy { copySpec ->
+      copySpec.duplicatesStrategy = DuplicatesStrategy.FAIL
+      copySpec.into(backupdir)
+      fileMap.forEach { (file, name) ->
+        if (file.exists()) {
+          logger.lifecycle(
+            "Backing up ${file.relativeToOrSelf(projectDir).path} to " + backupdir.relativeToOrSelf(
+              projectDir
+            ).path + File.separator + name
+          )
+          copySpec.from(file.parentFile) {
+            it.include(file.name).rename { name }
           }
         }
+      }
+    }
+  }
+}
 
-internal fun uniquifyFileNames(files: Collection<File>): Map<File, String> {
+private fun Project.checkInclusion(files: Collection<File>) {
+  for (file in files) {
+    for (pattern in DirectoryScanner.getDefaultExcludes()) {
+      if (DirectoryScanner.match(pattern, file.path)) {
+        throw GradleException("The file '${file.relativeToOrSelf(rootDir)}' won't be backed up before changing because it is excluded by DirectoryScanner default rule '$pattern' (https://github.com/gradle/gradle/issues/2986). Please use a different filename.")
+      }
+    }
+  }
+}
+
+private fun uniquifyFileNames(files: Collection<File>): Map<File, String> {
 
   val fileMap = mutableMapOf<File, String>()
 

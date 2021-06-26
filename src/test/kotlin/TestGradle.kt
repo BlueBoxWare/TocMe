@@ -74,9 +74,9 @@ object TestGradle: Spek({
       """.trimIndent())
     }
 
-    on("checking") {
+    on("building") {
 
-      fixture.buildCheck()
+      fixture.build()
 
       it("should report no source") {
         fixture.assertBuildNoSourceAfter33()

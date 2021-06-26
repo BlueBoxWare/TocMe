@@ -15,6 +15,7 @@
  */
 import com.github.blueboxware.tocme.TocMePlugin
 import com.vladsch.flexmark.util.ast.Document
+import org.apache.tools.ant.DirectoryScanner
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.gradle.testkit.runner.BuildResult
@@ -58,12 +59,16 @@ internal class ProjectFixture {
   }
 
   fun addFile(fileName: String) {
+    // https://github.com/gradle/gradle/issues/2986
+    DirectoryScanner.getDefaultExcludes().forEach { DirectoryScanner.removeDefaultExclude(it) }
+    DirectoryScanner.addDefaultExclude("_Dummy McDummface_")
     project.copy { copySpec ->
       copySpec.from(testDataDir.absolutePath) {
         it.include(fileName)
       }
       copySpec.into(tempDir.root)
     }
+    DirectoryScanner.resetDefaultExcludes()
   }
 
   fun createFile(fileName: String, contents: String) =

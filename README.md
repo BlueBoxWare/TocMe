@@ -20,6 +20,7 @@ This plugin uses the great and powerful [flexmark-java](https://github.com/vsch/
     - __[Specifying options](#specifying-options)__
     - __[Available options](#available-options)__
 - __[Changelog](#changelog)__
+  - __[1.3](#13)__
   - __[1.2](#12)__
   - __[1.1](#11)__
   - __[1.0](#10)__
@@ -33,7 +34,7 @@ Add the plugin to your project's `build.gradle`:
 
 ```groovy
 plugins {
-  id "com.github.blueboxware.tocme" version "1.2"
+  id "com.github.blueboxware.tocme" version "1.3"
 }
 ```
 
@@ -231,6 +232,9 @@ The following options can be used in `build.gradle`:
 in `dashChars`, which are replaced by a dash, and characters in `allowedChars`, which are not removed or replaced but left as is.
 
 # Changelog
+
+## 1.3
+* Compatibility with Gradle 7.1 ([#2](https://github.com/BlueBoxWare/TocMe/issues/2))
 
 ## 1.2
 * Changed the way the included levels are specified in Gradle. The `levels` parameter now takes
