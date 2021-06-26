@@ -1,4 +1,4 @@
-**_TocMe_** is a Gradle plugin which adds a Table of Contents to markdown documents and keeps it up to date.
+**_TocMe_** is a Gradle plugin which adds a Table of Contents to Markdown documents and keeps it up to date.
 
 This plugin uses the great and powerful [flexmark-java](https://github.com/vsch/flexmark-java).
 
@@ -6,7 +6,7 @@ This plugin uses the great and powerful [flexmark-java](https://github.com/vsch/
 <!-- toc -->
 - __[Getting started](#getting-started)__
   - __[Add the plugin](#add-the-plugin)__
-  - __[Prepare the markdown document](#prepare-the-markdown-document)__
+  - __[Prepare the Markdown document](#prepare-the-markdown-document)__
   - __[Add the tocme specification](#add-the-tocme-specification)__
   - __[Run the insertTocs task](#run-the-inserttocs-task)__
 - __[Notes](#notes)__
@@ -14,7 +14,7 @@ This plugin uses the great and powerful [flexmark-java](https://github.com/vsch/
     - __[Putting TOCs in multiple documents](#putting-tocs-in-multiple-documents)__
     - __[Backups](#backups)__
 - __[Options](#options)__
-  - __[In the markdown document itself](#in-the-markdown-document-itself)__
+  - __[In the Markdown document itself](#in-the-markdown-document-itself)__
   - __[In Gradle](#in-gradle)__
     - __[Output files](#output-files)__
     - __[Specifying options](#specifying-options)__
@@ -38,9 +38,9 @@ plugins {
 }
 ```
 
-## Prepare the markdown document
+## Prepare the Markdown document
 
-Put the following "markers" in the markdown document at the location where the TOC should be placed:
+Put the following "markers" in the Markdown document at the location where the TOC should be placed:
 
 ```markdown
 <!-- toc -->
@@ -75,7 +75,7 @@ To only check if the TOCs are up to date, without making any changes, run the `c
 # Notes
 
 ### Multiple TOCs in one document
-You can put multiple sets of markers in one document. A TOC will be inserted at each of the specified locations. By default each TOC will
+You can put multiple sets of markers in one document. A TOC will be inserted at each of the specified locations. By default, each TOC will
 only contain the headers appearing _after_ the TOC.
 
 You can use the `mode` option (see below) to specify that a TOC should also include headers appearing above the TOC, or that a
@@ -100,7 +100,7 @@ Backups of all files which are changed or overwritten by the `insertTocs` task a
 
 # Options
 
-## In the markdown document itself
+## In the Markdown document itself
 You can put a number of space-separated options in the opening markers in a document:
 
 ```markdown
@@ -194,7 +194,7 @@ tocme {
 ```
 
 When the same option is specified multiple times with different values, the value specified in the `<!-- toc -->` marker takes preference,
-next the one specified for the output file, followed by the the value specified for the input file and lastly the value specified as default
+next the one specified for the output file, followed by the value specified for the input file and lastly the value specified as default
 for the `tocme` specification.
 
 ### Available options
@@ -228,7 +228,7 @@ The following options can be used in `build.gradle`:
 
 <sup>1</sup>: Default depends on the used `variant`.
 
-<sup>2</sup>: Non alphanumeric characters are removed from header links ids, except for the characters specified
+<sup>2</sup>: Non-alphanumeric characters are removed from header links ids, except for the characters specified
 in `dashChars`, which are replaced by a dash, and characters in `allowedChars`, which are not removed or replaced but left as is.
 
 # Changelog

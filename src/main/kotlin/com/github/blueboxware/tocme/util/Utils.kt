@@ -151,7 +151,7 @@ private fun Document.checkCurrentContent(startTag: Tag, endTag: Tag): Boolean {
 
   innerContent(startTag, endTag)?.let { content ->
     content.lines().forEach { line ->
-      if (!line.isBlank() && !line.matches(regex)) {
+      if (line.isNotBlank() && !line.matches(regex)) {
         return false
       }
     }
@@ -238,7 +238,7 @@ private fun parseArgs(options: TocMeOptions, text: String): Pair<TocMeOptions, L
     .map { matchResult -> matchResult.groupValues.let { it -> it[1] to it[2].trim { it.isWhitespace() || it == '"' || it == '\'' } } }
     .forEach { (key, value) ->
 
-      fun boolean(): Boolean? =
+      fun boolean(): Boolean =
         when {
           value.toLowerCase() == "true" -> true
           value.toLowerCase() == "false" -> false
