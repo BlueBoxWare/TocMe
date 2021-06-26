@@ -24,8 +24,8 @@ import org.gradle.util.ConfigureUtil
 import java.io.File
 
 open class TocMeExtension(
-        private val project: Project,
-        private val defaultOptions: TocMeOptionsImpl
+  private val project: Project,
+  private val defaultOptions: TocMeOptionsImpl
 ): TocMeOptions by defaultOptions {
 
   @Suppress("unused")
@@ -36,53 +36,53 @@ open class TocMeExtension(
   @JvmOverloads
   @Suppress("MemberVisibilityCanBePrivate")
   fun doc(inputFile: File, configurationClosure: Closure<in TocMeGradleOptions>? = null) =
-          TocMeGradleOptions(project, this).let { options ->
-            ConfigureUtil.configure(configurationClosure, options)
-            registeredDocs.add(inputFile to options)
-          }
+    TocMeGradleOptions(project, this).let { options ->
+      ConfigureUtil.configure(configurationClosure, options)
+      registeredDocs.add(inputFile to options)
+    }
 
   @Suppress("MemberVisibilityCanBePrivate")
   fun doc(inputFile: File, configurationClosure: TocMeGradleOptions.() -> Unit) =
-          TocMeGradleOptions(project, this).let { options ->
-            options.apply(configurationClosure)
-            registeredDocs.add(inputFile to options)
-          }
+    TocMeGradleOptions(project, this).let { options ->
+      options.apply(configurationClosure)
+      registeredDocs.add(inputFile to options)
+    }
 
   @JvmOverloads
   @Suppress("unused")
   fun doc(inputFile: String, configurationClosure: Closure<in TocMeGradleOptions>? = null) =
-          doc(project.file(inputFile), configurationClosure)
+    doc(project.file(inputFile), configurationClosure)
 
   @Suppress("unused")
   fun doc(inputFile: String, configurationClosure: TocMeGradleOptions.() -> Unit) =
-          doc(project.file(inputFile), configurationClosure)
+    doc(project.file(inputFile), configurationClosure)
 
   @Suppress("MemberVisibilityCanBePrivate")
   fun docs(vararg inputFiles: File) =
-          inputFiles.forEach { doc(it) }
+    inputFiles.forEach { doc(it) }
 
   @Suppress("unused")
   fun docs(vararg inputFiles: String) =
-          docs(*(inputFiles.map { project.file(it) }.toTypedArray()))
+    docs(*(inputFiles.map { project.file(it) }.toTypedArray()))
 
   fun getDocs(): List<Pair<File, TocMeGradleOptions>> = registeredDocs
 
   internal fun getOutputFiles() =
-          registeredDocs.flatMap { (inputFile, gradleOptions) ->
-            gradleOptions.outputFiles.map { it.key }.toMutableList().apply {
-              add(inputFile)
-            }
-          }
+    registeredDocs.flatMap { (inputFile, gradleOptions) ->
+      gradleOptions.outputFiles.map { it.key }.toMutableList().apply {
+        add(inputFile)
+      }
+    }
 
   internal fun getOptionsAsString() =
-          defaultOptions.asString() +
-                  TocMeGradleOptions.SEPARATOR +
-                  registeredDocs.joinToString(TocMeGradleOptions.SEPARATOR) { (file, options) ->
-                    file.hashCode().toString() + TocMeGradleOptions.SEPARATOR + options.asString()
-                  }
+    defaultOptions.asString() +
+            TocMeGradleOptions.SEPARATOR +
+            registeredDocs.joinToString(TocMeGradleOptions.SEPARATOR) { (file, options) ->
+              file.hashCode().toString() + TocMeGradleOptions.SEPARATOR + options.asString()
+            }
 
   open fun levels(str: String): Collection<Int> =
-          parseLevels(str) ?: throw GradleException("Invalid level specification: '$str'")
+    parseLevels(str) ?: throw GradleException("Invalid level specification: '$str'")
 
   @Suppress("unused")
   companion object {

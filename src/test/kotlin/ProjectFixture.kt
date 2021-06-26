@@ -72,9 +72,9 @@ internal class ProjectFixture {
   }
 
   fun createFile(fileName: String, contents: String) =
-          File(project.rootDir, fileName).apply {
-            writeText(contents)
-          }
+    File(project.rootDir, fileName).apply {
+      writeText(contents)
+    }
 
   fun buildFile(contents: String) {
     buildFile.writeText(header + contents)
@@ -85,12 +85,12 @@ internal class ProjectFixture {
   fun file(path: String) = File(tempDir.root, path)
 
   fun buildCheck(vararg extraArguments: String, shouldFail: Boolean = false) =
-          build(TocMePlugin.CHECK_TOCS_TASK, shouldFail, *extraArguments)
+    build(TocMePlugin.CHECK_TOCS_TASK, shouldFail, *extraArguments)
 
   fun build(
-          taskName: String? = TocMePlugin.INSERT_TOCS_TASK,
-          shouldFail: Boolean = false,
-          vararg extraArguments: String
+    taskName: String? = TocMePlugin.INSERT_TOCS_TASK,
+    shouldFail: Boolean = false,
+    vararg extraArguments: String
   ): BuildResult {
 
     val args = extraArguments.toMutableList()
@@ -99,11 +99,11 @@ internal class ProjectFixture {
     latestTask = taskName
 
     val runner = GradleRunner
-            .create()
+      .create()
 //            .withDebug(true)
-            .withProjectDir(tempDir.root)
-            .withGradleVersion(GRADLE_VERSION.version)
-            .withArguments(*args.toTypedArray(), "--stacktrace", "--info")
+      .withProjectDir(tempDir.root)
+      .withGradleVersion(GRADLE_VERSION.version)
+      .withArguments(*args.toTypedArray(), "--stacktrace", "--info")
 
     @Suppress("ConstantConditionIf")
     if (!TEST_RELEASED_VERSION) {
@@ -111,11 +111,11 @@ internal class ProjectFixture {
     }
 
     val result =
-            if (shouldFail) {
-              runner.buildAndFail()
-            } else {
-              runner.build()
-            }
+      if (shouldFail) {
+        runner.buildAndFail()
+      } else {
+        runner.build()
+      }
 
     latestBuildResult = result
 
@@ -131,123 +131,127 @@ internal class ProjectFixture {
   }
 
   fun assertFileEquals(
-          expectedFileName: String,
-          actualFileName: String,
-          showDiff: Boolean = true,
-          showActual: Boolean = true,
-          showExpected: Boolean = false,
-          createExpectedFileIfNotFound: Boolean = true
+    expectedFileName: String,
+    actualFileName: String,
+    showDiff: Boolean = true,
+    showActual: Boolean = true,
+    showExpected: Boolean = false,
+    createExpectedFileIfNotFound: Boolean = true
   ) =
-          assertFileEquals(
-                  File(testDataDir, expectedFileName),
-                  File(tempDir.root, actualFileName),
-                  showDiff,
-                  showActual,
-                  showExpected,
-                  createExpectedFileIfNotFound = createExpectedFileIfNotFound
-          )
+    assertFileEquals(
+      File(testDataDir, expectedFileName),
+      File(tempDir.root, actualFileName),
+      showDiff,
+      showActual,
+      showExpected,
+      createExpectedFileIfNotFound = createExpectedFileIfNotFound
+    )
 
   fun assertFilesExist(vararg fileNames: String) =
-          fileNames.forEach {
-            assertTrue("File '$it' doesn't exist") { File(tempDir.root, it).exists() }
-          }
+    fileNames.forEach {
+      assertTrue("File '$it' doesn't exist") { File(tempDir.root, it).exists() }
+    }
 
   fun assertOutputContains(str: String) =
-          latestBuildResult?.output?.let { output ->
-            assertTrue(output.contains(str), "String '$str' not found in output. Output:\n$output")
-          }
+    latestBuildResult?.output?.let { output ->
+      assertTrue(output.contains(str), "String '$str' not found in output. Output:\n$output")
+    }
 
   fun assertOutputContainsNot(str: String) =
-          latestBuildResult?.output?.let { output ->
-            assertFalse(output.contains(str), "String '$str' found in output. Output:\n$output")
-          }
+    latestBuildResult?.output?.let { output ->
+      assertFalse(output.contains(str), "String '$str' found in output. Output:\n$output")
+    }
 
   fun assertOutputContainsNot(regex: Regex) =
-          latestBuildResult?.output?.let { output ->
-            assertNull(regex.find(output))
-          }
+    latestBuildResult?.output?.let { output ->
+      assertNull(regex.find(output))
+    }
 
   fun assertCheckOutputFileIsOutOfDate(fileName: String) =
-          assertOutputContains("$fileName: ${TocMePlugin.OUT_OF_DATE_MSG}")
+    assertOutputContains("$fileName: ${TocMePlugin.OUT_OF_DATE_MSG}")
 
   fun assertCheckOutputFileIsNotOutOfDate(fileName: String) =
-          assertOutputContainsNot("$fileName: ${TocMePlugin.OUT_OF_DATE_MSG}")
+    assertOutputContainsNot("$fileName: ${TocMePlugin.OUT_OF_DATE_MSG}")
 
   fun assertCheckOutputNothingIsOutOfDate() =
-          assertOutputContainsNot(TocMePlugin.OUT_OF_DATE_MSG)
+    assertOutputContainsNot(TocMePlugin.OUT_OF_DATE_MSG)
 
   fun assertBuildSuccess(task: String? = latestTask) =
-          assertTaskOutcome(TaskOutcome.SUCCESS, task)
+    assertTaskOutcome(TaskOutcome.SUCCESS, task)
 
   @Suppress("unused")
   fun assertBuildFailure(task: String? = latestTask) =
-          assertTaskOutcome(TaskOutcome.FAILED, task)
+    assertTaskOutcome(TaskOutcome.FAILED, task)
 
   fun assertBuildUpToDate(task: String? = latestTask) =
-          assertTaskOutcome(TaskOutcome.UP_TO_DATE, task)
+    assertTaskOutcome(TaskOutcome.UP_TO_DATE, task)
 
   private fun assertBuildNoSource(task: String? = latestTask) =
-          assertTaskOutcome(TaskOutcome.NO_SOURCE, task)
+    assertTaskOutcome(TaskOutcome.NO_SOURCE, task)
 
   fun assertBuildNoSourceAfter33(task: String? = latestTask) =
-          if (GRADLE_VERSION < GradleVersion.version("3.4"))
-            assertBuildUpToDate(task)
-          else
-            assertBuildNoSource()
+    if (GRADLE_VERSION < GradleVersion.version("3.4"))
+      assertBuildUpToDate(task)
+    else
+      assertBuildNoSource()
 
   private fun assertTaskOutcome(expectedOutcome: TaskOutcome, task: String? = latestTask) =
-          task?.let { actualTask ->
-            latestBuildResult?.let { actualResult ->
-              actualResult.task(":" + actualTask.removePrefix(":"))?.let {
-                assertEquals(expectedOutcome, it.outcome, "Expected task outcome: $expectedOutcome, actual outcome: ${it.outcome}")
-              }
-            }
-          } ?: throw AssertionError()
+    task?.let { actualTask ->
+      latestBuildResult?.let { actualResult ->
+        actualResult.task(":" + actualTask.removePrefix(":"))?.let {
+          assertEquals(
+            expectedOutcome,
+            it.outcome,
+            "Expected task outcome: $expectedOutcome, actual outcome: ${it.outcome}"
+          )
+        }
+      }
+    } ?: throw AssertionError()
 
   companion object {
 
     private const val CURRENT_VERSION = "pluginVersion"
     private const val RELEASED_VERSION = "releasedPluginVersion"
     private fun versionRegex(testReleasedVersion: Boolean) =
-            Regex("""${if (testReleasedVersion) RELEASED_VERSION else CURRENT_VERSION}\s*=\s*'([^']+)'""")
+      Regex("""${if (testReleasedVersion) RELEASED_VERSION else CURRENT_VERSION}\s*=\s*'([^']+)'""")
 
     internal fun getPluginVersion(testReleasedVersion: Boolean) =
-            versionRegex(testReleasedVersion).find(File("versions.gradle").readText())?.groupValues?.getOrNull(1)
-                    ?: throw AssertionError()
+      versionRegex(testReleasedVersion).find(File("versions.gradle").readText())?.groupValues?.getOrNull(1)
+        ?: throw AssertionError()
 
     internal fun assertTextEquals(
-            expectedText: String,
-            actualText: String,
-            showDiff: Boolean = true,
-            showActual: Boolean = true,
-            showExpected: Boolean = true,
-            document: Document? = null
+      expectedText: String,
+      actualText: String,
+      showDiff: Boolean = true,
+      showActual: Boolean = true,
+      showExpected: Boolean = true,
+      document: Document? = null
     ) {
       if (expectedText != actualText) {
         val expectedFile = createTempFile().apply { writeText(expectedText) }
         val actualFile = createTempFile().apply { writeText(actualText) }
         assertFileEquals(
-                expectedFile,
-                actualFile,
-                showDiff,
-                showActual,
-                showExpected,
-                showFileNames = false,
-                createExpectedFileIfNotFound = false,
-                document = document
+          expectedFile,
+          actualFile,
+          showDiff,
+          showActual,
+          showExpected,
+          showFileNames = false,
+          createExpectedFileIfNotFound = false,
+          document = document
         )
       }
     }
 
     internal fun assertFileEquals(
-            expectedFile: File,
-            actualFile: File,
-            showDiff: Boolean = true,
-            showActual: Boolean = true,
-            showExpected: Boolean = false,
-            showFileNames: Boolean = true,
-            createExpectedFileIfNotFound: Boolean = true,
-            document: Document? = null
+      expectedFile: File,
+      actualFile: File,
+      showDiff: Boolean = true,
+      showActual: Boolean = true,
+      showExpected: Boolean = false,
+      showFileNames: Boolean = true,
+      createExpectedFileIfNotFound: Boolean = true,
+      document: Document? = null
     ) {
 
       if (!actualFile.exists()) {
@@ -259,8 +263,9 @@ internal class ProjectFixture {
           expectedFile.writeText(actualFile.readText())
         }
         throw AssertionError(
-                "Expected file '${expectedFile.absolutePath}' does not exist." +
-                        if (createExpectedFileIfNotFound) " Creating." else "")
+          "Expected file '${expectedFile.absolutePath}' does not exist." +
+                  if (createExpectedFileIfNotFound) " Creating." else ""
+        )
       }
 
       var diffCmd: Process? = null

@@ -56,7 +56,8 @@ private const val STYLE_REVERSED = "reversed"
 private const val STYLE_INCREASING = "increasing"
 private const val STYLE_DECREASING = "decreasing"
 
-private val STYLE_VALUES = listOf(STYLE_HIERARCHY, STYLE_FLAT, STYLE_REVERSED, STYLE_INCREASING, STYLE_DECREASING).joinToString { "'$it'" }
+private val STYLE_VALUES =
+  listOf(STYLE_HIERARCHY, STYLE_FLAT, STYLE_REVERSED, STYLE_INCREASING, STYLE_DECREASING).joinToString { "'$it'" }
 private val MODE_VALUES = listOf(MODE_NORMAL, MODE_FULL, MODE_LOCAL).joinToString { "'$it'" }
 
 private const val INDENT = "  "
@@ -64,10 +65,10 @@ private const val INDENT = "  "
 private const val BACKUP_DIR = "tocme/backups/"
 
 internal fun insertTocs(
-        inputFile: File,
-        outputFile: File?,
-        options: TocMeOptions,
-        writeChanges: Boolean = false
+  inputFile: File,
+  outputFile: File?,
+  options: TocMeOptions,
+  writeChanges: Boolean = false
 ): Triple<String?, List<String>, String?> {
 
   val parserOptions = options.toParserOptions()
@@ -77,8 +78,8 @@ internal fun insertTocs(
   }
 
   val (result, warnings, error) = document.insertTocs(
-          options,
-          checkCurrentContent = writeChanges && inputFile == outputFile
+    options,
+    checkCurrentContent = writeChanges && inputFile == outputFile
   )
 
   if (writeChanges) {
@@ -91,7 +92,10 @@ internal fun insertTocs(
 
 }
 
-internal fun Document.insertTocs(options: TocMeOptions, checkCurrentContent: Boolean): Triple<String?, List<String>, String?> {
+internal fun Document.insertTocs(
+  options: TocMeOptions,
+  checkCurrentContent: Boolean
+): Triple<String?, List<String>, String?> {
 
   val headings by lazy {
     HeaderIdGenerator().generateIds(this)
@@ -173,21 +177,22 @@ private fun getEnclosingHeaders(headings: List<Heading>, startTag: Tag, endTag: 
 }
 
 private fun filterHeadings(
-        headings: List<Heading>,
-        options: TocMeOptions,
-        endTag: HtmlCommentBlock,
-        startHeader: Heading? = null,
-        endHeader: Heading? = null
+  headings: List<Heading>,
+  options: TocMeOptions,
+  endTag: HtmlCommentBlock,
+  startHeader: Heading? = null,
+  endHeader: Heading? = null
 ): List<Heading> =
-        headings.filter { header ->
-          options.levels().contains(header.level)
-                  && (options.isFull() || header.startOffset > endTag.startOffset)
-                  && (!options.isLocal() || (header.startOffset > startHeader?.startOffset ?: 0 && header.startOffset < endHeader?.startOffset ?: Int.MAX_VALUE))
-        }
+  headings.filter { header ->
+    options.levels().contains(header.level)
+            && (options.isFull() || header.startOffset > endTag.startOffset)
+            && (!options.isLocal() || (header.startOffset > startHeader?.startOffset ?: 0 && header.startOffset < endHeader?.startOffset ?: Int.MAX_VALUE))
+  }
 
 private fun getHeaderTexts(headings: List<Heading>, options: TocMeOptions): List<String> {
 
-  val isReversed = options.style() == TocOptions.ListType.SORTED_REVERSED || options.style() == TocOptions.ListType.FLAT_REVERSED
+  val isReversed =
+    options.style() == TocOptions.ListType.SORTED_REVERSED || options.style() == TocOptions.ListType.FLAT_REVERSED
   val isSorted = options.style() == TocOptions.ListType.SORTED || options.style() == TocOptions.ListType.SORTED_REVERSED
 
   val texts = mutableListOf<String>()
@@ -229,77 +234,77 @@ private fun parseArgs(options: TocMeOptions, text: String): Pair<TocMeOptions, L
   val warnings = mutableListOf<String>()
 
   Regex("""\b([^\s=]+)\s*(?:=\s*(["'][^"']*["']|[^\s]+))?""")
-          .findAll(text)
-          .map { matchResult -> matchResult.groupValues.let { it -> it[1] to it[2].trim { it.isWhitespace() || it == '"' || it == '\'' } } }
-          .forEach { (key, value) ->
+    .findAll(text)
+    .map { matchResult -> matchResult.groupValues.let { it -> it[1] to it[2].trim { it.isWhitespace() || it == '"' || it == '\'' } } }
+    .forEach { (key, value) ->
 
-            fun boolean(): Boolean? =
-                    when {
-                      value.toLowerCase() == "true" -> true
-                      value.toLowerCase() == "false" -> false
-                      value.isBlank() -> warnings.add("No value specified for option '$key'")
-                      else -> warnings.add("Option '$key' should be 'true' or 'false'")
-                    }
+      fun boolean(): Boolean? =
+        when {
+          value.toLowerCase() == "true" -> true
+          value.toLowerCase() == "false" -> false
+          value.isBlank() -> warnings.add("No value specified for option '$key'")
+          else -> warnings.add("Option '$key' should be 'true' or 'false'")
+        }
 
-            when (key) {
+      when (key) {
 
-              OPT_STYLE -> when (value) {
-                STYLE_HIERARCHY -> options.style = TocOptions.ListType.HIERARCHY
-                STYLE_FLAT -> options.style = TocOptions.ListType.FLAT
-                STYLE_REVERSED -> options.style = TocOptions.ListType.FLAT_REVERSED
-                STYLE_INCREASING -> options.style = TocOptions.ListType.SORTED
-                STYLE_DECREASING -> options.style = TocOptions.ListType.SORTED_REVERSED
-                else -> {
-                  warnings.add(
-                          if (value.isBlank()) {
-                            "Missing argument for parameter $OPT_STYLE"
-                          } else {
-                            "Invalid argument for parameter $OPT_STYLE: '$value'"
-                          } + ". Valid arguments are: $STYLE_VALUES."
-                  )
-                }
-              }
+        OPT_STYLE -> when (value) {
+          STYLE_HIERARCHY -> options.style = TocOptions.ListType.HIERARCHY
+          STYLE_FLAT -> options.style = TocOptions.ListType.FLAT
+          STYLE_REVERSED -> options.style = TocOptions.ListType.FLAT_REVERSED
+          STYLE_INCREASING -> options.style = TocOptions.ListType.SORTED
+          STYLE_DECREASING -> options.style = TocOptions.ListType.SORTED_REVERSED
+          else -> {
+            warnings.add(
+              if (value.isBlank()) {
+                "Missing argument for parameter $OPT_STYLE"
+              } else {
+                "Invalid argument for parameter $OPT_STYLE: '$value'"
+              } + ". Valid arguments are: $STYLE_VALUES."
+            )
+          }
+        }
 
-              OPT_NUMBERED -> options.numbered = boolean()
-              OPT_PLAIN -> options.plain = boolean()
-              OPT_BOLD -> options.bold = boolean()
+        OPT_NUMBERED -> options.numbered = boolean()
+        OPT_PLAIN -> options.plain = boolean()
+        OPT_BOLD -> options.bold = boolean()
 
-              OPT_LEVELS -> {
-                if (value.isBlank()) {
-                  warnings.add("Missing argument for parameter levels")
-                } else {
+        OPT_LEVELS -> {
+          if (value.isBlank()) {
+            warnings.add("Missing argument for parameter levels")
+          } else {
 
-                  parseLevels(value)?.let {
-                    options.levels = it
-                  } ?: run {
-                    warnings.add("Invalid value for parameter levels: '$value'")
-                  }
-
-                }
-              }
-
-              OPT_MODE -> when (value) {
-                MODE_FULL -> options.mode = Mode.Full
-                MODE_NORMAL -> options.mode = Mode.Normal
-                MODE_LOCAL -> options.mode = Mode.Local
-                else -> {
-                  warnings.add(
-                          if (value.isBlank()) {
-                            "Missing argument for parameter $OPT_MODE"
-                          } else {
-                            "Invalid argument for parameter $OPT_STYLE: '$value'"
-                          } + ". Valid arguments are: $MODE_VALUES."
-                  )
-                }
-              }
-
-              OPT_VARIANT -> warnings.add("The option '$OPT_VARIANT' can only be specified in Gradle, not in the '${options.tag()}' tag")
-
-              else -> warnings.add("Unknown option: '$key'")
-
+            parseLevels(value)?.let {
+              options.levels = it
+            } ?: run {
+              warnings.add("Invalid value for parameter levels: '$value'")
             }
 
           }
+        }
+
+        OPT_MODE -> when (value) {
+          MODE_FULL -> options.mode = Mode.Full
+          MODE_NORMAL -> options.mode = Mode.Normal
+          MODE_LOCAL -> options.mode = Mode.Local
+          else -> {
+            warnings.add(
+              if (value.isBlank()) {
+                "Missing argument for parameter $OPT_MODE"
+              } else {
+                "Invalid argument for parameter $OPT_STYLE: '$value'"
+              } + ". Valid arguments are: $MODE_VALUES."
+            )
+          }
+        }
+
+        OPT_VARIANT -> warnings.add("The option '$OPT_VARIANT' can only be specified in Gradle, not in the '${options.tag()}' tag")
+
+        else -> warnings.add("Unknown option: '$key'")
+
+      }
+
+    }
 
   return Pair(options, warnings)
 
@@ -310,7 +315,7 @@ internal fun parseLevels(text: String): Set<Int>? {
   val levels = mutableSetOf<Int>()
 
   fun String?.int(): Int? =
-          this?.trim()?.toIntOrNull()
+    this?.trim()?.toIntOrNull()
 
   text.split(',').forEach { item ->
     if (item.contains('-')) {
@@ -335,17 +340,17 @@ internal fun parseLevels(text: String): Set<Int>? {
 }
 
 private fun HtmlCommentBlock.collectTags(tagName: String) =
-        Regex("""<!--+\s*(.*?)\s*--+>""").findAll(chars).mapNotNull { match ->
-          val start = match.range.first
-          val end = match.range.last + 1
-          if (startOffset + start == 0 || document.chars[startOffset + start - 1] == '\n') {
-            Tag.createTag(this, match.groupValues[1], start, end)
-          } else {
-            null
-          }
-        }.filter { tag ->
-          tag.tag == tagName
-        }.toList()
+  Regex("""<!--+\s*(.*?)\s*--+>""").findAll(chars).mapNotNull { match ->
+    val start = match.range.first
+    val end = match.range.last + 1
+    if (startOffset + start == 0 || document.chars[startOffset + start - 1] == '\n') {
+      Tag.createTag(this, match.groupValues[1], start, end)
+    } else {
+      null
+    }
+  }.filter { tag ->
+    tag.tag == tagName
+  }.toList()
 
 private fun Document.collectTags(tagName: String): Pair<Map<Tag, Tag>?, String?> {
 
@@ -360,7 +365,10 @@ private fun Document.collectTags(tagName: String): Pair<Map<Tag, Tag>?, String?>
 
     if (tag.isStartTag) {
       if (startTag != null) {
-        return Pair(null, "Opening $tagName tag found on line ${tag.lineNumber()} while previous $tagName tag (on line ${startTag?.lineNumber()}) wasn't closed yet")
+        return Pair(
+          null,
+          "Opening $tagName tag found on line ${tag.lineNumber()} while previous $tagName tag (on line ${startTag?.lineNumber()}) wasn't closed yet"
+        )
       } else {
         startTag = tag
       }
@@ -538,9 +546,9 @@ private fun uniquifyFileNames(files: Collection<File>): Map<File, String> {
             val nameCount = absolutePath.nameCount
             val filePrefixLength = min(prefixLength, nameCount)
             absolutePath
-                    .subpath(nameCount - filePrefixLength, nameCount)
-                    .joinToString(".")
-                    .replace(Regex("""\.+"""), ".")
+              .subpath(nameCount - filePrefixLength, nameCount)
+              .joinToString(".")
+              .replace(Regex("""\.+"""), ".")
           }
         }.let { grouped ->
           if (grouped.size == sameNameFiles.size) {
@@ -579,7 +587,7 @@ private val EMOJI_REGEX = Regex(""":[\w\d_+-]+:""")
 private val SPACES_REGEX = Regex(""" +""")
 
 internal fun String.removeEmojis() =
-        EMOJI_REGEX.replace(this, "").let { SPACES_REGEX.replace(it, " ") }
+  EMOJI_REGEX.replace(this, "").let { SPACES_REGEX.replace(it, " ") }
 
 fun Boolean?.asString() = this?.toString()?.take(1) ?: "_"
 

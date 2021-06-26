@@ -43,7 +43,10 @@ internal object TestInsertToc: Spek({
   fun loadTests(filename: String) = run {
     expectedTestNumber = 0
     File(TEST_DATA_DIR, filename).readText().split(Regex("=====+\n")).flatMap { test ->
-      Regex("""(.*)---*\s+(\d+)\s+---+\n(.*)""", RegexOption.DOT_MATCHES_ALL).matchEntire(test)?.groupValues?.let { (_, input, nr, expectedOutput) ->
+      Regex(
+        """(.*)---*\s+(\d+)\s+---+\n(.*)""",
+        RegexOption.DOT_MATCHES_ALL
+      ).matchEntire(test)?.groupValues?.let { (_, input, nr, expectedOutput) ->
         expectedTestNumber++
         if (nr.toInt() != expectedTestNumber) {
           throw AssertionError("Test number is $nr, should be $expectedTestNumber")
@@ -88,7 +91,10 @@ internal object TestInsertToc: Spek({
         val document2 = parser.parse(result!!)
         val (result2, warnings2, error2) = document2.insertTocs(tocMeOptions, checkCurrentContent = true)
         assertNull(error2, "Failed to update. Unexpected error: $error2")
-        assertTrue(warnings2.isEmpty(), "Failed to update. Unexpected warning(s): \n" + warnings2.joinToString(separator = "\n"))
+        assertTrue(
+          warnings2.isEmpty(),
+          "Failed to update. Unexpected warning(s): \n" + warnings2.joinToString(separator = "\n")
+        )
         ProjectFixture.assertTextEquals(result, result2!!)
       }
 
@@ -120,8 +126,8 @@ internal object TestInsertToc: Spek({
 
       it("generates the expected warning") {
         assertTrue(
-                warnings.any { it.matches(warningRegex) },
-                "No warning which matches '$warningRegex' found.\nWarnings:\n" + warnings.joinToString(separator = "\n")
+          warnings.any { it.matches(warningRegex) },
+          "No warning which matches '$warningRegex' found.\nWarnings:\n" + warnings.joinToString(separator = "\n")
         )
       }
 
@@ -170,9 +176,14 @@ internal object TestInsertToc: Spek({
     val parser = Parser.builder(options).build()
 
     val data =
-            TEST_DATA_FILES_DIR.walkTopDown().filter { it.extension == "md" && it.name != "variant_issues.md" }.map {
-              Data3(it.name, it.absolutePath, it.readText(), File(TEST_DATA_FILES_DIR, it.nameWithoutExtension + ".out").readText())
-            }.toList().toTypedArray()
+      TEST_DATA_FILES_DIR.walkTopDown().filter { it.extension == "md" && it.name != "variant_issues.md" }.map {
+        Data3(
+          it.name,
+          it.absolutePath,
+          it.readText(),
+          File(TEST_DATA_FILES_DIR, it.nameWithoutExtension + ".out").readText()
+        )
+      }.toList().toTypedArray()
 
     on("inserting a toc (%s)", with = *data) { name, absolutePath, input, expected ->
 
@@ -195,7 +206,10 @@ internal object TestInsertToc: Spek({
         val document2 = parser.parse(result!!)
         val (result2, warnings2, error2) = document2.insertTocs(TocMeOptionsImpl(null), checkCurrentContent = true)
         assertNull(error2, "Failure on update. Unexpected error: $error2")
-        assertTrue(warnings2.isEmpty(), "Failure on update. Unexpected warning(s): \n" + warnings2.joinToString(separator = "\n"))
+        assertTrue(
+          warnings2.isEmpty(),
+          "Failure on update. Unexpected warning(s): \n" + warnings2.joinToString(separator = "\n")
+        )
         ProjectFixture.assertTextEquals(result, result2!!)
       }
 
@@ -215,12 +229,12 @@ internal object TestInsertToc: Spek({
       val tempFile = createTempFile()
 
       val (result, warnings, error) =
-              insertTocs(
-                      File(TEST_DATA_FILES_DIR, "variant_issues.md"),
-                      tempFile,
-                      tocmeOptions,
-                      writeChanges = true
-              )
+        insertTocs(
+          File(TEST_DATA_FILES_DIR, "variant_issues.md"),
+          tempFile,
+          tocmeOptions,
+          writeChanges = true
+        )
 
 
       tempFile.delete()
@@ -243,8 +257,8 @@ internal object TestInsertToc: Spek({
           }
 
           ProjectFixture.assertTextEquals(
-                  expectedFile.readText(),
-                  result!!
+            expectedFile.readText(),
+            result!!
           )
 
         }
@@ -276,7 +290,12 @@ internal object TestInsertToc: Spek({
         removeEmojis = true
       }
 
-      val (_, warnings, error) = insertTocs(File(TEST_DATA_FILES_DIR, file), tempFile, tocmeOptions, writeChanges = true)
+      val (_, warnings, error) = insertTocs(
+        File(TEST_DATA_FILES_DIR, file),
+        tempFile,
+        tocmeOptions,
+        writeChanges = true
+      )
 
       it("generates no errors") {
         assertNull(error, "Unexpected error: $error")
@@ -299,11 +318,11 @@ internal object TestInsertToc: Spek({
     val tests = mutableListOf<Data3<String, String, TocMeOptions.() -> Unit, String>>()
 
     fun test(
-            id: String,
-            doc: String,
-            cases: List<Triple<String, TocMeOptions.() -> Unit, String>>,
-            trimIndent: Boolean = true,
-            insertHeader: Boolean = true
+      id: String,
+      doc: String,
+      cases: List<Triple<String, TocMeOptions.() -> Unit, String>>,
+      trimIndent: Boolean = true,
+      insertHeader: Boolean = true
     ) {
       val header = if (insertHeader) "<!--toc-->\n<!--/toc-->\n" else ""
       val contents = header + if (trimIndent) doc.trimIndent() else doc
@@ -315,16 +334,16 @@ internal object TestInsertToc: Spek({
     fun case(id: String, conf: TocMeOptions.() -> Unit, expected: String) = Triple(id, conf, expected)
 
     test(
-            id = "allowSpace",
-            doc = """
+      id = "allowSpace",
+      doc = """
                 # Header1
                 #Header2
               """,
-            cases = listOf(
-                    case(
-                            id = "true",
-                            conf = { requireSpace = false },
-                            expected = """
+      cases = listOf(
+        case(
+          id = "true",
+          conf = { requireSpace = false },
+          expected = """
                                 <!--toc-->
                                 - __[Header1](#header1)__
                                 - __[Header2](#header2)__
@@ -332,37 +351,37 @@ internal object TestInsertToc: Spek({
                                 # Header1
                                 #Header2
                             """
-                    ),
-                    case(
-                            id = "false",
-                            conf = { requireSpace = true },
-                            expected = """
+        ),
+        case(
+          id = "false",
+          conf = { requireSpace = true },
+          expected = """
                                 <!--toc-->
                                 - __[Header1](#header1)__
                                 <!--/toc-->
                                 # Header1
                                 #Header2
                             """
-                    )
+        )
 
-            )
+      )
     )
 
     test(
-            id = "dupedDashes",
-            doc = """
+      id = "dupedDashes",
+      doc = """
                 # ----Header1 ---___--
                 # ---__---Header--2--___--
                 #   Hea der   3
               """,
-            cases = listOf(
-                    case(
-                            id = "true",
-                            conf = {
-                              dupedDashes = true
-                              dashChars = "-"
-                            },
-                            expected = """
+      cases = listOf(
+        case(
+          id = "true",
+          conf = {
+            dupedDashes = true
+            dashChars = "-"
+          },
+          expected = """
                               <!--toc-->
                               - __[----Header1 ---___--](#----header1-----)__
                               - __[------Header--2--_--](#------header--2----)__
@@ -372,14 +391,14 @@ internal object TestInsertToc: Spek({
                               # ---__---Header--2--___--
                               #   Hea der   3
                             """
-                    ),
-                    case(
-                            id = "false",
-                            conf = {
-                              dupedDashes = false
-                              dashChars = "-"
-                            },
-                            expected = """
+        ),
+        case(
+          id = "false",
+          conf = {
+            dupedDashes = false
+            dashChars = "-"
+          },
+          expected = """
                               <!--toc-->
                               - __[----Header1 ---___--](#-header1-)__
                               - __[------Header--2--_--](#-header-2-)__
@@ -389,14 +408,14 @@ internal object TestInsertToc: Spek({
                               # ---__---Header--2--___--
                               #   Hea der   3
                             """
-                    ),
-                    case(
-                            id = "true + dashChars='_- '",
-                            conf = {
-                              dupedDashes = true
-                              dashChars = "_- "
-                            },
-                            expected = """
+        ),
+        case(
+          id = "true + dashChars='_- '",
+          conf = {
+            dupedDashes = true
+            dashChars = "_- "
+          },
+          expected = """
                               <!--toc-->
                               - __[----Header1 ---___--](#----header1---------)__
                               - __[------Header--2--_--](#------header--2-----)__
@@ -406,14 +425,14 @@ internal object TestInsertToc: Spek({
                               # ---__---Header--2--___--
                               #   Hea der   3
                             """
-                    ),
-                    case(
-                            id = "false + dashChars='_- '",
-                            conf = {
-                              dupedDashes = false
-                              dashChars = "_- "
-                            },
-                            expected = """
+        ),
+        case(
+          id = "false + dashChars='_- '",
+          conf = {
+            dupedDashes = false
+            dashChars = "_- "
+          },
+          expected = """
                               <!--toc-->
                               - __[----Header1 ---___--](#-header1-)__
                               - __[------Header--2--_--](#-header-2-)__
@@ -423,14 +442,14 @@ internal object TestInsertToc: Spek({
                               # ---__---Header--2--___--
                               #   Hea der   3
                             """
-                    )
+        )
 
-            )
+      )
     )
 
     test(
-            id = "resolveDupes",
-            doc = """
+      id = "resolveDupes",
+      doc = """
                 # Header1
                 # Header2
                 ## Header1
@@ -438,11 +457,11 @@ internal object TestInsertToc: Spek({
                 Header1
                 =====
               """,
-            cases = listOf(
-                    case(
-                            id = "true",
-                            conf = { resolveDupes = true },
-                            expected = """
+      cases = listOf(
+        case(
+          id = "true",
+          conf = { resolveDupes = true },
+          expected = """
                               <!--toc-->
                               - __[Header1](#header1)__
                               - __[Header2](#header2)__
@@ -457,11 +476,11 @@ internal object TestInsertToc: Spek({
                               Header1
                               =====
                             """
-                    ),
-                    case(
-                            id = "false",
-                            conf = { resolveDupes = false },
-                            expected = """
+        ),
+        case(
+          id = "false",
+          conf = { resolveDupes = false },
+          expected = """
                               <!--toc-->
                               - __[Header1](#header1)__
                               - __[Header2](#header2)__
@@ -476,23 +495,23 @@ internal object TestInsertToc: Spek({
                               Header1
                               =====
                             """
-                    )
+        )
 
-            )
+      )
     )
 
     test(
-            id = "allowedChars",
-            doc = """
+      id = "allowedChars",
+      doc = """
                 # Header_+1()*#$@!
                 # Header++2++$@!###
                 # Header 3 ($)/\
               """,
-            cases = listOf(
-                    case(
-                            id = "_+#$/ ",
-                            conf = { allowedChars = "_+#$/ " },
-                            expected = """
+      cases = listOf(
+        case(
+          id = "_+#$/ ",
+          conf = { allowedChars = "_+#$/ " },
+          expected = """
                               <!--toc-->
                               - __[Header_+1()*#${'$'}@!](#header_+1#${'$'})__
                               - __[Header++2++${'$'}@!###](#header++2++${'$'}###)__
@@ -502,11 +521,11 @@ internal object TestInsertToc: Spek({
                               # Header++2++${'$'}@!###
                               # Header 3 (${'$'})/\
                             """
-                    ),
-                    case(
-                            id = "<none>",
-                            conf = { allowedChars = "" },
-                            expected = """
+        ),
+        case(
+          id = "<none>",
+          conf = { allowedChars = "" },
+          expected = """
                               <!--toc-->
                               - __[Header_+1()*#${'$'}@!](#header-1)__
                               - __[Header++2++${'$'}@!###](#header2)__
@@ -516,15 +535,15 @@ internal object TestInsertToc: Spek({
                               # Header++2++${'$'}@!###
                               # Header 3 (${'$'})/\
                             """
-                    )
+        )
 
-            )
+      )
     )
 
     test(
-            id = "allowLeadingSpace",
-            trimIndent = false,
-            doc = """
+      id = "allowLeadingSpace",
+      trimIndent = false,
+      doc = """
     # Header1
   # Header2
  # Header 3
@@ -535,11 +554,11 @@ internal object TestInsertToc: Spek({
     Header6
      -------
 """,
-            cases = listOf(
-                    case(
-                            id = "true",
-                            conf = { allowLeadingSpace = true },
-                            expected = """
+      cases = listOf(
+        case(
+          id = "true",
+          conf = { allowLeadingSpace = true },
+          expected = """
                             <!--toc-->
                             - __[Header2](#header2)__
                             - __[Header 3](#header-3)__
@@ -558,11 +577,11 @@ internal object TestInsertToc: Spek({
                                  -------
 
                             """
-                    ),
-                    case(
-                            id = "false",
-                            conf = { allowLeadingSpace = false },
-                            expected = """
+        ),
+        case(
+          id = "false",
+          conf = { allowLeadingSpace = false },
+          expected = """
                               <!--toc-->
                               <!--/toc-->
 
@@ -577,14 +596,14 @@ internal object TestInsertToc: Spek({
                                    -------
 
                             """
-                    )
+        )
 
-            )
+      )
     )
 
     test(
-            id = "setextMarkerLength",
-            doc = """
+      id = "setextMarkerLength",
+      doc = """
                 Length 1
                 =
 
@@ -612,11 +631,11 @@ internal object TestInsertToc: Spek({
                 Length 5
                 -----
               """,
-            cases = listOf(
-                    case(
-                            id = "1",
-                            conf = { setextMarkerLength = 1 },
-                            expected = """
+      cases = listOf(
+        case(
+          id = "1",
+          conf = { setextMarkerLength = 1 },
+          expected = """
                               <!--toc-->
                               - __[Length 1](#length-1)__
                                 - __[Length 1](#length-1-1)__
@@ -655,11 +674,11 @@ internal object TestInsertToc: Spek({
                               Length 5
                               -----
                             """
-                    ),
-                    case(
-                            id = "2",
-                            conf = { setextMarkerLength = 2 },
-                            expected = """
+        ),
+        case(
+          id = "2",
+          conf = { setextMarkerLength = 2 },
+          expected = """
                               <!--toc-->
                               - __[Length 2](#length-2)__
                               - __[Length 3](#length-3)__
@@ -696,11 +715,11 @@ internal object TestInsertToc: Spek({
                               Length 5
                               -----
                             """
-                    ),
-                    case(
-                            id = "4",
-                            conf = { setextMarkerLength = 4 },
-                            expected = """
+        ),
+        case(
+          id = "4",
+          conf = { setextMarkerLength = 4 },
+          expected = """
                               <!--toc-->
                               - __[Length 4](#length-4)__
                                 - __[Length 4](#length-4-1)__
@@ -733,14 +752,14 @@ internal object TestInsertToc: Spek({
                               Length 5
                               -----
                             """
-                    )
+        )
 
-            )
+      )
     )
 
     test(
-            id = "emptyHeadingWithoutSpace",
-            doc = """
+      id = "emptyHeadingWithoutSpace",
+      doc = """
               # Header1
               ##
               ##s
@@ -748,11 +767,11 @@ internal object TestInsertToc: Spek({
               ###s
               ####
             """.replace("s", " "),
-            cases = listOf(
-                    case(
-                            id = "true",
-                            conf = { emptyHeadingWithoutSpace = true },
-                            expected = """
+      cases = listOf(
+        case(
+          id = "true",
+          conf = { emptyHeadingWithoutSpace = true },
+          expected = """
                               <!--toc-->
                               - __[Header1](#header1)__
                                 - __[](#)__
@@ -767,11 +786,11 @@ internal object TestInsertToc: Spek({
                               ###s
                               ####
                             """.replace("s", " ")
-                    ),
-                    case(
-                            id = "false",
-                            conf = { emptyHeadingWithoutSpace = false },
-                            expected = """
+        ),
+        case(
+          id = "false",
+          conf = { emptyHeadingWithoutSpace = false },
+          expected = """
                               <!--toc-->
                               - __[Header1](#header1)__
                                 - __[](#)__
@@ -784,14 +803,14 @@ internal object TestInsertToc: Spek({
                               ###s
                               ####
                             """.replace("s", " ")
-                    )
+        )
 
-            )
+      )
     )
 
     test(
-            id = "headingInterruptsItemParagraph",
-            doc = """
+      id = "headingInterruptsItemParagraph",
+      doc = """
                 # Header1
                 - item 1
                 - item 2
@@ -800,11 +819,11 @@ internal object TestInsertToc: Spek({
 
                 # Header 3
               """,
-            cases = listOf(
-                    case(
-                            id = "true",
-                            conf = { headingInterruptsItemParagraph = true },
-                            expected = """
+      cases = listOf(
+        case(
+          id = "true",
+          conf = { headingInterruptsItemParagraph = true },
+          expected = """
                               <!--toc-->
                               - __[Header1](#header1)__
                               - __[Header2](#header2)__
@@ -818,11 +837,11 @@ internal object TestInsertToc: Spek({
 
                               # Header 3
                             """
-                    ),
-                    case(
-                            id = "false",
-                            conf = { headingInterruptsItemParagraph = false },
-                            expected = """
+        ),
+        case(
+          id = "false",
+          conf = { headingInterruptsItemParagraph = false },
+          expected = """
                               <!--toc-->
                               - __[Header1](#header1)__
                               - __[Header 3](#header-3)__
@@ -835,25 +854,25 @@ internal object TestInsertToc: Spek({
 
                               # Header 3
                             """
-                    )
+        )
 
-            )
+      )
     )
 
     test(
-            id = "custom tag name",
-            doc = """
+      id = "custom tag name",
+      doc = """
                 <!----   foobar numbered=true--->
                 <!--/foobar    --->
                 # Header1
                 ### Header2
               """,
-            insertHeader = false,
-            cases = listOf(
-                    case(
-                            id = "",
-                            conf = { tag = "foobar" },
-                            expected = """
+      insertHeader = false,
+      cases = listOf(
+        case(
+          id = "",
+          conf = { tag = "foobar" },
+          expected = """
                               <!----   foobar numbered=true--->
                               1. __[Header1](#header1)__
                                   1. __[Header2](#header2)__
@@ -861,8 +880,8 @@ internal object TestInsertToc: Spek({
                               # Header1
                               ### Header2
                             """
-                    )
-            )
+        )
+      )
     )
 
     on("inserting a toc (%s)", with = *tests.toTypedArray()) { label, content, conf, expected ->

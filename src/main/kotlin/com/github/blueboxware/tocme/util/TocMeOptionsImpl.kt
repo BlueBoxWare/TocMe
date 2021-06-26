@@ -77,65 +77,65 @@ class TocMeOptionsImpl(private val parent: TocMeOptions?): TocMeOptions {
   override fun setextMarkerLength(): Int? = setextMarkerLength ?: parent?.setextMarkerLength()
   override fun emptyHeadingWithoutSpace(): Boolean? = emptyHeadingWithoutSpace ?: parent?.emptyHeadingWithoutSpace()
   override fun headingInterruptsItemParagraph(): Boolean? =
-          headingInterruptsItemParagraph ?: parent?.headingInterruptsItemParagraph()
+    headingInterruptsItemParagraph ?: parent?.headingInterruptsItemParagraph()
 
   override fun toParserOptions(): DataHolder =
-          MutableDataSet().apply {
-            variant().setIn(this)
+    MutableDataSet().apply {
+      variant().setIn(this)
 
-            requireSpace()?.let {
-              set(HEADING_NO_ATX_SPACE, !it)
-            }
+      requireSpace()?.let {
+        set(HEADING_NO_ATX_SPACE, !it)
+      }
 
-            allowLeadingSpace()?.let {
-              set(HEADING_NO_LEAD_SPACE, !it)
-            }
+      allowLeadingSpace()?.let {
+        set(HEADING_NO_LEAD_SPACE, !it)
+      }
 
-            setextMarkerLength()?.let {
-              set(HEADING_SETEXT_MARKER_LENGTH, it)
-            }
+      setextMarkerLength()?.let {
+        set(HEADING_SETEXT_MARKER_LENGTH, it)
+      }
 
-            emptyHeadingWithoutSpace()?.let {
-              set(HEADING_NO_EMPTY_HEADING_WITHOUT_SPACE, !it)
-            }
+      emptyHeadingWithoutSpace()?.let {
+        set(HEADING_NO_EMPTY_HEADING_WITHOUT_SPACE, !it)
+      }
 
-            headingInterruptsItemParagraph()?.let {
-              set(HEADING_CAN_INTERRUPT_ITEM_PARAGRAPH, it)
-            }
+      headingInterruptsItemParagraph()?.let {
+        set(HEADING_CAN_INTERRUPT_ITEM_PARAGRAPH, it)
+      }
 
-            dupedDashes()?.let {
-              set(HEADER_ID_GENERATOR_NO_DUPED_DASHES, !it)
-            }
+      dupedDashes()?.let {
+        set(HEADER_ID_GENERATOR_NO_DUPED_DASHES, !it)
+      }
 
-            resolveDupes()?.let {
-              set(HEADER_ID_GENERATOR_RESOLVE_DUPES, it)
-            }
+      resolveDupes()?.let {
+        set(HEADER_ID_GENERATOR_RESOLVE_DUPES, it)
+      }
 
-            dashChars()?.let {
-              set(HEADER_ID_GENERATOR_TO_DASH_CHARS, it)
-            }
+      dashChars()?.let {
+        set(HEADER_ID_GENERATOR_TO_DASH_CHARS, it)
+      }
 
-            allowedChars()?.let {
-              set(HEADER_ID_GENERATOR_NON_DASH_CHARS, it)
-            }
-          }
+      allowedChars()?.let {
+        set(HEADER_ID_GENERATOR_NON_DASH_CHARS, it)
+      }
+    }
 
   fun asString(): String =
-          variant.asString() +
-                  plain.asString() +
-                  levels.toString() +
-                  numbered.asString() +
-                  style.asString() +
-                  bold.asString() +
-                  mode.asString() +
-                  removeEmojis.asString() +
-                  requireSpace.asString() +
-                  dupedDashes.asString() +
-                  resolveDupes.asString() +
-                  dashChars.asString() +
-                  allowLeadingSpace.asString() +
-                  allowedChars.asString() +
-                  setextMarkerLength.asString() +
-                  emptyHeadingWithoutSpace.asString() +
-                  headingInterruptsItemParagraph.asString()
+    variant.asString() +
+            plain.asString() +
+            levels.toString() +
+            numbered.asString() +
+            style.asString() +
+            bold.asString() +
+            mode.asString() +
+            removeEmojis.asString() +
+            requireSpace.asString() +
+            dupedDashes.asString() +
+            resolveDupes.asString() +
+            dashChars.asString() +
+            allowLeadingSpace.asString() +
+            allowedChars.asString() +
+            setextMarkerLength.asString() +
+            emptyHeadingWithoutSpace.asString() +
+            headingInterruptsItemParagraph.asString()
 }

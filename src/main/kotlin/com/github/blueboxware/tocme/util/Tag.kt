@@ -18,12 +18,12 @@ package com.github.blueboxware.tocme.util
 import com.vladsch.flexmark.ast.HtmlCommentBlock
 
 internal class Tag(
-        val container: HtmlCommentBlock,
-        val tag: String,
-        val isEndTag: Boolean,
-        val args: String,
-        val startOffset: Int,
-        val endOffset: Int
+  val container: HtmlCommentBlock,
+  val tag: String,
+  val isEndTag: Boolean,
+  val args: String,
+  val startOffset: Int,
+  val endOffset: Int
 ) {
 
   val isStartTag = !isEndTag
@@ -34,16 +34,16 @@ internal class Tag(
     private val CONTENT_REGEX = Regex("""\s*(/?)([^\s]*)\s*(.*)""")
 
     fun createTag(container: HtmlCommentBlock, content: String, localStartOffset: Int, localEndOffset: Int): Tag? =
-            CONTENT_REGEX.matchEntire(content)?.groupValues?.let { groupValues ->
-              return Tag(
-                      container,
-                      groupValues[2],
-                      groupValues[1].isNotEmpty(),
-                      groupValues[3],
-                      container.startOffset + localStartOffset,
-                      container.startOffset + localEndOffset
-              )
-            }
+      CONTENT_REGEX.matchEntire(content)?.groupValues?.let { groupValues ->
+        return Tag(
+          container,
+          groupValues[2],
+          groupValues[1].isNotEmpty(),
+          groupValues[3],
+          container.startOffset + localStartOffset,
+          container.startOffset + localEndOffset
+        )
+      }
   }
 
 

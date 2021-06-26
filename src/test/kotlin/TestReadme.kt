@@ -35,9 +35,10 @@ object TestReadme: Spek({
   }
 
   fun loadTests(type: String) = File("README.md.src").readText().let { readmeTxt ->
-    Regex("""```$type(.*?)```""", RegexOption.DOT_MATCHES_ALL).findAll(readmeTxt).map { it.groupValues[1] }.map { content ->
-      data<String, String?>(content, expected = null)
-    }
+    Regex("""```$type(.*?)```""", RegexOption.DOT_MATCHES_ALL).findAll(readmeTxt).map { it.groupValues[1] }
+      .map { content ->
+        data<String, String?>(content, expected = null)
+      }
   }.toList().toTypedArray()
 
   given("a Gradle fragment from the README") {
@@ -45,13 +46,13 @@ object TestReadme: Spek({
     beforeEachTest {
       File(fixture.project.rootDir, "doc").mkdir()
       listOf(
-              "README.md",
-              "doc/reference.md",
-              "doc/intro.md",
-              "doc/notes.md",
-              "notes.in.md",
-              "notes.md",
-              "notes.src.md"
+        "README.md",
+        "doc/reference.md",
+        "doc/intro.md",
+        "doc/notes.md",
+        "notes.in.md",
+        "notes.md",
+        "notes.src.md"
       ).forEach {
         fixture.createFile(it, "")
       }
@@ -73,11 +74,13 @@ object TestReadme: Spek({
   given("a MarkDown fragment from the README") {
 
     beforeEachTest {
-      fixture.buildFile("""
+      fixture.buildFile(
+        """
         tocme {
           doc("test.md")
         }
-      """.trimIndent())
+      """.trimIndent()
+      )
     }
 
     on("building (%s)", with = *loadTests("markdown")) { content, expected ->
