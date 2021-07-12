@@ -212,11 +212,12 @@ internal class ProjectFixture {
 
     private const val CURRENT_VERSION = "pluginVersion"
     private const val RELEASED_VERSION = "releasedPluginVersion"
+
     private fun versionRegex(testReleasedVersion: Boolean) =
-      Regex("""${if (testReleasedVersion) RELEASED_VERSION else CURRENT_VERSION}\s*=\s*'([^']+)'""")
+      Regex("""${if (testReleasedVersion) RELEASED_VERSION else CURRENT_VERSION}\s*=\s*([0-9.]+)""")
 
     internal fun getPluginVersion(testReleasedVersion: Boolean) =
-      versionRegex(testReleasedVersion).find(File("versions.gradle").readText())?.groupValues?.getOrNull(1)
+      versionRegex(testReleasedVersion).find(File("gradle.properties").readText())?.groupValues?.getOrNull(1)
         ?: throw AssertionError()
 
     internal fun assertTextEquals(
