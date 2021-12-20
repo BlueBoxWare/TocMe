@@ -5,22 +5,22 @@
 
 <!-- toc mode=full bold = 'true ' -->
 - __[Header 1](#header-1)__
-  - __[Header 2](#header-2)__
-  - __[Header 2](#header-2-1)__
-    - __[Header 3](#header-3)__
-  - __[Header 2](#header-2-2)__
-  - __[/{}$#@](#)__
-  - __[/{}$#@abc__--](#abc__--)__
+   - __[Header 2](#header-2)__
+   - __[Header 2](#header-2-1)__
+      - __[Header 3](#header-3)__
+   - __[Header 2](#header-2-2)__
+   - __[/{}$#@](#)__
+   - __[/{}$#@abc__--](#abc__--)__
 - __[ Emoji 1 foo ](#emoji-emoji-123-123-foo-_-)__
-  - __[Duped___underscores___](#duped___underscores___)__
-  - __[Duped-- ---dashes---](#duped------dashes---)__
+   - __[Duped___underscores___](#duped___underscores___)__
+   - __[Duped-- ---dashes---](#duped------dashes---)__
 - __[No](#no)__
 - __[Setext1](#setext1)__
 - __[Setext2](#setext2)__
 - __[Setext3](#setext3)__
-  - __[SetextA](#setexta)__
-  - __[SetextB](#setextb)__
-  - __[SetextC](#setextc)__
+   - __[SetextA](#setexta)__
+   - __[SetextB](#setextb)__
+   - __[SetextC](#setextc)__
 <!-- /toc -->
 
 <!-- toc mode=local-->
@@ -32,18 +32,18 @@
 ## Header 2
 
 <!-- toc -->
-  - __[/{}$#@](#)__
-  - __[/{}$#@abc__--](#abc__--)__
+   - __[/{}$#@](#)__
+   - __[/{}$#@abc__--](#abc__--)__
 - __[ Emoji 1 foo ](#emoji-emoji-123-123-foo-_-)__
-  - __[Duped___underscores___](#duped___underscores___)__
-  - __[Duped-- ---dashes---](#duped------dashes---)__
+   - __[Duped___underscores___](#duped___underscores___)__
+   - __[Duped-- ---dashes---](#duped------dashes---)__
 - __[No](#no)__
 - __[Setext1](#setext1)__
 - __[Setext2](#setext2)__
 - __[Setext3](#setext3)__
-  - __[SetextA](#setexta)__
-  - __[SetextB](#setextb)__
-  - __[SetextC](#setextc)__
+   - __[SetextA](#setexta)__
+   - __[SetextB](#setextb)__
+   - __[SetextC](#setextc)__
 <!-- /toc -->
 
 ## \/{}[]$#@

@@ -5,15 +5,15 @@
 
 <!-- toc mode=full bold = 'true ' -->
 - __[Header 1](#header-1)__
-  - __[Header 2](#header-2)__
-  - __[Header 2](#header-2-1)__
-    - __[Header 3](#header-3)__
-  - __[Header 2](#header-2-2)__
-  - __[/{}$#@](#)__
-  - __[/{}$#@abc__--](#abc----)__
+   - __[Header 2](#header-2)__
+   - __[Header 2](#header-2-1)__
+      - __[Header 3](#header-3)__
+   - __[Header 2](#header-2-2)__
+   - __[/{}$#@](#)__
+   - __[/{}$#@abc__--](#abc----)__
 - __[:emoji: Emoji :123: 1:23: foo :_-+:](#emoji-emoji-123-123-foo---)__
-  - __[Duped___underscores___](#duped---underscores---)__
-  - __[Duped-- ---dashes---](#duped------dashes---)__
+   - __[Duped___underscores___](#duped---underscores---)__
+   - __[Duped-- ---dashes---](#duped------dashes---)__
 - __[No](#no)__
 <!-- /toc -->
 
@@ -26,11 +26,11 @@
 ## Header 2
 
 <!-- toc -->
-  - __[/{}$#@](#)__
-  - __[/{}$#@abc__--](#abc----)__
+   - __[/{}$#@](#)__
+   - __[/{}$#@abc__--](#abc----)__
 - __[:emoji: Emoji :123: 1:23: foo :_-+:](#emoji-emoji-123-123-foo---)__
-  - __[Duped___underscores___](#duped---underscores---)__
-  - __[Duped-- ---dashes---](#duped------dashes---)__
+   - __[Duped___underscores___](#duped---underscores---)__
+   - __[Duped-- ---dashes---](#duped------dashes---)__
 - __[No](#no)__
 <!-- /toc -->
 

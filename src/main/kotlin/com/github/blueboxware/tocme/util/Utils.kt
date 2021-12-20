@@ -60,7 +60,7 @@ private val STYLE_VALUES =
   listOf(STYLE_HIERARCHY, STYLE_FLAT, STYLE_REVERSED, STYLE_INCREASING, STYLE_DECREASING).joinToString { "'$it'" }
 private val MODE_VALUES = listOf(MODE_NORMAL, MODE_FULL, MODE_LOCAL).joinToString { "'$it'" }
 
-private const val INDENT = "  "
+private const val INDENT = "   "
 
 private const val BACKUP_DIR = "tocme/backups/"
 

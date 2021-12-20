@@ -465,7 +465,7 @@ internal object TestInsertToc: Spek({
                               <!--toc-->
                               - __[Header1](#header1)__
                               - __[Header2](#header2)__
-                                - __[Header1](#header1-1)__
+                                 - __[Header1](#header1-1)__
                               - __[Header2](#header2-1)__
                               - __[Header1](#header1-2)__
                               <!--/toc-->
@@ -484,7 +484,7 @@ internal object TestInsertToc: Spek({
                               <!--toc-->
                               - __[Header1](#header1)__
                               - __[Header2](#header2)__
-                                - __[Header1](#header1)__
+                                 - __[Header1](#header1)__
                               - __[Header2](#header2)__
                               - __[Header1](#header1)__
                               <!--/toc-->
@@ -563,7 +563,7 @@ internal object TestInsertToc: Spek({
                             - __[Header2](#header2)__
                             - __[Header 3](#header-3)__
                             - __[Header4](#header4)__
-                              - __[Header5](#header5)__
+                               - __[Header5](#header5)__
                             <!--/toc-->
 
                                 # Header1
@@ -638,14 +638,14 @@ internal object TestInsertToc: Spek({
           expected = """
                               <!--toc-->
                               - __[Length 1](#length-1)__
-                                - __[Length 1](#length-1-1)__
+                                 - __[Length 1](#length-1-1)__
                               - __[Length 2](#length-2)__
                               - __[Length 3](#length-3)__
                               - __[Length 4](#length-4)__
-                                - __[Length 2](#length-2-1)__
-                                - __[Length 3](#length-3-1)__
-                                - __[Length 4](#length-4-1)__
-                                - __[Length 5](#length-5)__
+                                 - __[Length 2](#length-2-1)__
+                                 - __[Length 3](#length-3-1)__
+                                 - __[Length 4](#length-4-1)__
+                                 - __[Length 5](#length-5)__
                               <!--/toc-->
                               Length 1
                               =
@@ -683,10 +683,10 @@ internal object TestInsertToc: Spek({
                               - __[Length 2](#length-2)__
                               - __[Length 3](#length-3)__
                               - __[Length 4](#length-4)__
-                                - __[Length 2](#length-2-1)__
-                                - __[Length 3](#length-3-1)__
-                                - __[Length 4](#length-4-1)__
-                                - __[Length 5](#length-5)__
+                                 - __[Length 2](#length-2-1)__
+                                 - __[Length 3](#length-3-1)__
+                                 - __[Length 4](#length-4-1)__
+                                 - __[Length 5](#length-5)__
                               <!--/toc-->
                               Length 1
                               =
@@ -722,8 +722,8 @@ internal object TestInsertToc: Spek({
           expected = """
                               <!--toc-->
                               - __[Length 4](#length-4)__
-                                - __[Length 4](#length-4-1)__
-                                - __[Length 5](#length-5)__
+                                 - __[Length 4](#length-4-1)__
+                                 - __[Length 5](#length-5)__
                               <!--/toc-->
                               Length 1
                               =
@@ -774,10 +774,10 @@ internal object TestInsertToc: Spek({
           expected = """
                               <!--toc-->
                               - __[Header1](#header1)__
-                                - __[](#)__
-                                - __[](#)__
-                                  - __[](#)__
-                                  - __[](#)__
+                                 - __[](#)__
+                                 - __[](#)__
+                                    - __[](#)__
+                                    - __[](#)__
                               <!--/toc-->
                               # Header1
                               ##
@@ -793,8 +793,8 @@ internal object TestInsertToc: Spek({
           expected = """
                               <!--toc-->
                               - __[Header1](#header1)__
-                                - __[](#)__
-                                  - __[](#)__
+                                 - __[](#)__
+                                    - __[](#)__
                               <!--/toc-->
                               # Header1
                               ##
@@ -875,7 +875,7 @@ internal object TestInsertToc: Spek({
           expected = """
                               <!----   foobar numbered=true--->
                               1. __[Header1](#header1)__
-                                  1. __[Header2](#header2)__
+                                    1. __[Header2](#header2)__
                               <!--/foobar    --->
                               # Header1
                               ### Header2

@@ -38,108 +38,108 @@ You can find the most recent version of this guide [here](https://github.com/fac
 - __[Sending Feedback](#sending-feedback)__
 - __[Folder Structure](#folder-structure)__
 - __[Available Scripts](#available-scripts)__
-  - __[npm start](#npm-start)__
-  - __[npm test](#npm-test)__
-  - __[npm run build](#npm-run-build)__
-  - __[npm run eject](#npm-run-eject)__
+   - __[npm start](#npm-start)__
+   - __[npm test](#npm-test)__
+   - __[npm run build](#npm-run-build)__
+   - __[npm run eject](#npm-run-eject)__
 - __[Supported Browsers](#supported-browsers)__
 - __[Supported Language Features and Polyfills](#supported-language-features-and-polyfills)__
 - __[Syntax Highlighting in the Editor](#syntax-highlighting-in-the-editor)__
 - __[Displaying Lint Output in the Editor](#displaying-lint-output-in-the-editor)__
 - __[Debugging in the Editor](#debugging-in-the-editor)__
-  - __[Visual Studio Code](#visual-studio-code)__
-  - __[WebStorm](#webstorm)__
+   - __[Visual Studio Code](#visual-studio-code)__
+   - __[WebStorm](#webstorm)__
 - __[Formatting Code Automatically](#formatting-code-automatically)__
 - __[Changing the Page <title>](#changing-the-page-title)__
 - __[Installing a Dependency](#installing-a-dependency)__
 - __[Importing a Component](#importing-a-component)__
-  - __[Button.js](#buttonjs)__
-  - __[DangerButton.js](#dangerbuttonjs)__
+   - __[Button.js](#buttonjs)__
+   - __[DangerButton.js](#dangerbuttonjs)__
 - __[Code Splitting](#code-splitting)__
-  - __[moduleA.js](#moduleajs)__
-  - __[App.js](#appjs)__
-  - __[With React Router](#with-react-router)__
+   - __[moduleA.js](#moduleajs)__
+   - __[App.js](#appjs)__
+   - __[With React Router](#with-react-router)__
 - __[Adding a Stylesheet](#adding-a-stylesheet)__
-  - __[Button.css](#buttoncss)__
-  - __[Button.js](#buttonjs-1)__
+   - __[Button.css](#buttoncss)__
+   - __[Button.js](#buttonjs-1)__
 - __[Post-Processing CSS](#post-processing-css)__
 - __[Adding a CSS Preprocessor (Sass, Less etc.)](#adding-a-css-preprocessor-sass-less-etc)__
 - __[Adding Images, Fonts, and Files](#adding-images-fonts-and-files)__
 - __[Using the public Folder](#using-the-public-folder)__
-  - __[Changing the HTML](#changing-the-html)__
-  - __[Adding Assets Outside of the Module System](#adding-assets-outside-of-the-module-system)__
-  - __[When to Use the public Folder](#when-to-use-the-public-folder)__
+   - __[Changing the HTML](#changing-the-html)__
+   - __[Adding Assets Outside of the Module System](#adding-assets-outside-of-the-module-system)__
+   - __[When to Use the public Folder](#when-to-use-the-public-folder)__
 - __[Using Global Variables](#using-global-variables)__
 - __[Adding Bootstrap](#adding-bootstrap)__
-  - __[Using a Custom Theme](#using-a-custom-theme)__
+   - __[Using a Custom Theme](#using-a-custom-theme)__
 - __[Adding Flow](#adding-flow)__
 - __[Adding a Router](#adding-a-router)__
 - __[Adding Custom Environment Variables](#adding-custom-environment-variables)__
-  - __[Referencing Environment Variables in the HTML](#referencing-environment-variables-in-the-html)__
-  - __[Adding Temporary Environment Variables In Your Shell](#adding-temporary-environment-variables-in-your-shell)__
-  - __[Adding Development Environment Variables In .env](#adding-development-environment-variables-in-env)__
+   - __[Referencing Environment Variables in the HTML](#referencing-environment-variables-in-the-html)__
+   - __[Adding Temporary Environment Variables In Your Shell](#adding-temporary-environment-variables-in-your-shell)__
+   - __[Adding Development Environment Variables In .env](#adding-development-environment-variables-in-env)__
 - __[Can I Use Decorators?](#can-i-use-decorators)__
 - __[Fetching Data with AJAX Requests](#fetching-data-with-ajax-requests)__
 - __[Integrating with an API Backend](#integrating-with-an-api-backend)__
-  - __[Node](#node)__
-  - __[Ruby on Rails](#ruby-on-rails)__
+   - __[Node](#node)__
+   - __[Ruby on Rails](#ruby-on-rails)__
 - __[Proxying API Requests in Development](#proxying-api-requests-in-development)__
-  - __["Invalid Host Header" Errors After Configuring Proxy](#invalid-host-header-errors-after-configuring-proxy)__
-  - __[Configuring the Proxy Manually](#configuring-the-proxy-manually)__
-  - __[Configuring a WebSocket Proxy](#configuring-a-websocket-proxy)__
+   - __["Invalid Host Header" Errors After Configuring Proxy](#invalid-host-header-errors-after-configuring-proxy)__
+   - __[Configuring the Proxy Manually](#configuring-the-proxy-manually)__
+   - __[Configuring a WebSocket Proxy](#configuring-a-websocket-proxy)__
 - __[Using HTTPS in Development](#using-https-in-development)__
 - __[Generating Dynamic <meta> Tags on the Server](#generating-dynamic-meta-tags-on-the-server)__
 - __[Pre-Rendering into Static HTML Files](#pre-rendering-into-static-html-files)__
 - __[Injecting Data from the Server into the Page](#injecting-data-from-the-server-into-the-page)__
 - __[Running Tests](#running-tests)__
-  - __[Filename Conventions](#filename-conventions)__
-  - __[Command Line Interface](#command-line-interface)__
-  - __[Version Control Integration](#version-control-integration)__
-  - __[Writing Tests](#writing-tests)__
-  - __[Testing Components](#testing-components)__
-  - __[Using Third Party Assertion Libraries](#using-third-party-assertion-libraries)__
-  - __[Initializing Test Environment](#initializing-test-environment)__
-  - __[Focusing and Excluding Tests](#focusing-and-excluding-tests)__
-  - __[Coverage Reporting](#coverage-reporting)__
-  - __[Continuous Integration](#continuous-integration)__
-  - __[On CI servers](#on-ci-servers)__
-  - __[On your own environment](#on-your-own-environment)__
-  - __[Disabling jsdom](#disabling-jsdom)__
-  - __[Snapshot Testing](#snapshot-testing)__
-  - __[Editor Integration](#editor-integration)__
+   - __[Filename Conventions](#filename-conventions)__
+   - __[Command Line Interface](#command-line-interface)__
+   - __[Version Control Integration](#version-control-integration)__
+   - __[Writing Tests](#writing-tests)__
+   - __[Testing Components](#testing-components)__
+   - __[Using Third Party Assertion Libraries](#using-third-party-assertion-libraries)__
+   - __[Initializing Test Environment](#initializing-test-environment)__
+   - __[Focusing and Excluding Tests](#focusing-and-excluding-tests)__
+   - __[Coverage Reporting](#coverage-reporting)__
+   - __[Continuous Integration](#continuous-integration)__
+   - __[On CI servers](#on-ci-servers)__
+   - __[On your own environment](#on-your-own-environment)__
+   - __[Disabling jsdom](#disabling-jsdom)__
+   - __[Snapshot Testing](#snapshot-testing)__
+   - __[Editor Integration](#editor-integration)__
 - __[Debugging Tests](#debugging-tests)__
-  - __[Debugging Tests in Chrome](#debugging-tests-in-chrome)__
-  - __[Debugging Tests in Visual Studio Code](#debugging-tests-in-visual-studio-code)__
+   - __[Debugging Tests in Chrome](#debugging-tests-in-chrome)__
+   - __[Debugging Tests in Visual Studio Code](#debugging-tests-in-visual-studio-code)__
 - __[Developing Components in Isolation](#developing-components-in-isolation)__
-  - __[Getting Started with Storybook](#getting-started-with-storybook)__
-  - __[Getting Started with Styleguidist](#getting-started-with-styleguidist)__
+   - __[Getting Started with Storybook](#getting-started-with-storybook)__
+   - __[Getting Started with Styleguidist](#getting-started-with-styleguidist)__
 - __[Publishing Components to npm](#publishing-components-to-npm)__
 - __[Making a Progressive Web App](#making-a-progressive-web-app)__
-  - __[Opting Out of Caching](#opting-out-of-caching)__
-  - __[Offline-First Considerations](#offline-first-considerations)__
-  - __[Progressive Web App Metadata](#progressive-web-app-metadata)__
+   - __[Opting Out of Caching](#opting-out-of-caching)__
+   - __[Offline-First Considerations](#offline-first-considerations)__
+   - __[Progressive Web App Metadata](#progressive-web-app-metadata)__
 - __[Analyzing the Bundle Size](#analyzing-the-bundle-size)__
 - __[Deployment](#deployment)__
-  - __[Static Server](#static-server)__
-  - __[Other Solutions](#other-solutions)__
-  - __[Serving Apps with Client-Side Routing](#serving-apps-with-client-side-routing)__
-  - __[Building for Relative Paths](#building-for-relative-paths)__
-  - __[Azure](#azure)__
-  - __[Firebase](#firebase)__
-  - __[GitHub Pages](#github-pages)__
-  - __[Heroku](#heroku)__
-  - __[Netlify](#netlify)__
-  - __[Now](#now)__
-  - __[S3 and CloudFront](#s3-and-cloudfront)__
-  - __[Surge](#surge)__
+   - __[Static Server](#static-server)__
+   - __[Other Solutions](#other-solutions)__
+   - __[Serving Apps with Client-Side Routing](#serving-apps-with-client-side-routing)__
+   - __[Building for Relative Paths](#building-for-relative-paths)__
+   - __[Azure](#azure)__
+   - __[Firebase](#firebase)__
+   - __[GitHub Pages](#github-pages)__
+   - __[Heroku](#heroku)__
+   - __[Netlify](#netlify)__
+   - __[Now](#now)__
+   - __[S3 and CloudFront](#s3-and-cloudfront)__
+   - __[Surge](#surge)__
 - __[Advanced Configuration](#advanced-configuration)__
 - __[Troubleshooting](#troubleshooting-1)__
-  - __[npm start doesn’t detect changes](#npm-start-doesnt-detect-changes)__
-  - __[npm test hangs on macOS Sierra](#npm-test-hangs-on-macos-sierra)__
-  - __[npm run build exits too early](#npm-run-build-exits-too-early)__
-  - __[npm run build fails on Heroku](#npm-run-build-fails-on-heroku)__
-  - __[Moment.js locales are missing](#momentjs-locales-are-missing)__
-  - __[npm run build fails to minify](#npm-run-build-fails-to-minify)__
+   - __[npm start doesn’t detect changes](#npm-start-doesnt-detect-changes)__
+   - __[npm test hangs on macOS Sierra](#npm-test-hangs-on-macos-sierra)__
+   - __[npm run build exits too early](#npm-run-build-exits-too-early)__
+   - __[npm run build fails on Heroku](#npm-run-build-fails-on-heroku)__
+   - __[Moment.js locales are missing](#momentjs-locales-are-missing)__
+   - __[npm run build fails to minify](#npm-run-build-fails-to-minify)__
 - __[Alternatives to Ejecting](#alternatives-to-ejecting)__
 - __[Something Missing?](#something-missing)__
 <!--/toc-->
@@ -1694,38 +1694,38 @@ If you use [Visual Studio Code](https://code.visualstudio.com), there is a [Jest
 ## Debugging Tests
 
 <!-- toc -->
-  - __[Debugging Tests in Chrome](#debugging-tests-in-chrome)__
-  - __[Debugging Tests in Visual Studio Code](#debugging-tests-in-visual-studio-code)__
+   - __[Debugging Tests in Chrome](#debugging-tests-in-chrome)__
+   - __[Debugging Tests in Visual Studio Code](#debugging-tests-in-visual-studio-code)__
 - __[Developing Components in Isolation](#developing-components-in-isolation)__
-  - __[Getting Started with Storybook](#getting-started-with-storybook)__
-  - __[Getting Started with Styleguidist](#getting-started-with-styleguidist)__
+   - __[Getting Started with Storybook](#getting-started-with-storybook)__
+   - __[Getting Started with Styleguidist](#getting-started-with-styleguidist)__
 - __[Publishing Components to npm](#publishing-components-to-npm)__
 - __[Making a Progressive Web App](#making-a-progressive-web-app)__
-  - __[Opting Out of Caching](#opting-out-of-caching)__
-  - __[Offline-First Considerations](#offline-first-considerations)__
-  - __[Progressive Web App Metadata](#progressive-web-app-metadata)__
+   - __[Opting Out of Caching](#opting-out-of-caching)__
+   - __[Offline-First Considerations](#offline-first-considerations)__
+   - __[Progressive Web App Metadata](#progressive-web-app-metadata)__
 - __[Analyzing the Bundle Size](#analyzing-the-bundle-size)__
 - __[Deployment](#deployment)__
-  - __[Static Server](#static-server)__
-  - __[Other Solutions](#other-solutions)__
-  - __[Serving Apps with Client-Side Routing](#serving-apps-with-client-side-routing)__
-  - __[Building for Relative Paths](#building-for-relative-paths)__
-  - __[Azure](#azure)__
-  - __[Firebase](#firebase)__
-  - __[GitHub Pages](#github-pages)__
-  - __[Heroku](#heroku)__
-  - __[Netlify](#netlify)__
-  - __[Now](#now)__
-  - __[S3 and CloudFront](#s3-and-cloudfront)__
-  - __[Surge](#surge)__
+   - __[Static Server](#static-server)__
+   - __[Other Solutions](#other-solutions)__
+   - __[Serving Apps with Client-Side Routing](#serving-apps-with-client-side-routing)__
+   - __[Building for Relative Paths](#building-for-relative-paths)__
+   - __[Azure](#azure)__
+   - __[Firebase](#firebase)__
+   - __[GitHub Pages](#github-pages)__
+   - __[Heroku](#heroku)__
+   - __[Netlify](#netlify)__
+   - __[Now](#now)__
+   - __[S3 and CloudFront](#s3-and-cloudfront)__
+   - __[Surge](#surge)__
 - __[Advanced Configuration](#advanced-configuration)__
 - __[Troubleshooting](#troubleshooting-1)__
-  - __[npm start doesn’t detect changes](#npm-start-doesnt-detect-changes)__
-  - __[npm test hangs on macOS Sierra](#npm-test-hangs-on-macos-sierra)__
-  - __[npm run build exits too early](#npm-run-build-exits-too-early)__
-  - __[npm run build fails on Heroku](#npm-run-build-fails-on-heroku)__
-  - __[Moment.js locales are missing](#momentjs-locales-are-missing)__
-  - __[npm run build fails to minify](#npm-run-build-fails-to-minify)__
+   - __[npm start doesn’t detect changes](#npm-start-doesnt-detect-changes)__
+   - __[npm test hangs on macOS Sierra](#npm-test-hangs-on-macos-sierra)__
+   - __[npm run build exits too early](#npm-run-build-exits-too-early)__
+   - __[npm run build fails on Heroku](#npm-run-build-fails-on-heroku)__
+   - __[Moment.js locales are missing](#momentjs-locales-are-missing)__
+   - __[npm run build fails to minify](#npm-run-build-fails-to-minify)__
 - __[Alternatives to Ejecting](#alternatives-to-ejecting)__
 - __[Something Missing?](#something-missing)__
 <!----- /toc ---->

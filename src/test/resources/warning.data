@@ -23,10 +23,10 @@ line 5.*unknown option.*foo
 ### Header3
 ### Header4
 <!-- toc  foo -->
-    - __[Header6](#header6)__
-  - __[Header7](#header7)__
+      - __[Header6](#header6)__
+   - __[Header7](#header7)__
 - __[Header8](#header8)__
-    - __[Header9](#header9)__
+      - __[Header9](#header9)__
 <!--/toc-->
 #### Header5
 ### Header6
@@ -52,10 +52,10 @@ line 5.*invalid argument for parameter style.*foo
 ### Header3
 ### Header4
 <!-- toc  style=foo foo-->
-    - __[Header6](#header6)__
-  - __[Header7](#header7)__
+      - __[Header6](#header6)__
+   - __[Header7](#header7)__
 - __[Header8](#header8)__
-    - __[Header9](#header9)__
+      - __[Header9](#header9)__
 <!--/toc-->
 #### Header5
 ### Header6
@@ -81,10 +81,10 @@ line 5.*missing argument for parameter style
 ### Header3
 ### Header4
 <!-- toc  style-->
-    - __[Header6](#header6)__
-  - __[Header7](#header7)__
+      - __[Header6](#header6)__
+   - __[Header7](#header7)__
 - __[Header8](#header8)__
-    - __[Header9](#header9)__
+      - __[Header9](#header9)__
 <!--/toc-->
 #### Header5
 ### Header6
@@ -147,10 +147,10 @@ line 5.*Invalid value.*parameter levels.*1.-2
 ### Header3
 ### Header4
 <!-- toc  levels=1+-2-->
-    - __[Header6](#header6)__
-  - __[Header7](#header7)__
+      - __[Header6](#header6)__
+   - __[Header7](#header7)__
 - __[Header8](#header8)__
-    - __[Header9](#header9)__
+      - __[Header9](#header9)__
 <!--/toc-->
 #### Header5
 ### Header6

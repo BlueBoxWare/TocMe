@@ -1020,11 +1020,11 @@ object TestGradle: Spek({
           """
           <!-- toc foo=bar-->
           - __[Header 1](#header-1)__
-            - __[Header 2](#header-2)__
+             - __[Header 2](#header-2)__
           <!-- /toc -->
           <!---- toc style=boo --->
           - __[Header 1](#header-1)__
-            - __[Header 2](#header-2)__
+             - __[Header 2](#header-2)__
           <!--- /toc-->
           <!-- toc -->
           a

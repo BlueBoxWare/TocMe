@@ -28,49 +28,49 @@ SOFTWARE.
 - __[Important Notices](#important-notices)__
 - __[Table of Contents](#table-of-contents)__
 - __[TL;DR](#tldr)__
-  - __[Various Download Options for Fonts](#various-download-options-for-fonts)__
+   - __[Various Download Options for Fonts](#various-download-options-for-fonts)__
 - __[Features](#features)__
 - __[Glyph Sets](#glyph-sets)__
-  - __[Seti-UI + Custom](#seti-ui--custom)__
-    - __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website)__
-  - __[Devicons](#devicons)__
-    - __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-1)__
-  - __[Font Awesome](#font-awesome)__
-    - __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-2)__
-  - __[Font Awesome Extension](#font-awesome-extension)__
-    - __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-3)__
-  - __[Material Design Icons](#material-design-icons)__
-    - __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-4)__
-  - __[Weather](#weather)__
-    - __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-5)__
-  - __[Octicons](#octicons)__
-    - __[ See set on the NerdFonts.com Website*](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-6)__
-  - __[Powerline Extra Symbols](#powerline-extra-symbols)__
-    - __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-7)__
-  - __[IEC Power Symbols](#iec-power-symbols)__
-    - __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-8)__
-  - __[Font Logos (Formerly Font Linux)](#font-logos-formerly-font-linux)__
-    - __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-9)__
-  - __[Pomicons](#pomicons)__
-    - __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-10)__
-  - __[Icon names in shell](#icon-names-in-shell)__
+   - __[Seti-UI + Custom](#seti-ui--custom)__
+      - __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website)__
+   - __[Devicons](#devicons)__
+      - __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-1)__
+   - __[Font Awesome](#font-awesome)__
+      - __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-2)__
+   - __[Font Awesome Extension](#font-awesome-extension)__
+      - __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-3)__
+   - __[Material Design Icons](#material-design-icons)__
+      - __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-4)__
+   - __[Weather](#weather)__
+      - __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-5)__
+   - __[Octicons](#octicons)__
+      - __[ See set on the NerdFonts.com Website*](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-6)__
+   - __[Powerline Extra Symbols](#powerline-extra-symbols)__
+      - __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-7)__
+   - __[IEC Power Symbols](#iec-power-symbols)__
+      - __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-8)__
+   - __[Font Logos (Formerly Font Linux)](#font-logos-formerly-font-linux)__
+      - __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-9)__
+   - __[Pomicons](#pomicons)__
+      - __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-10)__
+   - __[Icon names in shell](#icon-names-in-shell)__
 - __[Patched Fonts](#patched-fonts)__
 - __[Combinations](#combinations)__
-  - __[Variations](#variations)__
+   - __[Variations](#variations)__
 - __[Font Installation](#font-installation)__
-  - __[Option 1: Download and Install Manually](#option-1-download-and-install-manually)__
-  - __[Option 2: Release Archive Download](#option-2-release-archive-download)__
-  - __[Option 3: Install Script](#option-3-install-script)__
-    - __[All fonts:](#all-fonts)__
-    - __[Single font:](#single-font)__
-  - __[Option 4: Homebrew Fonts](#option-4-homebrew-fonts)__
-  - __[Option 5: Clone the Repo](#option-5-clone-the-repo)__
-  - __[Option 6: Ad Hoc Curl Download](#option-6-ad-hoc-curl-download)__
-    - __[Linux](#linux)__
-    - __[macOS (OS X)](#macos-os-x)__
-  - __[Option 7: Unofficial Arch User Repository (AUR)](#option-7-unofficial-arch-user-repository-aur)__
-  - __[Option 8: Patch Your Own Font](#option-8-patch-your-own-font)__
-    - __[Examples](#examples)__
+   - __[Option 1: Download and Install Manually](#option-1-download-and-install-manually)__
+   - __[Option 2: Release Archive Download](#option-2-release-archive-download)__
+   - __[Option 3: Install Script](#option-3-install-script)__
+      - __[All fonts:](#all-fonts)__
+      - __[Single font:](#single-font)__
+   - __[Option 4: Homebrew Fonts](#option-4-homebrew-fonts)__
+   - __[Option 5: Clone the Repo](#option-5-clone-the-repo)__
+   - __[Option 6: Ad Hoc Curl Download](#option-6-ad-hoc-curl-download)__
+      - __[Linux](#linux)__
+      - __[macOS (OS X)](#macos-os-x)__
+   - __[Option 7: Unofficial Arch User Repository (AUR)](#option-7-unofficial-arch-user-repository-aur)__
+   - __[Option 8: Patch Your Own Font](#option-8-patch-your-own-font)__
+      - __[Examples](#examples)__
 - __[Gotta Patch 'em All Font Patcher!](#gotta-patch-em-all-font-patcher)__
 - __[Contributing](#contributing)__
 - __[Unstable File Paths](#unstable-file-paths)__
@@ -84,49 +84,49 @@ SOFTWARE.
 1. __[Important Notices](#important-notices)__
 2. __[Table of Contents](#table-of-contents)__
 3. __[TL;DR](#tldr)__
-  1. __[Various Download Options for Fonts](#various-download-options-for-fonts)__
+   1. __[Various Download Options for Fonts](#various-download-options-for-fonts)__
 4. __[Features](#features)__
 5. __[Glyph Sets](#glyph-sets)__
-  1. __[Seti-UI + Custom](#seti-ui--custom)__
-    1. __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website)__
-  2. __[Devicons](#devicons)__
-    1. __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-1)__
-  3. __[Font Awesome](#font-awesome)__
-    1. __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-2)__
-  4. __[Font Awesome Extension](#font-awesome-extension)__
-    1. __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-3)__
-  5. __[Material Design Icons](#material-design-icons)__
-    1. __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-4)__
-  6. __[Weather](#weather)__
-    1. __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-5)__
-  7. __[Octicons](#octicons)__
-    1. __[ See set on the NerdFonts.com Website*](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-6)__
-  8. __[Powerline Extra Symbols](#powerline-extra-symbols)__
-    1. __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-7)__
-  9. __[IEC Power Symbols](#iec-power-symbols)__
-    1. __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-8)__
-  10. __[Font Logos (Formerly Font Linux)](#font-logos-formerly-font-linux)__
-    1. __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-9)__
-  11. __[Pomicons](#pomicons)__
-    1. __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-10)__
-  12. __[Icon names in shell](#icon-names-in-shell)__
+   1. __[Seti-UI + Custom](#seti-ui--custom)__
+      1. __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website)__
+   2. __[Devicons](#devicons)__
+      1. __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-1)__
+   3. __[Font Awesome](#font-awesome)__
+      1. __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-2)__
+   4. __[Font Awesome Extension](#font-awesome-extension)__
+      1. __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-3)__
+   5. __[Material Design Icons](#material-design-icons)__
+      1. __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-4)__
+   6. __[Weather](#weather)__
+      1. __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-5)__
+   7. __[Octicons](#octicons)__
+      1. __[ See set on the NerdFonts.com Website*](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-6)__
+   8. __[Powerline Extra Symbols](#powerline-extra-symbols)__
+      1. __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-7)__
+   9. __[IEC Power Symbols](#iec-power-symbols)__
+      1. __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-8)__
+   10. __[Font Logos (Formerly Font Linux)](#font-logos-formerly-font-linux)__
+      1. __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-9)__
+   11. __[Pomicons](#pomicons)__
+      1. __[ See set on the NerdFonts.com Website](#mag-bookmark_tabs-see-set-on-the-nerdfontscom-website-10)__
+   12. __[Icon names in shell](#icon-names-in-shell)__
 6. __[Patched Fonts](#patched-fonts)__
 7. __[Combinations](#combinations)__
-  1. __[Variations](#variations)__
+   1. __[Variations](#variations)__
 8. __[Font Installation](#font-installation)__
-  1. __[Option 1: Download and Install Manually](#option-1-download-and-install-manually)__
-  2. __[Option 2: Release Archive Download](#option-2-release-archive-download)__
-  3. __[Option 3: Install Script](#option-3-install-script)__
-    1. __[All fonts:](#all-fonts)__
-    2. __[Single font:](#single-font)__
-  4. __[Option 4: Homebrew Fonts](#option-4-homebrew-fonts)__
-  5. __[Option 5: Clone the Repo](#option-5-clone-the-repo)__
-  6. __[Option 6: Ad Hoc Curl Download](#option-6-ad-hoc-curl-download)__
-    1. __[Linux](#linux)__
-    2. __[macOS (OS X)](#macos-os-x)__
-  7. __[Option 7: Unofficial Arch User Repository (AUR)](#option-7-unofficial-arch-user-repository-aur)__
-  8. __[Option 8: Patch Your Own Font](#option-8-patch-your-own-font)__
-    1. __[Examples](#examples)__
+   1. __[Option 1: Download and Install Manually](#option-1-download-and-install-manually)__
+   2. __[Option 2: Release Archive Download](#option-2-release-archive-download)__
+   3. __[Option 3: Install Script](#option-3-install-script)__
+      1. __[All fonts:](#all-fonts)__
+      2. __[Single font:](#single-font)__
+   4. __[Option 4: Homebrew Fonts](#option-4-homebrew-fonts)__
+   5. __[Option 5: Clone the Repo](#option-5-clone-the-repo)__
+   6. __[Option 6: Ad Hoc Curl Download](#option-6-ad-hoc-curl-download)__
+      1. __[Linux](#linux)__
+      2. __[macOS (OS X)](#macos-os-x)__
+   7. __[Option 7: Unofficial Arch User Repository (AUR)](#option-7-unofficial-arch-user-repository-aur)__
+   8. __[Option 8: Patch Your Own Font](#option-8-patch-your-own-font)__
+      1. __[Examples](#examples)__
 9. __[Gotta Patch 'em All Font Patcher!](#gotta-patch-em-all-font-patcher)__
 10. __[Contributing](#contributing)__
 11. __[Unstable File Paths](#unstable-file-paths)__
