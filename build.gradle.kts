@@ -19,19 +19,26 @@ repositories {
 }
 
 dependencies {
+  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.31")
+  implementation("org.jetbrains.kotlin:kotlin-reflect:1.5.31")
+
   implementation("com.vladsch.flexmark:flexmark:" + properties("flexmarkVersion"))
   implementation("com.vladsch.flexmark:flexmark-ext-toc:" + properties("flexmarkVersion"))
 
-  implementation("org.jetbrains.kotlin:kotlin-reflect")
-
-  testImplementation("org.jetbrains.spek:spek-api:1.1.5")
+  testImplementation("org.jetbrains.spek:spek-api:1.1.5") {
+    exclude(group = "org.jetbrains.kotlin")
+  }
   testImplementation("org.jetbrains.spek:spek-data-driven-extension:1.1.5") {
-    exclude(group = "org.jetbrains.kotlin", module = "kotlin-runtime")
+    exclude(group = "org.jetbrains.kotlin")
   }
   testImplementation("junit:junit:4.13.1")
   testImplementation(gradleTestKit())
+  testImplementation(kotlin("test"))
 
-  testRuntimeOnly("org.jetbrains.spek:spek-junit-platform-engine:1.1.5")
+  testRuntimeOnly("org.jetbrains.spek:spek-junit-platform-engine:1.1.5") {
+    exclude(group= "org.junit.platform")
+    exclude(group = "org.jetbrains.kotlin")
+  }
   // Needed for the Spek plugin to work correctly
   testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.4")
 
@@ -84,6 +91,8 @@ pluginBundle {
 tocme {
   doc(file("README.md.src"))
 }
+
+
 
 
 

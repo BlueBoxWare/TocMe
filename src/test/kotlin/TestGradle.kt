@@ -674,7 +674,7 @@ object TestGradle: Spek({
       }
 
       it("should create backups") {
-        fixture.project.file(fixture.backupDir).listFiles().maxBy { it.name.toLong() }!!
+        fixture.project.file(fixture.backupDir).listFiles()!!.maxByOrNull { it.name.toLong() }!!
           .relativeToOrSelf(fixture.project.rootDir).let { backupDir ->
             listOf(
               "gdx.md",

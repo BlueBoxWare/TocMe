@@ -429,7 +429,7 @@ private fun renderToc(headings: List<Heading>, headingTexts: List<String>, optio
 
   if (options.style() == TocOptions.ListType.HIERARCHY) {
     headings.firstOrNull()?.level?.let { firstLevel ->
-      headings.minBy { it.level }?.level?.let { minLevel ->
+      headings.minByOrNull { it.level }?.level?.let { minLevel ->
         repeat((minLevel until firstLevel).count()) { writer.indent() }
       }
     }

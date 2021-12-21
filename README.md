@@ -34,7 +34,7 @@ Add the plugin to your project's `build.gradle`:
 
 ```groovy
 plugins {
-  id "com.github.blueboxware.tocme" version "1.3"
+  id "com.github.blueboxware.tocme" version "1.4"
 }
 ```
 
@@ -232,6 +232,9 @@ The following options can be used in `build.gradle`:
 in `dashChars`, which are replaced by a dash, and characters in `allowedChars`, which are not removed or replaced but left as is.
 
 # Changelog
+
+## 1.4
+* Use 3 spaces for indentation in TOCs. Fixes [#3](https://github.com/BlueBoxWare/TocMe/issues/3).
 
 ## 1.3
 * Compatibility with Gradle 7.1 ([#2](https://github.com/BlueBoxWare/TocMe/issues/2))
