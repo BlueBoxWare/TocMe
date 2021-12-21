@@ -20,6 +20,7 @@ This plugin uses the great and powerful [flexmark-java](https://github.com/vsch/
     - __[Specifying options](#specifying-options)__
     - __[Available options](#available-options)__
 - __[Changelog](#changelog)__
+  - __[1.4](#14)__
   - __[1.3](#13)__
   - __[1.2](#12)__
   - __[1.1](#11)__
@@ -234,7 +235,7 @@ in `dashChars`, which are replaced by a dash, and characters in `allowedChars`, 
 # Changelog
 
 ## 1.4
-* Use 3 spaces for indentation in TOCs. Fixes [#3](https://github.com/BlueBoxWare/TocMe/issues/3).
+* Now uses 3 spaces as indentation instead of 2. Fixes [#3](https://github.com/BlueBoxWare/TocMe/issues/3): incorrect formatting of nested lists in numbered lists.
 
 ## 1.3
 * Compatibility with Gradle 7.1 ([#2](https://github.com/BlueBoxWare/TocMe/issues/2))
