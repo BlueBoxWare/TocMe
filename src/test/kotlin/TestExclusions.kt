@@ -1,3 +1,8 @@
+import io.kotest.common.ExperimentalKotest
+import io.kotest.core.spec.style.BehaviorSpec
+import io.kotest.datatest.withData
+import io.kotest.engine.spec.tempdir
+
 /*
  * Copyright 2021 Blue Box Ware
  *
@@ -14,52 +19,48 @@
  * limitations under the License.
  */
 
-import org.jetbrains.spek.api.Spek
-import org.jetbrains.spek.api.dsl.given
-import org.jetbrains.spek.api.dsl.it
-import org.jetbrains.spek.data_driven.data
-import org.jetbrains.spek.data_driven.on
-
-object TestGradleExclusions: Spek({
+@OptIn(ExperimentalKotest::class)
+@Suppress("unused")
+internal object TestExclusions: BehaviorSpec({
 
   lateinit var fixture: ProjectFixture
 
-  beforeEachTest {
-    fixture = ProjectFixture()
+  beforeContainer {
+    fixture = ProjectFixture(tempdir())
     fixture.addFile("files/gdx.md")
-  }
-
-  afterEachTest {
-    fixture.destroy()
   }
 
   given("a spec with excluded file") {
 
-    val tests = arrayOf(
-      data("SCCS", true),
-      data("files/.git/test", true),
-      data("test/test~", true),
-      data("files/gdx.md", false)
-    )
+    withData(
+      Pair("SCCS", true),
+      Pair("files/.git/test", true),
+      Pair("test/test~", true),
+      Pair("files/gdx.md", false)
+    ) { (filename, excluded) ->
 
-    on("building (%s)", with = *tests) { filename: String, excluded: Boolean ->
+      `when`("building ($filename)") {
 
-      fixture.buildFile(
-        """
+        fixture.buildFile(
+          """
         tocme {
           doc(file("$filename"))
         }
       """.trimIndent()
-      )
-      val result = fixture.build(shouldFail = excluded)
+        )
+        fixture.build(shouldFail = excluded)
 
-      it("should fail with an error") {
-        if (excluded) {
-          fixture.assertOutputContains("GradleException: The file '$filename' won't be backed up")
+        then("should fail with an error") {
+          if (excluded) {
+            fixture.assertOutputContains("GradleException: The file '$filename' won't be backed up")
+          }
         }
+
       }
 
     }
 
   }
+
 })
+

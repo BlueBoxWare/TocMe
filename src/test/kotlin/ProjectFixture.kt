@@ -22,22 +22,20 @@ import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import org.gradle.util.GradleVersion
-import org.junit.rules.TemporaryFolder
 import java.io.File
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-internal class ProjectFixture {
+internal class ProjectFixture(private val tempDir: File) {
 
   private val GRADLE_VERSION = GradleVersion.current()
   private val TEST_RELEASED_VERSION = false
 
-  private val tempDir = TemporaryFolder().apply { create() }
-  private val buildFile = tempDir.newFile("build.gradle")
+  private val buildFile = File(tempDir, "build.gradle")
 
-  val project: Project = ProjectBuilder.builder().withProjectDir(tempDir.root).build()
+  val project: Project = ProjectBuilder.builder().withProjectDir(tempDir).build()
 
   val backupDir = "build/tocme/backups/${TocMePlugin.INSERT_TOCS_TASK}/"
 
@@ -54,10 +52,6 @@ internal class ProjectFixture {
 
   """.trimIndent()
 
-  fun destroy() {
-    tempDir.delete()
-  }
-
   fun addFile(fileName: String) {
     // https://github.com/gradle/gradle/issues/2986
     DirectoryScanner.getDefaultExcludes().forEach { DirectoryScanner.removeDefaultExclude(it) }
@@ -66,7 +60,7 @@ internal class ProjectFixture {
       copySpec.from(testDataDir.absolutePath) {
         it.include(fileName)
       }
-      copySpec.into(tempDir.root)
+      copySpec.into(tempDir)
     }
     DirectoryScanner.resetDefaultExcludes()
   }
@@ -82,7 +76,7 @@ internal class ProjectFixture {
 
   fun replaceInBuildFile(old: String, new: String) = buildFile.writeText(buildFile.readText().replace(old, new))
 
-  fun file(path: String) = File(tempDir.root, path)
+  fun file(path: String) = File(tempDir, path)
 
   fun buildCheck(vararg extraArguments: String, shouldFail: Boolean = false) =
     build(TocMePlugin.CHECK_TOCS_TASK, shouldFail, *extraArguments)
@@ -101,7 +95,7 @@ internal class ProjectFixture {
     val runner = GradleRunner
       .create()
 //            .withDebug(true)
-      .withProjectDir(tempDir.root)
+      .withProjectDir(tempDir)
       .withGradleVersion(GRADLE_VERSION.version)
       .withArguments(*args.toTypedArray(), "--stacktrace", "--info")
 
@@ -123,13 +117,6 @@ internal class ProjectFixture {
 
   }
 
-  // https://github.com/gradle/gradle/issues/1079
-  fun sleepIfNecessary() {
-    if (GRADLE_VERSION < GradleVersion.version("3.5")) {
-      Thread.sleep(2000)
-    }
-  }
-
   fun assertFileEquals(
     expectedFileName: String,
     actualFileName: String,
@@ -140,17 +127,12 @@ internal class ProjectFixture {
   ) =
     assertFileEquals(
       File(testDataDir, expectedFileName),
-      File(tempDir.root, actualFileName),
+      File(tempDir, actualFileName),
       showDiff,
       showActual,
       showExpected,
       createExpectedFileIfNotFound = createExpectedFileIfNotFound
     )
-
-  fun assertFilesExist(vararg fileNames: String) =
-    fileNames.forEach {
-      assertTrue("File '$it' doesn't exist") { File(tempDir.root, it).exists() }
-    }
 
   fun assertOutputContains(str: String) =
     latestBuildResult?.output?.let { output ->

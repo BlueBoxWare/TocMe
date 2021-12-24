@@ -1,5 +1,11 @@
+import io.kotest.common.ExperimentalKotest
+import io.kotest.core.spec.style.BehaviorSpec
+import io.kotest.datatest.withData
+import io.kotest.engine.spec.tempdir
+import java.io.File
+
 /*
- * Copyright 2018 Blue Box Ware
+ * Copyright 2021 Blue Box Ware
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,37 +19,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@file:Suppress("UNUSED_ANONYMOUS_PARAMETER")
-
-import org.jetbrains.spek.api.Spek
-import org.jetbrains.spek.api.dsl.given
-import org.jetbrains.spek.api.dsl.it
-import org.jetbrains.spek.data_driven.data
-import org.jetbrains.spek.data_driven.on
-import java.io.File
-
-object TestReadme: Spek({
+@OptIn(ExperimentalKotest::class)
+@Suppress("unused")
+internal object TestReadme: BehaviorSpec({
 
   lateinit var fixture: ProjectFixture
 
-  beforeEachTest {
-    fixture = ProjectFixture()
-  }
-
-  afterEachTest {
-    fixture.destroy()
+  beforeContainer {
+    fixture = ProjectFixture(tempdir())
   }
 
   fun loadTests(type: String) = File("README.md.src").readText().let { readmeTxt ->
     Regex("""```$type(.*?)```""", RegexOption.DOT_MATCHES_ALL).findAll(readmeTxt).map { it.groupValues[1] }
-      .map { content ->
-        data<String, String?>(content, expected = null)
-      }
-  }.toList().toTypedArray()
+  }
 
   given("a Gradle fragment from the README") {
 
-    beforeEachTest {
+    beforeContainer {
       File(fixture.project.rootDir, "doc").mkdir()
       listOf(
         "README.md",
@@ -57,23 +49,24 @@ object TestReadme: Spek({
         fixture.createFile(it, "")
       }
     }
+    withData(loadTests("gradle")) { content ->
+      `when`("building ($content)") {
 
-    on("building (%s)", with = *loadTests("gradle")) { content, expected ->
+        fixture.buildFile(content)
+        fixture.build()
 
-      fixture.buildFile(content)
-      fixture.build()
+        then("should succeed") {
+          fixture.assertBuildSuccess()
+        }
 
-      it("should succeed") {
-        fixture.assertBuildSuccess()
       }
 
     }
-
   }
 
   given("a MarkDown fragment from the README") {
 
-    beforeEachTest {
+    beforeContainer {
       fixture.buildFile(
         """
         tocme {
@@ -83,21 +76,23 @@ object TestReadme: Spek({
       )
     }
 
-    on("building (%s)", with = *loadTests("markdown")) { content, expected ->
+    withData(loadTests("markdown")) { content ->
 
-      fixture.createFile("test.md", content)
-      fixture.build()
+      `when`("building ($content)") {
 
-      it("should succeed") {
-        fixture.assertBuildSuccess()
+        fixture.createFile("test.md", content)
+        fixture.build()
+
+        then("should succeed") {
+          fixture.assertBuildSuccess()
+        }
+
+        then("should generate no warnings") {
+          fixture.assertOutputContainsNot(Regex("^test.md:", RegexOption.MULTILINE))
+        }
+
       }
-
-      it("should generate no warnings") {
-        fixture.assertOutputContainsNot(Regex("^test.md:", RegexOption.MULTILINE))
-      }
-
     }
-
   }
 
 })

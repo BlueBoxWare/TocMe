@@ -1,5 +1,21 @@
+import com.github.blueboxware.tocme.TocMeOptions
+import com.github.blueboxware.tocme.util.TocMeOptionsImpl
+import com.github.blueboxware.tocme.util.Variant
+import com.github.blueboxware.tocme.util.insertTocs
+import com.vladsch.flexmark.parser.Parser
+import com.vladsch.flexmark.parser.ParserEmulationProfile
+import com.vladsch.flexmark.util.data.MutableDataSet
+import io.kotest.common.ExperimentalKotest
+import io.kotest.core.spec.style.BehaviorSpec
+import io.kotest.datatest.withData
+import io.kotest.engine.spec.tempfile
+import java.io.File
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
+
 /*
- * Copyright 2018 Blue Box Ware
+ * Copyright 2021 Blue Box Ware
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,34 +29,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@file:Suppress("UNUSED_ANONYMOUS_PARAMETER")
 
-import com.github.blueboxware.tocme.TocMeOptions
-import com.github.blueboxware.tocme.util.TocMeOptionsImpl
-import com.github.blueboxware.tocme.util.Variant
-import com.github.blueboxware.tocme.util.insertTocs
-import com.vladsch.flexmark.parser.Parser
-import com.vladsch.flexmark.parser.ParserEmulationProfile
-import com.vladsch.flexmark.util.data.MutableDataSet
-import org.jetbrains.spek.api.Spek
-import org.jetbrains.spek.api.dsl.given
-import org.jetbrains.spek.api.dsl.it
-import org.jetbrains.spek.data_driven.Data3
-import org.jetbrains.spek.data_driven.data
-import org.jetbrains.spek.data_driven.on
-import java.io.File
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
-
-internal object TestInsertToc: Spek({
+@OptIn(ExperimentalKotest::class)
+@Suppress("unused")
+internal object TestInsertToc: BehaviorSpec({
 
   val TEST_DATA_DIR = File("src/test/resources")
   val TEST_DATA_FILES_DIR = File(TEST_DATA_DIR, "files/")
 
   var expectedTestNumber: Int
 
-  fun loadTests(filename: String) = run {
+  data class Test(
+    val label: String,
+    val input: String,
+    val variant: Variant,
+    val expected: String
+  )
+
+  fun loadTests(filename: String): List<Test> = run {
     expectedTestNumber = 0
     File(TEST_DATA_DIR, filename).readText().split(Regex("=====+\n")).flatMap { test ->
       Regex(
@@ -52,270 +58,278 @@ internal object TestInsertToc: Spek({
           throw AssertionError("Test number is $nr, should be $expectedTestNumber")
         }
         Variant.values().map {
-          data("$nr ($it)", input.trimEnd('\n'), it, expected = expectedOutput.trimEnd('\n'))
+          Test("$nr ($it)", input.trimEnd('\n'), it, expectedOutput.trimEnd('\n'))
         }
 
       } ?: throw AssertionError()
-    }.toTypedArray()
-  }
-
-  given("a markdown document with correct toc tags") {
-
-    val data = loadTests("valid.data")
-
-    on("inserting a toc, test %s", with = *data) { label, input, variant, expected ->
-
-      val parserOptions = MutableDataSet()
-      variant.setIn(parserOptions)
-
-      val tocMeOptions = TocMeOptionsImpl(null).apply { this.variant = variant }
-
-      val parser = Parser.builder(parserOptions).build()
-
-      val document = parser.parse(input)
-      val (result, warnings, error) = document.insertTocs(tocMeOptions, checkCurrentContent = true)
-
-      it("generates no errors") {
-        assertNull(error, "Unexpected error: $error")
-      }
-
-      it("generates no warnings") {
-        assertTrue(warnings.isEmpty(), "Unexpected warning(s): \n" + warnings.joinToString(separator = "\n"))
-      }
-
-      it("generates the correct results") {
-        ProjectFixture.assertTextEquals(expected, result!!, document = document)
-      }
-
-      it("should 'update' without warnings, errors or actual changes") {
-        val document2 = parser.parse(result!!)
-        val (result2, warnings2, error2) = document2.insertTocs(tocMeOptions, checkCurrentContent = true)
-        assertNull(error2, "Failed to update. Unexpected error: $error2")
-        assertTrue(
-          warnings2.isEmpty(),
-          "Failed to update. Unexpected warning(s): \n" + warnings2.joinToString(separator = "\n")
-        )
-        ProjectFixture.assertTextEquals(result, result2!!)
-      }
-
     }
-
   }
 
-  given("a markdown document which should produces warnings") {
+  given("a Markdown document with correct toc tags") {
 
-    val data = loadTests("warning.data")
+    withData(loadTests("valid.data")) { (label, input, variant, expected) ->
 
-    on("inserting a toc, test %s", with = *data) { label, input, variant, expected ->
+      `when`("inserting a toc: $label") {
 
-      val parserOptions = MutableDataSet()
-      variant.setIn(parserOptions)
+        val parserOptions = MutableDataSet()
+        variant.setIn(parserOptions)
 
-      val tocMeOptions = TocMeOptionsImpl(null).apply { this.variant = variant }
+        val tocMeOptions = TocMeOptionsImpl(null).apply { this.variant = variant }
 
-      val parser = Parser.builder(parserOptions).build()
+        val parser = Parser.builder(parserOptions).build()
 
-      val document = parser.parse(input)
-      val (result, warnings, error) = document.insertTocs(tocMeOptions, checkCurrentContent = true)
+        val document = parser.parse(input)
+        val (result, warnings, error) = document.insertTocs(tocMeOptions, checkCurrentContent = true)
 
-      val warningRegex = expected.lines().first().let { Regex(".*$it.*", RegexOption.IGNORE_CASE) }
+        then("generates no errors") {
+          assertNull(error, "Unexpected error: $error")
+        }
 
-      it("generates no errors") {
-        assertNull(error, "Unexpected error: $error")
-      }
+        then("generates no warnings") {
+          assertTrue(warnings.isEmpty(), "Unexpected warning(s): \n" + warnings.joinToString(separator = "\n"))
+        }
 
-      it("generates the expected warning") {
-        assertTrue(
-          warnings.any { it.matches(warningRegex) },
-          "No warning which matches '$warningRegex' found.\nWarnings:\n" + warnings.joinToString(separator = "\n")
-        )
-      }
+        then("generates the correct results") {
+          ProjectFixture.assertTextEquals(expected, result!!, document = document)
+        }
 
-      it("generates the correct result") {
-        expected.lines().drop(1).joinToString(separator = "\n").let {
-          ProjectFixture.assertTextEquals(it, result!!)
+        then("should 'update' without warnings, errors or actual changes") {
+          val document2 = parser.parse(result!!)
+          val (result2, warnings2, error2) = document2.insertTocs(tocMeOptions, checkCurrentContent = true)
+          assertNull(error2, "Failed to update. Unexpected error: $error2")
+          assertTrue(
+            warnings2.isEmpty(),
+            "Failed to update. Unexpected warning(s): \n" + warnings2.joinToString(separator = "\n")
+          )
+          ProjectFixture.assertTextEquals(result, result2!!)
         }
       }
-
     }
 
   }
 
-  given("a markdown document which should produce an error") {
+  given("a Markdown document which should produces warnings") {
 
-    val data = loadTests("error.data")
+    withData(loadTests("warning.data")) { (label, input, variant, expected) ->
 
-    on("inserting a toc, test %s", with = *data) { label, input, variant, expected ->
+      `when`("inserting a toc: $label") {
 
-      val parserOptions = MutableDataSet()
-      variant.setIn(parserOptions)
+        val parserOptions = MutableDataSet()
+        variant.setIn(parserOptions)
 
-      val tocMeOptions = TocMeOptionsImpl(null).apply { this.variant = variant }
+        val tocMeOptions = TocMeOptionsImpl(null).apply { this.variant = variant }
 
-      val parser = Parser.builder(parserOptions).build()
+        val parser = Parser.builder(parserOptions).build()
 
-      val document = parser.parse(input)
-      val (_, _, error) = document.insertTocs(tocMeOptions, checkCurrentContent = true)
+        val document = parser.parse(input)
+        val (result, warnings, error) = document.insertTocs(tocMeOptions, checkCurrentContent = true)
 
-      val errorRegex = expected.lines().first().let { Regex(".*$it.*", RegexOption.IGNORE_CASE) }
+        val warningRegex = expected.lines().first().let {
+          Regex(
+            ".*$it.*",
+            RegexOption.IGNORE_CASE
+          )
+        }
 
-      it("generates an error") {
-        assertNotNull(error, "No error")
-        assertTrue(error!!.matches(errorRegex), "Actual error ('$error') doesn't match regex ('$errorRegex')")
+        then("generates no errors") {
+          assertNull(error, "Unexpected error: $error")
+        }
+
+        then("generates the expected warning") {
+          assertTrue(
+            warnings.any { it.matches(warningRegex) },
+            "No warning which matches '$warningRegex' found.\nWarnings:\n" + warnings.joinToString(separator = "\n")
+          )
+        }
+
+        then("generates the correct result") {
+          expected.lines().drop(1).joinToString(separator = "\n").let {
+            ProjectFixture.assertTextEquals(it, result!!)
+          }
+        }
+
       }
-
     }
-
   }
 
-  given("a markdown document from file") {
+  given("a Markdown document which should produce an error") {
+
+    withData(loadTests("error.data")) { (label, input, variant, expected) ->
+
+      `when`("inserting a toc: $label") {
+
+        val parserOptions = MutableDataSet()
+        variant.setIn(parserOptions)
+
+        val tocMeOptions = TocMeOptionsImpl(null).apply { this.variant = variant }
+
+        val parser = Parser.builder(parserOptions).build()
+
+        val document = parser.parse(input)
+        val (_, _, error) = document.insertTocs(tocMeOptions, checkCurrentContent = true)
+
+        val errorRegex = expected.lines().first().let { Regex(".*$it.*", RegexOption.IGNORE_CASE) }
+
+        then("generates an error") {
+          assertNotNull(error, "No error")
+          assertTrue(error.matches(errorRegex), "Actual error ('$error') doesn't match regex ('$errorRegex')")
+        }
+
+      }
+    }
+  }
+
+  given("a Markdown document from file") {
 
     val options = MutableDataSet().apply {
       setFrom(ParserEmulationProfile.GITHUB)
     }
     val parser = Parser.builder(options).build()
 
-    val data =
-      TEST_DATA_FILES_DIR.walkTopDown().filter { it.extension == "md" && it.name != "variant_issues.md" }.map {
-        Data3(
-          it.name,
-          it.absolutePath,
-          it.readText(),
-          File(TEST_DATA_FILES_DIR, it.nameWithoutExtension + ".out").readText()
-        )
-      }.toList().toTypedArray()
+    TEST_DATA_FILES_DIR.walkTopDown().filter { it.extension == "md" && it.name != "variant_issues.md" }.map {
+      Triple(
+        it.absolutePath,
+        it.readText(),
+        File(TEST_DATA_FILES_DIR, it.nameWithoutExtension + ".out").readText()
+      )
+    }.forEach { (absolutePath, input, expected) ->
 
-    on("inserting a toc (%s)", with = *data) { name, absolutePath, input, expected ->
+      `when`("inserting a toc ($absolutePath)") {
 
-      val document = parser.parse(input)
-      val (result, warnings, error) = document.insertTocs(TocMeOptionsImpl(null), checkCurrentContent = true)
+        val document = parser.parse(input)
+        val (result, warnings, error) = document.insertTocs(TocMeOptionsImpl(null), checkCurrentContent = true)
 
-      it("generates no errors") {
-        assertNull(error, "Unexpected error: $error")
+        then("generates no errors") {
+          assertNull(error, "Unexpected error: $error")
+        }
+
+        then("generates no warnings") {
+          assertTrue(warnings.isEmpty(), "Unexpected warning(s): \n" + warnings.joinToString(separator = "\n"))
+        }
+
+        then("generates the correct results") {
+          ProjectFixture.assertTextEquals(expected.trimEnd(), result!!.trimEnd())
+        }
+
+        then("should 'update' without warnings, errors or actual changes") {
+          val document2 = parser.parse(result!!)
+          val (result2, warnings2, error2) = document2.insertTocs(TocMeOptionsImpl(null), checkCurrentContent = true)
+          assertNull(error2, "Failure on update. Unexpected error: $error2")
+          assertTrue(
+            warnings2.isEmpty(),
+            "Failure on update. Unexpected warning(s): \n" + warnings2.joinToString(separator = "\n")
+          )
+          ProjectFixture.assertTextEquals(result, result2!!)
+        }
+
       }
-
-      it("generates no warnings") {
-        assertTrue(warnings.isEmpty(), "Unexpected warning(s): \n" + warnings.joinToString(separator = "\n"))
-      }
-
-      it("generates the correct results") {
-        ProjectFixture.assertTextEquals(expected.trimEnd(), result!!.trimEnd())
-      }
-
-      it("should 'update' without warnings, errors or actual changes") {
-        val document2 = parser.parse(result!!)
-        val (result2, warnings2, error2) = document2.insertTocs(TocMeOptionsImpl(null), checkCurrentContent = true)
-        assertNull(error2, "Failure on update. Unexpected error: $error2")
-        assertTrue(
-          warnings2.isEmpty(),
-          "Failure on update. Unexpected warning(s): \n" + warnings2.joinToString(separator = "\n")
-        )
-        ProjectFixture.assertTextEquals(result, result2!!)
-      }
-
     }
 
   }
 
-  given("a markdown document with constructs which are handled different by different markdown variants") {
+  given("a Markdown document with constructs which are handled different by different markdown variants") {
 
-    val data = Variant.values().map { data(it.name, it) }.toTypedArray()
+    Variant.values().map {
+      Pair(
+        it.name,
+        it
+      )
+    }.forEach { (name, variant) ->
 
-    on("inserting a toc with variant %s", with = *data) { name, variant ->
+      `when`("inserting a toc with variant $name") {
 
-      val tocmeOptions = TocMeOptionsImpl(null).apply {
-        this.variant = variant
+        val tocmeOptions = TocMeOptionsImpl(null).apply {
+          this.variant = variant
+        }
+        val tempFile = tempfile()
+
+        val (result, warnings, error) =
+          insertTocs(
+            File(TEST_DATA_FILES_DIR, "variant_issues.md"),
+            tempFile,
+            tocmeOptions,
+            writeChanges = true
+          )
+
+        then("generates no errors") {
+          assertNull(error, "Unexpected error: $error")
+        }
+
+        then("generates no warnings") {
+          assertTrue(
+            warnings.isEmpty(),
+            "Unexpected warning(s): \n" + warnings.joinToString(separator = "\n")
+          )
+        }
+
+        then("generates the correct result") {
+
+          File(TEST_DATA_FILES_DIR, "variant_issues.$name.out").let { expectedFile ->
+
+            if (!expectedFile.exists()) {
+              expectedFile.writeText(result!!)
+              throw AssertionError("Expected file '${expectedFile.absolutePath}' does not exist. Creating.")
+            }
+
+            ProjectFixture.assertTextEquals(
+              expectedFile.readText(),
+              result!!
+            )
+
+          }
+        }
       }
-      val tempFile = createTempFile()
+    }
 
-      val (result, warnings, error) =
-        insertTocs(
-          File(TEST_DATA_FILES_DIR, "variant_issues.md"),
+  }
+
+  given("a Markdown document with emojis in headers") {
+
+    listOf("variant_issues", "nerdfonts").map {
+      Pair("$it.md", "${it}_no_emojis.out")
+    }.forEach { (file, expected) ->
+
+      `when`("inserting a toc while removing emojis: $file") {
+
+        val tempFile = tempfile()
+
+        val tocmeOptions = TocMeOptionsImpl(null).apply {
+          removeEmojis = true
+        }
+
+        val (_, warnings, error) = insertTocs(
+          File(TEST_DATA_FILES_DIR, file),
           tempFile,
           tocmeOptions,
           writeChanges = true
         )
 
-
-      tempFile.delete()
-
-      it("generates no errors") {
-        assertNull(error, "Unexpected error: $error")
-      }
-
-      it("generates no warnings") {
-        assertTrue(warnings.isEmpty(), "Unexpected warning(s): \n" + warnings.joinToString(separator = "\n"))
-      }
-
-      it("generates the correct result") {
-
-        File(TEST_DATA_FILES_DIR, "variant_issues.$name.out").let { expectedFile ->
-
-          if (!expectedFile.exists()) {
-            expectedFile.writeText(result!!)
-            throw AssertionError("Expected file '${expectedFile.absolutePath}' does not exist. Creating.")
-          }
-
-          ProjectFixture.assertTextEquals(
-            expectedFile.readText(),
-            result!!
-          )
-
+        then("generates no errors") {
+          assertNull(error, "Unexpected error: $error")
         }
-      }
 
+        then("generates no warnings") {
+          assertTrue(warnings.isEmpty(), "Unexpected warning(s): \n" + warnings.joinToString(separator = "\n"))
+        }
+
+        then("generates the correct result") {
+          ProjectFixture.assertFileEquals(File(TEST_DATA_FILES_DIR, expected), tempFile)
+        }
+
+      }
     }
-
-  }
-
-  given("a markdown document with emojis in headers") {
-
-    lateinit var tempFile: File
-
-    beforeEachTest {
-      tempFile = createTempFile()
-    }
-
-    afterEachTest {
-      tempFile.delete()
-    }
-
-    val tests = listOf("variant_issues", "nerdfonts").map {
-      data("$it.md", expected = "${it}_no_emojis.out")
-    }.toTypedArray()
-
-    on("inserting a toc while removing emojis (%s)", with = *tests) { file, expected ->
-
-      val tocmeOptions = TocMeOptionsImpl(null).apply {
-        removeEmojis = true
-      }
-
-      val (_, warnings, error) = insertTocs(
-        File(TEST_DATA_FILES_DIR, file),
-        tempFile,
-        tocmeOptions,
-        writeChanges = true
-      )
-
-      it("generates no errors") {
-        assertNull(error, "Unexpected error: $error")
-      }
-
-      it("generates no warnings") {
-        assertTrue(warnings.isEmpty(), "Unexpected warning(s): \n" + warnings.joinToString(separator = "\n"))
-      }
-
-      it("generates the correct result") {
-        ProjectFixture.assertFileEquals(File(TEST_DATA_FILES_DIR, expected), tempFile)
-      }
-
-    }
-
   }
 
   given("a simple document with variant issues") {
 
-    val tests = mutableListOf<Data3<String, String, TocMeOptions.() -> Unit, String>>()
+    data class Test(
+      val label: String,
+      val contents: String,
+      val conf: TocMeOptions.() -> Unit,
+      val expected: String
+    )
+
+    val tests = mutableListOf<Test>()
 
     fun test(
       id: String,
@@ -327,7 +341,7 @@ internal object TestInsertToc: Spek({
       val header = if (insertHeader) "<!--toc-->\n<!--/toc-->\n" else ""
       val contents = header + if (trimIndent) doc.trimIndent() else doc
       cases.forEach { (caseId, conf, expected) ->
-        tests.add(data("$id: $caseId", contents, conf, expected = expected.trimIndent()))
+        tests.add(Test("$id: $caseId", contents, conf, expected.trimIndent()))
       }
     }
 
@@ -884,32 +898,35 @@ internal object TestInsertToc: Spek({
       )
     )
 
-    on("inserting a toc (%s)", with = *tests.toTypedArray()) { label, content, conf, expected ->
+    withData(tests.associateBy { it.label }) { (name, content, conf, expected) ->
 
-      val parentTocmeOptions = TocMeOptionsImpl(null).apply {
-        variant = Variant.Commonmark
+      `when`("inserting a toc: $name") {
+
+        val parentTocmeOptions = TocMeOptionsImpl(null).apply {
+          variant = Variant.Commonmark
+        }
+        conf.let { parentTocmeOptions.it() }
+
+        val tocmeOptions = TocMeOptionsImpl(parentTocmeOptions)
+
+        val parser = Parser.builder(tocmeOptions.toParserOptions()).build()
+
+        val document = parser.parse(content)
+        val (result, warnings, error) = document.insertTocs(tocmeOptions, checkCurrentContent = true)
+
+        then("generates no errors") {
+          assertNull(error, "Unexpected error: $error")
+        }
+
+        then("generates no warnings") {
+          assertTrue(warnings.isEmpty(), "Unexpected warning(s): \n" + warnings.joinToString(separator = "\n"))
+        }
+
+        then("generates the correct result") {
+          ProjectFixture.assertTextEquals(expected, result!!)
+        }
+
       }
-      parentTocmeOptions.conf()
-
-      val tocmeOptions = TocMeOptionsImpl(parentTocmeOptions)
-
-      val parser = Parser.builder(tocmeOptions.toParserOptions()).build()
-
-      val document = parser.parse(content)
-      val (result, warnings, error) = document.insertTocs(tocmeOptions, checkCurrentContent = true)
-
-      it("generates no errors") {
-        assertNull(error, "Unexpected error: $error")
-      }
-
-      it("generates no warnings") {
-        assertTrue(warnings.isEmpty(), "Unexpected warning(s): \n" + warnings.joinToString(separator = "\n"))
-      }
-
-      it("generates the correct result") {
-        ProjectFixture.assertTextEquals(expected, result!!)
-      }
-
     }
 
   }

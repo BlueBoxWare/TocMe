@@ -25,7 +25,7 @@ import java.io.File
 open class CheckTocsTask: TocMeTask() {
 
   init {
-    description = "Checks if TOCs are up to date"
+    description = "Checks if TOCs are up-to-date"
 
     outputs.upToDateWhen { getOutputFiles().isEmpty() }
   }

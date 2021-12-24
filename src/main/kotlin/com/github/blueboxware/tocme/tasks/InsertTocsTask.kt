@@ -25,7 +25,7 @@ import java.io.File
 open class InsertTocsTask: TocMeTask() {
 
   init {
-    description = "Creates and/or updates TOCs in markdown documents"
+    description = "Creates and/or updates TOCs in Markdown documents"
   }
 
   @TaskAction

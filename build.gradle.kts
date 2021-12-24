@@ -25,22 +25,12 @@ dependencies {
   implementation("com.vladsch.flexmark:flexmark:" + properties("flexmarkVersion"))
   implementation("com.vladsch.flexmark:flexmark-ext-toc:" + properties("flexmarkVersion"))
 
-  testImplementation("org.jetbrains.spek:spek-api:1.1.5") {
-    exclude(group = "org.jetbrains.kotlin")
-  }
-  testImplementation("org.jetbrains.spek:spek-data-driven-extension:1.1.5") {
-    exclude(group = "org.jetbrains.kotlin")
-  }
-  testImplementation("junit:junit:4.13.1")
   testImplementation(gradleTestKit())
   testImplementation(kotlin("test"))
 
-  testRuntimeOnly("org.jetbrains.spek:spek-junit-platform-engine:1.1.5") {
-    exclude(group= "org.junit.platform")
-    exclude(group = "org.jetbrains.kotlin")
-  }
-  // Needed for the Spek plugin to work correctly
-  testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.4")
+  testImplementation("io.kotest:kotest-runner-junit5:" + properties("kotestVersion"))
+  testImplementation("io.kotest:kotest-assertions-core:" + properties("kotestVersion"))
+  testImplementation("io.kotest:kotest-framework-datatest:" + properties("kotestVersion"))
 
 }
 
@@ -51,7 +41,13 @@ tasks {
     targetCompatibility = "1.8"
   }
   withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions {
+      jvmTarget = "1.8"
+    }
+  }
+
+  withType<Test> {
+    useJUnitPlatform()
   }
 
   register("createReadme") {
