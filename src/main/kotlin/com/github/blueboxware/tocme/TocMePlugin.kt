@@ -17,19 +17,13 @@ package com.github.blueboxware.tocme
 
 import com.github.blueboxware.tocme.tasks.CheckTocsTask
 import com.github.blueboxware.tocme.tasks.InsertTocsTask
-import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.language.base.plugins.LifecycleBasePlugin
-import org.gradle.util.GradleVersion
 
 class TocMePlugin: Plugin<Project> {
 
   override fun apply(project: Project) {
-
-    if (GradleVersion.current() < GradleVersion.version("3.0")) {
-      throw GradleException("The com.github.blueboxware.tocme plugin requires Gradle version 3.0 or higher")
-    }
 
     val tocmeExtension = project.extensions.create(TOCME_EXTENSION_NAME, TocMeExtension::class.java, project)
 

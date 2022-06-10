@@ -5,7 +5,6 @@ import com.github.blueboxware.tocme.util.insertTocs
 import com.vladsch.flexmark.parser.Parser
 import com.vladsch.flexmark.parser.ParserEmulationProfile
 import com.vladsch.flexmark.util.data.MutableDataSet
-import io.kotest.common.ExperimentalKotest
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.datatest.withData
 import io.kotest.engine.spec.tempfile
@@ -30,7 +29,6 @@ import kotlin.test.assertTrue
  * limitations under the License.
  */
 
-@OptIn(ExperimentalKotest::class)
 @Suppress("unused")
 internal object TestInsertToc: BehaviorSpec({
 
@@ -50,7 +48,7 @@ internal object TestInsertToc: BehaviorSpec({
     expectedTestNumber = 0
     File(TEST_DATA_DIR, filename).readText().split(Regex("=====+\n")).flatMap { test ->
       Regex(
-        """(.*)---*\s+(\d+)\s+---+\n(.*)""",
+        """(.*)--+\s+(\d+)\s+---+\n(.*)""",
         RegexOption.DOT_MATCHES_ALL
       ).matchEntire(test)?.groupValues?.let { (_, input, nr, expectedOutput) ->
         expectedTestNumber++

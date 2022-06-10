@@ -35,6 +35,7 @@ import org.gradle.api.Project
 import org.gradle.api.file.DuplicatesStrategy
 import java.io.File
 import java.lang.Integer.min
+import java.util.*
 
 const val TOC_TAG = "toc"
 
@@ -116,7 +117,7 @@ internal fun Document.insertTocs(
     checkBounds(startTag, endTag) { return Triple(null, warnings, "something went horribly wrong") }
 
     if (checkCurrentContent && !checkCurrentContent(startTag, endTag)) {
-      warnings.add("It doesn't look like the current content between the ${options.tag()} tags on line ${startTag.lineNumber()} and line ${endTag.lineNumber()} is a toc. Not making changes here, just in case.")
+      warnings.add("It doesn't look like the current content between the ${options.tag()} tags online ${startTag.lineNumber()} and line ${endTag.lineNumber()} is a toc. Not making changes here, just in case.")
       return@forEach
     }
 
@@ -184,9 +185,10 @@ private fun filterHeadings(
   endHeader: Heading? = null
 ): List<Heading> =
   headings.filter { header ->
-    options.levels().contains(header.level)
+    (options.levels().contains(header.level)
             && (options.isFull() || header.startOffset > endTag.startOffset)
-            && (!options.isLocal() || (header.startOffset > startHeader?.startOffset ?: 0 && header.startOffset < endHeader?.startOffset ?: Int.MAX_VALUE))
+            && (!options.isLocal() || (header.startOffset > (startHeader?.startOffset
+      ?: 0) && header.startOffset < (endHeader?.startOffset ?: Int.MAX_VALUE))))
   }
 
 private fun getHeaderTexts(headings: List<Heading>, options: TocMeOptions): List<String> {
@@ -233,15 +235,15 @@ private fun parseArgs(options: TocMeOptions, text: String): Pair<TocMeOptions, L
 
   val warnings = mutableListOf<String>()
 
-  Regex("""\b([^\s=]+)\s*(?:=\s*(["'][^"']*["']|[^\s]+))?""")
+  Regex("""\b([^\s=]+)\s*(?:=\s*(["'][^"']*["']|\S+))?""")
     .findAll(text)
     .map { matchResult -> matchResult.groupValues.let { it -> it[1] to it[2].trim { it.isWhitespace() || it == '"' || it == '\'' } } }
     .forEach { (key, value) ->
 
       fun boolean(): Boolean =
         when {
-          value.toLowerCase() == "true" -> true
-          value.toLowerCase() == "false" -> false
+          value.lowercase(Locale.getDefault()) == "true" -> true
+          value.lowercase(Locale.getDefault()) == "false" -> false
           value.isBlank() -> warnings.add("No value specified for option '$key'")
           else -> warnings.add("Option '$key' should be 'true' or 'false'")
         }
@@ -367,14 +369,14 @@ private fun Document.collectTags(tagName: String): Pair<Map<Tag, Tag>?, String?>
       if (startTag != null) {
         return Pair(
           null,
-          "Opening $tagName tag found on line ${tag.lineNumber()} while previous $tagName tag (on line ${startTag?.lineNumber()}) wasn't closed yet"
+          "Opening $tagName tag found online ${tag.lineNumber()} while previous $tagName tag (online ${startTag?.lineNumber()}) wasn't closed yet"
         )
       } else {
         startTag = tag
       }
     } else if (tag.isEndTag) {
       if (startTag == null) {
-        return Pair(null, "Closing $tagName tag on line ${tag.lineNumber()} does not have a corresponding opening tag")
+        return Pair(null, "Closing $tagName tag online ${tag.lineNumber()} does not have a corresponding opening tag")
       }
       startTag?.let {
         result[it] = tag
@@ -385,7 +387,7 @@ private fun Document.collectTags(tagName: String): Pair<Map<Tag, Tag>?, String?>
   }
 
   startTag?.let {
-    return Pair(null, "Opening $tagName tag on line ${it.lineNumber()} does not have a corresponding closing tag")
+    return Pair(null, "Opening $tagName tag online ${it.lineNumber()} does not have a corresponding closing tag")
   }
 
   return Pair(result, null)

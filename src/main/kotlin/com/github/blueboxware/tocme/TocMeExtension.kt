@@ -20,7 +20,6 @@ import com.vladsch.flexmark.ext.toc.internal.TocOptions
 import groovy.lang.Closure
 import org.gradle.api.GradleException
 import org.gradle.api.Project
-import org.gradle.util.ConfigureUtil
 import java.io.File
 
 open class TocMeExtension(
@@ -37,7 +36,9 @@ open class TocMeExtension(
   @Suppress("MemberVisibilityCanBePrivate")
   fun doc(inputFile: File, configurationClosure: Closure<in TocMeGradleOptions>? = null) =
     TocMeGradleOptions(project, this).let { options ->
-      ConfigureUtil.configure(configurationClosure, options)
+      if (configurationClosure != null) {
+        project.configure(options, configurationClosure)
+      }
       registeredDocs.add(inputFile to options)
     }
 

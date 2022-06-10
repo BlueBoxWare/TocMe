@@ -43,6 +43,7 @@ tasks {
   withType<KotlinCompile> {
     kotlinOptions {
       jvmTarget = "1.8"
+      freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlin.RequiresOptIn"
     }
   }
 
@@ -80,7 +81,7 @@ gradlePlugin {
 pluginBundle {
   website = "https://github.com/BlueBoxWare/TocMe"
   vcsUrl = "https://github.com/BlueBoxWare/TocMe.git"
-  description = "Plugin to add Table of Contents to markdown documents and keeping them up to date"
+  description = "Plugin to add Table of Contents to Markdown documents and keeping them up to date"
   tags = listOf("readme", "table of content", "table of contents", "toc", "markdown")
 }
 

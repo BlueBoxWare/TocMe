@@ -30,7 +30,7 @@ import kotlin.test.assertTrue
 
 internal class ProjectFixture(private val tempDir: File) {
 
-  private val GRADLE_VERSION = GradleVersion.current()
+  private val GRADLE_VERSION = GradleVersion.version("7.4.2")
   private val TEST_RELEASED_VERSION = false
 
   private val buildFile = File(tempDir, "build.gradle")
@@ -139,7 +139,7 @@ internal class ProjectFixture(private val tempDir: File) {
       assertTrue(output.contains(str), "String '$str' not found in output. Output:\n$output")
     }
 
-  fun assertOutputContainsNot(str: String) =
+  private fun assertOutputContainsNot(str: String) =
     latestBuildResult?.output?.let { output ->
       assertFalse(output.contains(str), "String '$str' found in output. Output:\n$output")
     }
@@ -152,6 +152,7 @@ internal class ProjectFixture(private val tempDir: File) {
   fun assertCheckOutputFileIsOutOfDate(fileName: String) =
     assertOutputContains("$fileName: ${TocMePlugin.OUT_OF_DATE_MSG}")
 
+  @Suppress("unused")
   fun assertCheckOutputFileIsNotOutOfDate(fileName: String) =
     assertOutputContainsNot("$fileName: ${TocMePlugin.OUT_OF_DATE_MSG}")
 
@@ -196,7 +197,7 @@ internal class ProjectFixture(private val tempDir: File) {
     private const val RELEASED_VERSION = "releasedPluginVersion"
 
     private fun versionRegex(testReleasedVersion: Boolean) =
-      Regex("""${if (testReleasedVersion) RELEASED_VERSION else CURRENT_VERSION}\s*=\s*([0-9.]+)""")
+      Regex("""${if (testReleasedVersion) RELEASED_VERSION else CURRENT_VERSION}\s*=\s*([\d.]+)""")
 
     internal fun getPluginVersion(testReleasedVersion: Boolean) =
       versionRegex(testReleasedVersion).find(File("gradle.properties").readText())?.groupValues?.getOrNull(1)
@@ -211,8 +212,8 @@ internal class ProjectFixture(private val tempDir: File) {
       document: Document? = null
     ) {
       if (expectedText != actualText) {
-        val expectedFile = createTempFile().apply { writeText(expectedText) }
-        val actualFile = createTempFile().apply { writeText(actualText) }
+        val expectedFile = kotlin.io.path.createTempFile().toFile().apply { writeText(expectedText) }
+        val actualFile = kotlin.io.path.createTempFile().toFile().apply { writeText(actualText) }
         assertFileEquals(
           expectedFile,
           actualFile,

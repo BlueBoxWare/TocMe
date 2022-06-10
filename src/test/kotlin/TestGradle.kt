@@ -1,4 +1,3 @@
-import io.kotest.common.ExperimentalKotest
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.engine.spec.tempdir
 
@@ -17,7 +16,6 @@ import io.kotest.engine.spec.tempdir
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@OptIn(ExperimentalKotest::class)
 @Suppress("unused")
 internal object TestGradle: BehaviorSpec({
 
@@ -224,7 +222,7 @@ internal object TestGradle: BehaviorSpec({
 
     }
 
-    `when`("building twice and changing default settings in between") {
+    `when`("building twice and changing default settings in between (2)") {
 
       fixture.build()
       fixture.replaceInBuildFile("tocme {", "tocme {\nbold=false\n")
@@ -368,7 +366,7 @@ internal object TestGradle: BehaviorSpec({
 
     }
 
-    `when`("building twice and adding an output file in between") {
+    `when`("building twice and adding an output file in between (2)") {
 
       fixture.replaceInBuildFile("))", """)) { output(file("out.md")) { bold = false } }""")
       fixture.build()

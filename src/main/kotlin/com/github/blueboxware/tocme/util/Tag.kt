@@ -31,7 +31,7 @@ internal class Tag(
   fun lineNumber() = container.document.getLineNumber(startOffset) + 1
 
   companion object {
-    private val CONTENT_REGEX = Regex("""\s*(/?)([^\s]*)\s*(.*)""")
+    private val CONTENT_REGEX = Regex("""\s*(/?)(\S*)\s*(.*)""")
 
     fun createTag(container: HtmlCommentBlock, content: String, localStartOffset: Int, localEndOffset: Int): Tag? =
       CONTENT_REGEX.matchEntire(content)?.groupValues?.let { groupValues ->

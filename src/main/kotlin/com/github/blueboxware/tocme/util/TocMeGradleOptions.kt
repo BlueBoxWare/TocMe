@@ -19,7 +19,6 @@ import com.github.blueboxware.tocme.TocMeOptions
 import groovy.lang.Closure
 import org.gradle.api.Project
 import org.gradle.api.tasks.Input
-import org.gradle.util.ConfigureUtil
 import java.io.File
 
 class TocMeGradleOptions(
@@ -31,9 +30,12 @@ class TocMeGradleOptions(
   internal val outputFiles: MutableMap<File, TocMeOptions> = mutableMapOf()
 
   @JvmOverloads
+  // Don't use @Action: it seems to capture the wrong this object
   fun output(outputFile: File, configurationClosure: Closure<in TocMeOptions>? = null) =
     TocMeOptionsImpl(this).let { options ->
-      ConfigureUtil.configure(configurationClosure, options)
+      if (configurationClosure != null) {
+        project.configure(options, configurationClosure)
+      }
       outputFiles[outputFile] = options
     }
 
