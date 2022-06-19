@@ -20,6 +20,7 @@ This plugin uses the great and powerful [flexmark-java](https://github.com/vsch/
     - __[Specifying options](#specifying-options)__
     - __[Available options](#available-options)__
 - __[Changelog](#changelog)__
+  - __[1.5](#15)__
   - __[1.4](#14)__
   - __[1.3](#13)__
   - __[1.2](#12)__
