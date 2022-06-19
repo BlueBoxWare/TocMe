@@ -5,9 +5,7 @@ fun properties(key: String) = project.findProperty(key).toString()
 plugins {
   kotlin("jvm") version "1.5.20"
   id("java")
-  id("java-gradle-plugin")
-  id("maven-publish")
-  id("com.gradle.plugin-publish") version "0.12.0"
+  id("com.gradle.plugin-publish") version "1.0.0-rc-3"
   id("com.github.blueboxware.tocme") version "1.1"
 }
 
@@ -69,11 +67,10 @@ tasks {
 
 gradlePlugin {
   plugins {
-    register("TocMe") {
+    create("TocMe") {
       id = "com.github.blueboxware.tocme"
       implementationClass = "com.github.blueboxware.tocme.TocMePlugin"
       displayName = "TocMe"
-      version = properties("version")
     }
   }
 }

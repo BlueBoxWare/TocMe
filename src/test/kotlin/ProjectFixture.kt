@@ -30,7 +30,7 @@ import kotlin.test.assertTrue
 
 internal class ProjectFixture(private val tempDir: File) {
 
-  private val GRADLE_VERSION = GradleVersion.version("7.4.2")
+  private val GRADLE_VERSION = GradleVersion.version("7.6-20220617064407+0000")
   private val TEST_RELEASED_VERSION = false
 
   private val buildFile = File(tempDir, "build.gradle")

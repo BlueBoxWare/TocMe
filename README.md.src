@@ -234,6 +234,9 @@ in `dashChars`, which are replaced by a dash, and characters in `allowedChars`, 
 
 # Changelog
 
+## 1.5
+* Internal change only: remove usage of `ConfigureUtil` in preparation for Gradle 8.0.
+
 ## 1.4
 * Now uses 3 spaces as indentation instead of 2. Fixes [#3](https://github.com/BlueBoxWare/TocMe/issues/3): incorrect formatting of nested lists in numbered lists.
 
