@@ -18,8 +18,9 @@ package com.github.blueboxware.tocme.tasks
 import com.github.blueboxware.tocme.TocMeExtension
 import com.github.blueboxware.tocme.TocMePlugin
 import org.gradle.api.DefaultTask
+import org.gradle.api.internal.tasks.TaskExecutionOutcome
+import org.gradle.api.internal.tasks.TaskStateInternal
 import org.gradle.api.tasks.*
-import java.io.File
 
 abstract class TocMeTask: DefaultTask() {
 
@@ -36,9 +37,13 @@ abstract class TocMeTask: DefaultTask() {
   @Input
   internal fun getOptionsAsString() = tocMeExtension.getOptionsAsString()
 
-  @InputFiles
-  @SkipWhenEmpty
-  @Optional
-  fun getInputFiles() = if (getOutputFiles().isNotEmpty()) listOf(File("__DummyF1l3__")) else null
+  @Internal
+  override fun getState(): TaskStateInternal {
+    val state = super.getState()
+    if (state.outcome != null && getOutputFiles().isEmpty()) {
+      state.outcome = TaskExecutionOutcome.NO_SOURCE
+    }
+    return state
+  }
 
 }

@@ -6,7 +6,6 @@ plugins {
   kotlin("jvm") version "1.5.20"
   id("java")
   id("com.gradle.plugin-publish") version "1.0.0-rc-3"
-  id("com.github.blueboxware.tocme") version "1.1"
 }
 
 group = properties("group")
@@ -59,8 +58,6 @@ tasks {
       file("README.md.src").readText().replace("<releasedPluginVersion>", properties("releasedPluginVersion"))
     )
 
-    dependsOn(project.tasks.getByName("insertTocs"))
-
   }
 
 }
@@ -82,9 +79,6 @@ pluginBundle {
   tags = listOf("readme", "table of content", "table of contents", "toc", "markdown")
 }
 
-tocme {
-  doc(file("README.md.src"))
-}
 
 
 

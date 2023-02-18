@@ -20,6 +20,7 @@ This plugin uses the great and powerful [flexmark-java](https://github.com/vsch/
     - __[Specifying options](#specifying-options)__
     - __[Available options](#available-options)__
 - __[Changelog](#changelog)__
+  - __[1.6](#16)__
   - __[1.5](#15)__
   - __[1.4](#14)__
   - __[1.3](#13)__
@@ -36,7 +37,7 @@ Add the plugin to your project's `build.gradle`:
 
 ```groovy
 plugins {
-  id "com.github.blueboxware.tocme" version "1.5"
+  id "com.github.blueboxware.tocme" version "1.6"
 }
 ```
 
@@ -234,6 +235,8 @@ The following options can be used in `build.gradle`:
 in `dashChars`, which are replaced by a dash, and characters in `allowedChars`, which are not removed or replaced but left as is.
 
 # Changelog
+## 1.6
+* Compatibility with Gradle 8.0. [#5]
 
 ## 1.5
 * Internal change only: remove usage of `ConfigureUtil` in preparation for Gradle 8.0.
