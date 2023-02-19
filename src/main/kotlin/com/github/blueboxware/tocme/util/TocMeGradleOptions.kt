@@ -46,7 +46,6 @@ class TocMeGradleOptions(
     }
 
   @JvmOverloads
-  @Suppress("unused")
   fun output(outputFile: String, configurationClosure: Closure<in TocMeOptions>? = null) =
     output(project.file(outputFile), configurationClosure)
 

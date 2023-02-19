@@ -5,28 +5,28 @@ This plugin uses the great and powerful [flexmark-java](https://github.com/vsch/
 # Table of Contents
 <!-- toc -->
 - __[Getting started](#getting-started)__
-  - __[Add the plugin](#add-the-plugin)__
-  - __[Prepare the Markdown document](#prepare-the-markdown-document)__
-  - __[Add the tocme specification](#add-the-tocme-specification)__
-  - __[Run the insertTocs task](#run-the-inserttocs-task)__
+   - __[Add the plugin](#add-the-plugin)__
+   - __[Prepare the Markdown document](#prepare-the-markdown-document)__
+   - __[Add the tocme specification](#add-the-tocme-specification)__
+   - __[Run the insertTocs task](#run-the-inserttocs-task)__
 - __[Notes](#notes)__
-    - __[Multiple TOCs in one document](#multiple-tocs-in-one-document)__
-    - __[Putting TOCs in multiple documents](#putting-tocs-in-multiple-documents)__
-    - __[Backups](#backups)__
+      - __[Multiple TOCs in one document](#multiple-tocs-in-one-document)__
+      - __[Putting TOCs in multiple documents](#putting-tocs-in-multiple-documents)__
+      - __[Backups](#backups)__
 - __[Options](#options)__
-  - __[In the Markdown document itself](#in-the-markdown-document-itself)__
-  - __[In Gradle](#in-gradle)__
-    - __[Output files](#output-files)__
-    - __[Specifying options](#specifying-options)__
-    - __[Available options](#available-options)__
+   - __[In the Markdown document itself](#in-the-markdown-document-itself)__
+   - __[In Gradle](#in-gradle)__
+      - __[Output files](#output-files)__
+      - __[Specifying options](#specifying-options)__
+      - __[Available options](#available-options)__
 - __[Changelog](#changelog)__
-  - __[1.6](#16)__
-  - __[1.5](#15)__
-  - __[1.4](#14)__
-  - __[1.3](#13)__
-  - __[1.2](#12)__
-  - __[1.1](#11)__
-  - __[1.0](#10)__
+   - __[1.6](#16)__
+   - __[1.5](#15)__
+   - __[1.4](#14)__
+   - __[1.3](#13)__
+   - __[1.2](#12)__
+   - __[1.1](#11)__
+   - __[1.0](#10)__
 <!-- /toc -->
 
 # Getting started

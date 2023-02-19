@@ -1,11 +1,24 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 fun properties(key: String) = project.findProperty(key).toString()
 
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+
+  dependencies {
+    val kotlinVersion = project.findProperty("kotlinVersion").toString()
+    classpath("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
+    classpath("org.jetbrains.kotlin:kotlin-stdlib-common:$kotlinVersion")
+    classpath("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
+    classpath("org.jetbrains:annotations:13.0")
+  }
+}
+
 plugins {
-  kotlin("jvm") version "1.5.20"
   id("java")
-  id("com.gradle.plugin-publish") version "1.0.0-rc-3"
+  kotlin("jvm") version "1.7.10"
+  id("com.gradle.plugin-publish") version "1.1.0"
+  id("com.github.blueboxware.tocme") version "1.6"
 }
 
 group = properties("group")
@@ -16,8 +29,8 @@ repositories {
 }
 
 dependencies {
-  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.31")
-  implementation("org.jetbrains.kotlin:kotlin-reflect:1.5.31")
+  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:" + properties("kotlinVersion"))
+  implementation("org.jetbrains.kotlin:kotlin-reflect:" + properties("kotlinVersion"))
 
   implementation("com.vladsch.flexmark:flexmark:" + properties("flexmarkVersion"))
   implementation("com.vladsch.flexmark:flexmark-ext-toc:" + properties("flexmarkVersion"))
@@ -37,12 +50,6 @@ tasks {
     sourceCompatibility = "1.8"
     targetCompatibility = "1.8"
   }
-  withType<KotlinCompile> {
-    kotlinOptions {
-      jvmTarget = "1.8"
-      freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlin.RequiresOptIn"
-    }
-  }
 
   withType<Test> {
     useJUnitPlatform()
@@ -55,29 +62,35 @@ tasks {
     outputs.file("README.md")
 
     file("README.md").writeText(
-      file("README.md.src").readText().replace("<releasedPluginVersion>", properties("releasedPluginVersion"))
+      file("README.md.src").readText().replace("<releasedPluginVersion>",
+        properties("releasedPluginVersion")
+      )
     )
+
+    dependsOn(project.tasks.getByName("insertTocs"))
 
   }
 
 }
 
+tocme {
+  doc(file("README.md.src"))
+}
+
 gradlePlugin {
+  website.set("https://github.com/BlueBoxWare/TocMe")
+  vcsUrl.set("https://github.com/BlueBoxWare/TocMe.git")
   plugins {
     create("TocMe") {
       id = "com.github.blueboxware.tocme"
       implementationClass = "com.github.blueboxware.tocme.TocMePlugin"
       displayName = "TocMe"
+      description = "Plugin to add Table of Contents to Markdown documents and keeping them up to date"
+      tags.set(listOf("readme", "table of content", "table of contents", "toc", "markdown"))
     }
   }
 }
 
-pluginBundle {
-  website = "https://github.com/BlueBoxWare/TocMe"
-  vcsUrl = "https://github.com/BlueBoxWare/TocMe.git"
-  description = "Plugin to add Table of Contents to Markdown documents and keeping them up to date"
-  tags = listOf("readme", "table of content", "table of contents", "toc", "markdown")
-}
 
 
 

@@ -99,7 +99,6 @@ internal class ProjectFixture(private val tempDir: File) {
       .withGradleVersion(GRADLE_VERSION.version)
       .withArguments(*args.toTypedArray(), "--stacktrace", "--info")
 
-    @Suppress("ConstantConditionIf")
     if (!TEST_RELEASED_VERSION) {
       runner.withPluginClasspath()
     }

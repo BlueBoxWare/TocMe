@@ -33,7 +33,6 @@ open class TocMeExtension(
   private val registeredDocs = mutableListOf<Pair<File, TocMeGradleOptions>>()
 
   @JvmOverloads
-  @Suppress("MemberVisibilityCanBePrivate")
   fun doc(inputFile: File, configurationClosure: Closure<in TocMeGradleOptions>? = null) =
     TocMeGradleOptions(project, this).let { options ->
       if (configurationClosure != null) {
@@ -50,19 +49,15 @@ open class TocMeExtension(
     }
 
   @JvmOverloads
-  @Suppress("unused")
   fun doc(inputFile: String, configurationClosure: Closure<in TocMeGradleOptions>? = null) =
     doc(project.file(inputFile), configurationClosure)
 
-  @Suppress("unused")
   fun doc(inputFile: String, configurationClosure: TocMeGradleOptions.() -> Unit) =
     doc(project.file(inputFile), configurationClosure)
 
-  @Suppress("MemberVisibilityCanBePrivate")
   fun docs(vararg inputFiles: File) =
     inputFiles.forEach { doc(it) }
 
-  @Suppress("unused")
   fun docs(vararg inputFiles: String) =
     docs(*(inputFiles.map { project.file(it) }.toTypedArray()))
 
