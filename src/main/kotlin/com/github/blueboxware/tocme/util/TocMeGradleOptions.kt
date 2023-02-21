@@ -16,41 +16,30 @@
 package com.github.blueboxware.tocme.util
 
 import com.github.blueboxware.tocme.TocMeOptions
-import groovy.lang.Closure
+import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.tasks.Input
 import java.io.File
+import javax.inject.Inject
 
-class TocMeGradleOptions(
+abstract class TocMeGradleOptions @Inject constructor (
   val project: Project,
-  defaultOptions: TocMeOptions,
-  private val inputFileDefaultOptions: TocMeOptionsImpl = TocMeOptionsImpl(defaultOptions)
-): TocMeOptions by inputFileDefaultOptions {
+  defaultOptions: TocMeOptionsImpl,
+): TocMeOptionsImpl(defaultOptions) {
 
   internal val outputFiles: MutableMap<File, TocMeOptions> = mutableMapOf()
 
   @JvmOverloads
-  // Don't use @Action: it seems to capture the wrong this object
-  fun output(outputFile: File, configurationClosure: Closure<in TocMeOptions>? = null) =
-    TocMeOptionsImpl(this).let { options ->
-      if (configurationClosure != null) {
-        project.configure(options, configurationClosure)
-      }
+  fun output(outputFile: File, action: Action<TocMeOptionsImpl>? = null) {
+    project.objects.newInstance(TocMeOptionsImpl::class.java, this).let { options ->
+      action?.execute(options)
       outputFiles[outputFile] = options
     }
-
-  fun output(outputFile: File, configurationClosure: TocMeOptions.() -> Unit) =
-    TocMeOptionsImpl(this).let { options ->
-      options.apply(configurationClosure)
-      outputFiles[outputFile] = options
-    }
+  }
 
   @JvmOverloads
-  fun output(outputFile: String, configurationClosure: Closure<in TocMeOptions>? = null) =
-    output(project.file(outputFile), configurationClosure)
-
-  fun output(outputFile: String, configurationClosure: TocMeOptions.() -> Unit) =
-    output(project.file(outputFile), configurationClosure)
+  fun output(outputFile: String, action: Action<TocMeOptionsImpl>? = null) =
+    output(project.file(outputFile), action)
 
   @Suppress("MemberVisibilityCanBePrivate")
   fun outputs(vararg outputFiles: File) =
@@ -61,8 +50,8 @@ class TocMeGradleOptions(
     outputs(*(outputFiles.map { project.file(it) }.toTypedArray()))
 
   @Input
-  fun asString(): String =
-    inputFileDefaultOptions.asString() +
+  override fun asString(): String =
+    super.asString() +
             SEPARATOR +
             outputFiles.map { (file, options) ->
               file.hashCode().toString() + SEPARATOR + (options as? TocMeOptionsImpl)?.asString()

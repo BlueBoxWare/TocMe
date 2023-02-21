@@ -97,6 +97,7 @@ internal class ProjectFixture(private val tempDir: File) {
       .withDebug(true)
       .withProjectDir(tempDir)
       .withGradleVersion(GRADLE_VERSION.version)
+//      .withArguments(*args.toTypedArray(), "--configuration-cache", "--stacktrace", "--info")
       .withArguments(*args.toTypedArray(), "--stacktrace", "--info")
 
     if (!TEST_RELEASED_VERSION) {

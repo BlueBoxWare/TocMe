@@ -21,8 +21,10 @@ import com.vladsch.flexmark.html.HtmlRenderer.*
 import com.vladsch.flexmark.parser.Parser.*
 import com.vladsch.flexmark.util.data.DataHolder
 import com.vladsch.flexmark.util.data.MutableDataSet
+import org.gradle.api.GradleException
+import javax.inject.Inject
 
-class TocMeOptionsImpl(private val parent: TocMeOptions?): TocMeOptions {
+open class TocMeOptionsImpl @Inject constructor(private val parent: TocMeOptions?): TocMeOptions {
 
   override var tag: String? = null
 
@@ -61,6 +63,9 @@ class TocMeOptionsImpl(private val parent: TocMeOptions?): TocMeOptions {
   override fun mode(): Mode = mode ?: parent?.mode() ?: Mode.Normal
 
   override fun levels(): Collection<Int> = levels ?: parent?.levels() ?: setOf(1, 2, 3)
+
+  open fun levels(str: String): Collection<Int> =
+    parseLevels(str) ?: throw GradleException("Invalid level specification: '$str'")
 
   override fun bold(): Boolean = bold ?: parent?.bold() ?: true
   override fun numbered(): Boolean = numbered ?: parent?.numbered() ?: false
@@ -120,7 +125,7 @@ class TocMeOptionsImpl(private val parent: TocMeOptions?): TocMeOptions {
       }
     }
 
-  fun asString(): String =
+  open fun asString(): String =
     variant.asString() +
             plain.asString() +
             levels.toString() +

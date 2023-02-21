@@ -17,15 +17,14 @@ package com.github.blueboxware.tocme
 
 import com.github.blueboxware.tocme.util.*
 import com.vladsch.flexmark.ext.toc.internal.TocOptions
-import groovy.lang.Closure
-import org.gradle.api.GradleException
+import org.gradle.api.Action
 import org.gradle.api.Project
 import java.io.File
 
-open class TocMeExtension(
+abstract class TocMeExtension(
   private val project: Project,
-  private val defaultOptions: TocMeOptionsImpl
-): TocMeOptions by defaultOptions {
+  defaultOptions: TocMeOptionsImpl
+): TocMeOptionsImpl(defaultOptions) {
 
   @Suppress("unused")
   constructor(project: Project): this(project, TocMeOptionsImpl(null))
@@ -33,27 +32,16 @@ open class TocMeExtension(
   private val registeredDocs = mutableListOf<Pair<File, TocMeGradleOptions>>()
 
   @JvmOverloads
-  fun doc(inputFile: File, configurationClosure: Closure<in TocMeGradleOptions>? = null) =
-    TocMeGradleOptions(project, this).let { options ->
-      if (configurationClosure != null) {
-        project.configure(options, configurationClosure)
-      }
+  fun doc(inputFile: File, action: Action<TocMeGradleOptions>? = null) {
+    project.objects.newInstance(TocMeGradleOptions::class.java, project, this).let { options ->
+      action?.execute(options)
       registeredDocs.add(inputFile to options)
     }
-
-  @Suppress("MemberVisibilityCanBePrivate")
-  fun doc(inputFile: File, configurationClosure: TocMeGradleOptions.() -> Unit) =
-    TocMeGradleOptions(project, this).let { options ->
-      options.apply(configurationClosure)
-      registeredDocs.add(inputFile to options)
-    }
+  }
 
   @JvmOverloads
-  fun doc(inputFile: String, configurationClosure: Closure<in TocMeGradleOptions>? = null) =
-    doc(project.file(inputFile), configurationClosure)
-
-  fun doc(inputFile: String, configurationClosure: TocMeGradleOptions.() -> Unit) =
-    doc(project.file(inputFile), configurationClosure)
+  fun doc(inputFile: String, action: Action<TocMeGradleOptions>? = null) =
+    doc(project.file(inputFile), action)
 
   fun docs(vararg inputFiles: File) =
     inputFiles.forEach { doc(it) }
@@ -71,14 +59,11 @@ open class TocMeExtension(
     }
 
   internal fun getOptionsAsString() =
-    defaultOptions.asString() +
+    super.asString() +
             TocMeGradleOptions.SEPARATOR +
             registeredDocs.joinToString(TocMeGradleOptions.SEPARATOR) { (file, options) ->
               file.hashCode().toString() + TocMeGradleOptions.SEPARATOR + options.asString()
             }
-
-  open fun levels(str: String): Collection<Int> =
-    parseLevels(str) ?: throw GradleException("Invalid level specification: '$str'")
 
   @Suppress("unused")
   companion object {

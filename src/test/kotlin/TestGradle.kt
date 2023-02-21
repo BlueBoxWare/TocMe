@@ -27,6 +27,7 @@ internal object TestGradle: BehaviorSpec({
     fixture.addFile("files/nerdfonts.md")
     fixture.addFile("files/variant_issues.md")
     fixture.addFile("files/react.md")
+    fixture.addFile("files/simple.md")
   }
 
   given("no spec") {
@@ -402,6 +403,112 @@ internal object TestGradle: BehaviorSpec({
 
   }
 
+  given("an output spec") {
+
+    beforeContainer {
+      fixture.buildFile(
+        """
+        tocme {
+          doc(file("files/simple.md")) { output(file("out.md")) { bold = false } }
+
+        }
+      """.trimIndent()
+      )
+    }
+
+    `when`("building") {
+
+      fixture.build()
+
+      then("should insert the tocs correctly") {
+        fixture.assertBuildSuccess()
+        fixture.assertFileEquals("files/simple_nobold.out", "out.md")
+      }
+    }
+
+  }
+
+  given("an input spec") {
+
+    beforeContainer {
+      fixture.buildFile(
+        """
+        tocme {
+          doc(file("files/simple.md")) { 
+          bold = false
+          output(file("out.md"))  }
+
+        }
+      """.trimIndent()
+      )
+    }
+
+    `when`("building") {
+
+      fixture.build()
+
+      then("should insert the tocs correctly") {
+        fixture.assertBuildSuccess()
+        fixture.assertFileEquals("files/simple_nobold.out", "out.md")
+      }
+    }
+
+  }
+
+  given("an input and ouput spec, input before") {
+
+    beforeContainer {
+      fixture.buildFile(
+        """
+        tocme {
+          doc(file("files/simple.md")) { 
+          bold = false
+          output(file("out.md")) { bold = true } }
+
+        }
+      """.trimIndent()
+      )
+    }
+
+    `when`("building") {
+
+      fixture.build()
+
+      then("should insert the tocs correctly") {
+        fixture.assertBuildSuccess()
+        fixture.assertFileEquals("files/simple_bold.out", "out.md")
+      }
+    }
+
+  }
+
+  given("an input and output spec, input after") {
+
+    beforeContainer {
+      fixture.buildFile(
+        """
+        tocme {
+          doc(file("files/simple.md")) { 
+           output(file("out.md")) { bold = false }
+           bold = true
+          }
+
+        }
+      """.trimIndent()
+      )
+    }
+
+    `when`("building") {
+
+      fixture.build()
+
+      then("should insert the tocs correctly") {
+        fixture.assertBuildSuccess()
+        fixture.assertFileEquals("files/simple_nobold.out", "out.md")
+      }
+    }
+
+  }
 
 })
 
