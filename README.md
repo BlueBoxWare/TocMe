@@ -237,10 +237,10 @@ in `dashChars`, which are replaced by a dash, and characters in `allowedChars`, 
 
 # Changelog
 ## 1.7
-* Compatibility with Gradle's configuration cache [#6].
+* Compatibility with Gradle's configuration cache #6.
 
 ## 1.6
-* Compatibility with Gradle 8.0. [#5]
+* Compatibility with Gradle 8.0 #5.
 
 ## 1.5
 * Internal change only: remove usage of `ConfigureUtil` in preparation for Gradle 8.0.
