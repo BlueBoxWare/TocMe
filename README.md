@@ -20,6 +20,7 @@ This plugin uses the great and powerful [flexmark-java](https://github.com/vsch/
       - __[Specifying options](#specifying-options)__
       - __[Available options](#available-options)__
 - __[Changelog](#changelog)__
+   - __[1.7](#17)__
    - __[1.6](#16)__
    - __[1.5](#15)__
    - __[1.4](#14)__
@@ -37,7 +38,7 @@ Add the plugin to your project's `build.gradle`:
 
 ```groovy
 plugins {
-  id "com.github.blueboxware.tocme" version "1.6"
+  id "com.github.blueboxware.tocme" version "1.7"
 }
 ```
 
@@ -114,14 +115,14 @@ You can put a number of space-separated options in the opening markers in a docu
 
 The following options are available:
 
-| Name  | Default | Description |
-| ------------- | ------------- | ------------- |
-| **`style`**  | `hierarchy`  | The style to use for the TOC. Possible values: `hierarchy`, `flat`, `reversed` (flat in reversed order), `increasing` (flat, alphabetically sorted) or `decreasing` (flat, alphabetically reversed sorted). |
-| **`mode`**   | `normal`     | Determines which headers to include. Possible values: `normal` (only headers which appear after the TOC), `full` (include headers appearing before the TOC) or `local` (only subheaders of the header above the marker). |
-| **`levels`** | `1-3`          | Which header levels to include. Examples of possible values: "`1-4`", "`1,2,3,4`" (same), "`1-2,3-4`" (same). |
-| **`numbered`** | `false`      | When true: number the headers in the TOC. |
-| **`bold`**   | `true`         | When true: render the headers in the TOC bold. |
-| **`plain`**  | `false`        | When true: don't make the headers links to their respective sections. |
+| Name           | Default     | Description                                                                                                                                                                                                              |
+|----------------|-------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **`style`**    | `hierarchy` | The style to use for the TOC. Possible values: `hierarchy`, `flat`, `reversed` (flat in reversed order), `increasing` (flat, alphabetically sorted) or `decreasing` (flat, alphabetically reversed sorted).              |
+| **`mode`**     | `normal`    | Determines which headers to include. Possible values: `normal` (only headers which appear after the TOC), `full` (include headers appearing before the TOC) or `local` (only subheaders of the header above the marker). |
+| **`levels`**   | `1-3`       | Which header levels to include. Examples of possible values: "`1-4`", "`1,2,3,4`" (same), "`1-2,3-4`" (same).                                                                                                            |
+| **`numbered`** | `false`     | When true: number the headers in the TOC.                                                                                                                                                                                |
+| **`bold`**     | `true`      | When true: render the headers in the TOC bold.                                                                                                                                                                           |
+| **`plain`**    | `false`     | When true: don't make the headers links to their respective sections.                                                                                                                                                    |
 
 ## In Gradle
 
@@ -203,31 +204,31 @@ for the `tocme` specification.
 ### Available options
 The following options can be used in `build.gradle`:
 
-| Name  | Type | Default | Description |
-| ------------- | ----- | ------------- | ------------- |
-| **`variant`** | <kbd>enum</kbd> | `GitHub` | The markdown variant to use when parsing the document and creating the TOC. Possible values: `Commonmark`, `Commonmark26` (Commonmark v0.26), `Commonmark27` (v0.27), `Commonmark28` (v0.28), `Kramdown`, `Markdown`, `GitHub`, `GitHubDoc`, `GitLab`, `MultiMarkdown`, `Pegdown` and `PegdownStrict`. |
-| **`style`**  | <kbd>enum</kbd> | `Hierarchy`  | The style to use for the TOC. Possible values: `Hierarchy`, `Flat`, `Reversed` (flat in reversed order), `Increasing` (flat, alphabetically sorted) or `Decreasing` (flat, alphabetically reversed sorted). |
-| **`mode`**   | <kbd>enum</kbd> | `Normal`     | Determines which headers to include. Possible values: `Normal` (only headers which appear after the TOC), `Full` (include headers appearing before the TOC) or `Local` (only subheaders of the header above the marker). |
-| **`levels`** | <kbd>int</kbd> | `[1, 2, 3]` (levels 1-3) | A collection of integers specifying the level numbers to include. Use the `levels()` function to specify a string instead, for example: `levels = levels("1,3-5")` |
-| **`numbered`** | <kbd>bool</kbd> |`false`      | When true: number the headers in the TOC. |
-| **`bold`**   | <kbd>bool</kbd> | `true`         | When true: render the headers in the TOC bold. |
-| **`plain`**  | <kbd>bool</kbd> | `false`        | When true: don't make the headers links to their respective sections. |
+| Name           | Type            | Default                  | Description                                                                                                                                                                                                                                                                                            |
+|----------------|-----------------|--------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **`variant`**  | <kbd>enum</kbd> | `GitHub`                 | The markdown variant to use when parsing the document and creating the TOC. Possible values: `Commonmark`, `Commonmark26` (Commonmark v0.26), `Commonmark27` (v0.27), `Commonmark28` (v0.28), `Kramdown`, `Markdown`, `GitHub`, `GitHubDoc`, `GitLab`, `MultiMarkdown`, `Pegdown` and `PegdownStrict`. |
+| **`style`**    | <kbd>enum</kbd> | `Hierarchy`              | The style to use for the TOC. Possible values: `Hierarchy`, `Flat`, `Reversed` (flat in reversed order), `Increasing` (flat, alphabetically sorted) or `Decreasing` (flat, alphabetically reversed sorted).                                                                                            |
+| **`mode`**     | <kbd>enum</kbd> | `Normal`                 | Determines which headers to include. Possible values: `Normal` (only headers which appear after the TOC), `Full` (include headers appearing before the TOC) or `Local` (only subheaders of the header above the marker).                                                                               |
+| **`levels`**   | <kbd>int</kbd>  | `[1, 2, 3]` (levels 1-3) | A collection of integers specifying the level numbers to include. Use the `levels()` function to specify a string instead, for example: `levels = levels("1,3-5")`                                                                                                                                     |
+| **`numbered`** | <kbd>bool</kbd> | `false`                  | When true: number the headers in the TOC.                                                                                                                                                                                                                                                              |
+| **`bold`**     | <kbd>bool</kbd> | `true`                   | When true: render the headers in the TOC bold.                                                                                                                                                                                                                                                         |
+| **`plain`**    | <kbd>bool</kbd> | `false`                  | When true: don't make the headers links to their respective sections.                                                                                                                                                                                                                                  |
 
 #### Advanced options
 
-| Name  | Type | Default | Description |
-| ------| ---- | ------- | ------------- |
-| **`tag`** | <kbd>string</kbd> | `"toc"` | The keyword to use in the toc-markers in the markdown document. |
-| **`removeEmojis`** | <kbd>bool</kbd> | `false` | Remove emojis from the header texts in the TOC. |
-| **`requireSpace`** | <kbd>bool</kbd> | `true` | When true: don't recognize headers without a space between the # and the header text (`#Header`) |
-| **`dupedDashes`** | <kbd>bool</kbd> | ...<sup>1</sup> | When false: replace duplicate dashes in header link ids with a single dash. |
-| **`resolveDupes`** | <kbd>bool</kbd> | ...<sup>1</sup> | When true: add a number to duplicate header link ids to make them unique. |
-| **`dashChars`** | <kbd>string</kbd> | ...<sup>1</sup> | A string specifying the characters to replace with a dash in header link ids.<sup>2</sup> |
-| **`allowedChars`** | <kbd>string</kbd> | ...<sup>1</sup> | A string specifying the characters which are allowed in header link ids. Alphanumeric characters are always allowed.<sup>2</sup>  |
-| **`allowLeadingSpace`** | <kbd>bool</kbd> | ...<sup>1</sup> | When true: allow non-indent spaces before headers. |
-| **`emptyHeadingWithoutSpace`** | <kbd>bool</kbd> | `true` | When false: don't recognize empty headers without a space following the '#'. |
-| **`setextMarkerLength`** | <kbd>int</kbd> | ...<sup>1</sup> | The minimum number of `-` or `=` characters to use under a setext header for it to be recognized as header. |
-| **`headingInterruptsItemParagraph`** | <kbd>bool</kbd> | `true` | When true: allow headings to interrupt list item paragraphs. |
+| Name                                 | Type              | Default         | Description                                                                                                                      |
+|--------------------------------------|-------------------|-----------------|----------------------------------------------------------------------------------------------------------------------------------|
+| **`tag`**                            | <kbd>string</kbd> | `"toc"`         | The keyword to use in the toc-markers in the markdown document.                                                                  |
+| **`removeEmojis`**                   | <kbd>bool</kbd>   | `false`         | Remove emojis from the header texts in the TOC.                                                                                  |
+| **`requireSpace`**                   | <kbd>bool</kbd>   | `true`          | When true: don't recognize headers without a space between the # and the header text (`#Header`)                                 |
+| **`dupedDashes`**                    | <kbd>bool</kbd>   | ...<sup>1</sup> | When false: replace duplicate dashes in header link ids with a single dash.                                                      |
+| **`resolveDupes`**                   | <kbd>bool</kbd>   | ...<sup>1</sup> | When true: add a number to duplicate header link ids to make them unique.                                                        |
+| **`dashChars`**                      | <kbd>string</kbd> | ...<sup>1</sup> | A string specifying the characters to replace with a dash in header link ids.<sup>2</sup>                                        |
+| **`allowedChars`**                   | <kbd>string</kbd> | ...<sup>1</sup> | A string specifying the characters which are allowed in header link ids. Alphanumeric characters are always allowed.<sup>2</sup> |
+| **`allowLeadingSpace`**              | <kbd>bool</kbd>   | ...<sup>1</sup> | When true: allow non-indent spaces before headers.                                                                               |
+| **`emptyHeadingWithoutSpace`**       | <kbd>bool</kbd>   | `true`          | When false: don't recognize empty headers without a space following the '#'.                                                     |
+| **`setextMarkerLength`**             | <kbd>int</kbd>    | ...<sup>1</sup> | The minimum number of `-` or `=` characters to use under a setext header for it to be recognized as header.                      |
+| **`headingInterruptsItemParagraph`** | <kbd>bool</kbd>   | `true`          | When true: allow headings to interrupt list item paragraphs.                                                                     |
 
 <sup>1</sup>: Default depends on the used `variant`.
 
@@ -235,6 +236,9 @@ The following options can be used in `build.gradle`:
 in `dashChars`, which are replaced by a dash, and characters in `allowedChars`, which are not removed or replaced but left as is.
 
 # Changelog
+## 1.7
+* Compatibility with Gradle's configuration cache [#6].
+
 ## 1.6
 * Compatibility with Gradle 8.0. [#5]
 
