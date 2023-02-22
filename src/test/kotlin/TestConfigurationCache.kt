@@ -17,12 +17,12 @@ import io.kotest.engine.spec.tempdir
  * limitations under the License.
  */
 @Suppress("unused")
-internal object TestGradle: BehaviorSpec({
+internal object TestConfigurationCache: BehaviorSpec({
 
   lateinit var fixture: ProjectFixture
 
   beforeContainer {
-    fixture = ProjectFixture(tempdir(), useConfigurationCache = false)
+    fixture = ProjectFixture(tempdir(), useConfigurationCache = true)
     fixture.addFile("files/gdx.md")
     fixture.addFile("files/nerdfonts.md")
     fixture.addFile("files/variant_issues.md")
@@ -69,9 +69,9 @@ internal object TestGradle: BehaviorSpec({
       )
     }
 
-    `when`("building") {
+    `when`("checking") {
 
-      fixture.build()
+      fixture.buildCheck()
 
       then("should report no source") {
         fixture.assertBuildNoSourceAfter33()
@@ -79,9 +79,9 @@ internal object TestGradle: BehaviorSpec({
 
     }
 
-    `when`("checking") {
+    `when`("building") {
 
-      fixture.buildCheck()
+      fixture.build()
 
       then("should report no source") {
         fixture.assertBuildNoSourceAfter33()
@@ -130,6 +130,10 @@ internal object TestGradle: BehaviorSpec({
         fixture.assertFileEquals("files/gdx.md", "files/gdx.md")
       }
 
+      then("should have used the configuration cache") {
+        fixture.assertConfigCacheUsed()
+      }
+
     }
 
     `when`("building") {
@@ -165,6 +169,14 @@ internal object TestGradle: BehaviorSpec({
         fixture.assertBuildUpToDate()
       }
 
+      then("should have used the build-cache") {
+        fixture.assertConfigCacheUsed()
+      }
+
+      then("should have made a backup") {
+        fixture.assertBackupMade("files/gdx.md")
+      }
+
     }
 
     `when`("checking after building and changing the input doc (unchanged TOC)") {
@@ -177,6 +189,10 @@ internal object TestGradle: BehaviorSpec({
 
       then("should not report the TOC is out of date") {
         fixture.assertCheckOutputNothingIsOutOfDate()
+      }
+
+      then("should not have used the configuration cache") {
+        fixture.assertConfigCacheNotUsed()
       }
 
     }
@@ -407,113 +423,6 @@ internal object TestGradle: BehaviorSpec({
         fixture.assertFileEquals("files/gdx.out", "files/gdx.md")
       }
 
-    }
-
-  }
-
-  given("an output spec") {
-
-    beforeContainer {
-      fixture.buildFile(
-        """
-        tocme {
-          doc(file("files/simple.md")) { output(file("out.md")) { bold = false } }
-
-        }
-      """.trimIndent()
-      )
-    }
-
-    `when`("building") {
-
-      fixture.build()
-
-      then("should insert the tocs correctly") {
-        fixture.assertBuildSuccess()
-        fixture.assertFileEquals("files/simple_nobold.out", "out.md")
-      }
-    }
-
-  }
-
-  given("an input spec") {
-
-    beforeContainer {
-      fixture.buildFile(
-        """
-        tocme {
-          doc(file("files/simple.md")) { 
-          bold = false
-          output(file("out.md"))  }
-
-        }
-      """.trimIndent()
-      )
-    }
-
-    `when`("building") {
-
-      fixture.build()
-
-      then("should insert the tocs correctly") {
-        fixture.assertBuildSuccess()
-        fixture.assertFileEquals("files/simple_nobold.out", "out.md")
-      }
-    }
-
-  }
-
-  given("an input and ouput spec, input before") {
-
-    beforeContainer {
-      fixture.buildFile(
-        """
-        tocme {
-          doc(file("files/simple.md")) { 
-          bold = false
-          output(file("out.md")) { bold = true } }
-
-        }
-      """.trimIndent()
-      )
-    }
-
-    `when`("building") {
-
-      fixture.build()
-
-      then("should insert the tocs correctly") {
-        fixture.assertBuildSuccess()
-        fixture.assertFileEquals("files/simple_bold.out", "out.md")
-      }
-    }
-
-  }
-
-  given("an input and output spec, input after") {
-
-    beforeContainer {
-      fixture.buildFile(
-        """
-        tocme {
-          doc(file("files/simple.md")) { 
-           output(file("out.md")) { bold = false }
-           bold = true
-          }
-
-        }
-      """.trimIndent()
-      )
-    }
-
-    `when`("building") {
-
-      fixture.build()
-
-      then("should insert the tocs correctly") {
-        fixture.assertBuildSuccess()
-        fixture.assertFileEquals("files/simple_nobold.out", "out.md")
-      }
     }
 
   }

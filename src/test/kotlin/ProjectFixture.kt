@@ -28,7 +28,10 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-internal class ProjectFixture(private val tempDir: File) {
+internal class ProjectFixture(
+  private val tempDir: File,
+  private val useConfigurationCache: Boolean
+) {
 
   private val GRADLE_VERSION = GradleVersion.version("8.0")
   private val TEST_RELEASED_VERSION = false
@@ -37,7 +40,7 @@ internal class ProjectFixture(private val tempDir: File) {
 
   val project: Project = ProjectBuilder.builder().withProjectDir(tempDir).build()
 
-  val backupDir = "build/tocme/backups/${TocMePlugin.INSERT_TOCS_TASK}/"
+  private val backupDir = "build/tocme/backups/${TocMePlugin.INSERT_TOCS_TASK}/"
 
   private var latestBuildResult: BuildResult? = null
   private var latestTask: String? = null
@@ -94,11 +97,15 @@ internal class ProjectFixture(private val tempDir: File) {
 
     val runner = GradleRunner
       .create()
-      .withDebug(true)
+      .withDebug(!useConfigurationCache)
       .withProjectDir(tempDir)
       .withGradleVersion(GRADLE_VERSION.version)
-//      .withArguments(*args.toTypedArray(), "--configuration-cache", "--stacktrace", "--info")
-      .withArguments(*args.toTypedArray(), "--stacktrace", "--info")
+      .withArguments(
+        *args.toTypedArray(),
+        if (useConfigurationCache) "--configuration-cache" else "--no-configuration-cache",
+        "--stacktrace",
+        "--info"
+      )
 
     if (!TEST_RELEASED_VERSION) {
       runner.withPluginClasspath()
@@ -169,6 +176,14 @@ internal class ProjectFixture(private val tempDir: File) {
   fun assertBuildUpToDate(task: String? = latestTask) =
     assertTaskOutcome(TaskOutcome.UP_TO_DATE, task)
 
+  fun assertConfigCacheUsed() {
+    latestBuildResult!!.output.contains("Reusing configuration cache.")
+  }
+
+  fun assertConfigCacheNotUsed() {
+    !latestBuildResult!!.output.contains("Reusing configuration cache.")
+  }
+
   private fun assertBuildNoSource(task: String? = latestTask) =
     assertTaskOutcome(TaskOutcome.NO_SOURCE, task)
 
@@ -177,6 +192,26 @@ internal class ProjectFixture(private val tempDir: File) {
       assertBuildUpToDate(task)
     else
       assertBuildNoSource()
+
+  fun assertBackupMade(expectedFileName: String) {
+    val name = File(expectedFileName).name
+    project.file(backupDir).walkTopDown().forEach { file ->
+      if (file.name == name) {
+        file.relativeToOrSelf(project.rootDir).let {
+          try {
+            assertFileEquals(
+              File(testDataDir, expectedFileName),
+              file
+            )
+            return
+          } catch (e: AssertionError) {
+            // Keep going
+          }
+        }
+      }
+    }
+    throw AssertionError("Backup of $expectedFileName not found.")
+  }
 
   private fun assertTaskOutcome(expectedOutcome: TaskOutcome, task: String? = latestTask) =
     task?.let { actualTask ->

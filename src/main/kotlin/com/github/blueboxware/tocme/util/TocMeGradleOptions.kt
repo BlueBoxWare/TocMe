@@ -17,21 +17,23 @@ package com.github.blueboxware.tocme.util
 
 import com.github.blueboxware.tocme.TocMeOptions
 import org.gradle.api.Action
-import org.gradle.api.Project
+import org.gradle.api.internal.file.FileOperations
+import org.gradle.api.model.ObjectFactory
 import org.gradle.api.tasks.Input
 import java.io.File
 import javax.inject.Inject
 
-abstract class TocMeGradleOptions @Inject constructor (
-  val project: Project,
+abstract class TocMeGradleOptions @Inject constructor(
   defaultOptions: TocMeOptionsImpl,
+  private val objectFactory: ObjectFactory,
+  private val fileOperations: FileOperations
 ): TocMeOptionsImpl(defaultOptions) {
 
   internal val outputFiles: MutableMap<File, TocMeOptions> = mutableMapOf()
 
   @JvmOverloads
   fun output(outputFile: File, action: Action<TocMeOptionsImpl>? = null) {
-    project.objects.newInstance(TocMeOptionsImpl::class.java, this).let { options ->
+    objectFactory.newInstance(TocMeOptionsImpl::class.java, this).let { options ->
       action?.execute(options)
       outputFiles[outputFile] = options
     }
@@ -39,7 +41,7 @@ abstract class TocMeGradleOptions @Inject constructor (
 
   @JvmOverloads
   fun output(outputFile: String, action: Action<TocMeOptionsImpl>? = null) =
-    output(project.file(outputFile), action)
+    output(fileOperations.file(outputFile), action)
 
   @Suppress("MemberVisibilityCanBePrivate")
   fun outputs(vararg outputFiles: File) =
@@ -47,7 +49,7 @@ abstract class TocMeGradleOptions @Inject constructor (
 
   @Suppress("unused")
   fun outputs(vararg outputFiles: String) =
-    outputs(*(outputFiles.map { project.file(it) }.toTypedArray()))
+    outputs(*(outputFiles.map { fileOperations.file(it) }.toTypedArray()))
 
   @Input
   override fun asString(): String =

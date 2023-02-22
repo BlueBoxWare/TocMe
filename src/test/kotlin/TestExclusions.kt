@@ -24,7 +24,7 @@ internal object TestExclusions: BehaviorSpec({
   lateinit var fixture: ProjectFixture
 
   beforeContainer {
-    fixture = ProjectFixture(tempdir())
+    fixture = ProjectFixture(tempdir(), useConfigurationCache = false)
     fixture.addFile("files/gdx.md")
   }
 

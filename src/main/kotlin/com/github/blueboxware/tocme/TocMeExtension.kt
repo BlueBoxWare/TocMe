@@ -18,22 +18,30 @@ package com.github.blueboxware.tocme
 import com.github.blueboxware.tocme.util.*
 import com.vladsch.flexmark.ext.toc.internal.TocOptions
 import org.gradle.api.Action
-import org.gradle.api.Project
+import org.gradle.api.internal.file.FileOperations
+import org.gradle.api.model.ObjectFactory
 import java.io.File
+import javax.inject.Inject
 
-abstract class TocMeExtension(
-  private val project: Project,
-  defaultOptions: TocMeOptionsImpl
+abstract class TocMeExtension @Inject constructor(
+  defaultOptions: TocMeOptionsImpl,
+  private val objectFactory: ObjectFactory,
+  private val fileOperations: FileOperations
 ): TocMeOptionsImpl(defaultOptions) {
 
   @Suppress("unused")
-  constructor(project: Project): this(project, TocMeOptionsImpl(null))
+  @Inject
+  constructor(objectFactory: ObjectFactory, fileOperations: FileOperations): this(
+    TocMeOptionsImpl(null),
+    objectFactory,
+    fileOperations
+  )
 
   private val registeredDocs = mutableListOf<Pair<File, TocMeGradleOptions>>()
 
   @JvmOverloads
   fun doc(inputFile: File, action: Action<TocMeGradleOptions>? = null) {
-    project.objects.newInstance(TocMeGradleOptions::class.java, project, this).let { options ->
+    objectFactory.newInstance(TocMeGradleOptions::class.java, this).let { options ->
       action?.execute(options)
       registeredDocs.add(inputFile to options)
     }
@@ -41,13 +49,13 @@ abstract class TocMeExtension(
 
   @JvmOverloads
   fun doc(inputFile: String, action: Action<TocMeGradleOptions>? = null) =
-    doc(project.file(inputFile), action)
+    doc(fileOperations.file(inputFile), action)
 
   fun docs(vararg inputFiles: File) =
     inputFiles.forEach { doc(it) }
 
   fun docs(vararg inputFiles: String) =
-    docs(*(inputFiles.map { project.file(it) }.toTypedArray()))
+    docs(*(inputFiles.map { fileOperations.file(it) }.toTypedArray()))
 
   fun getDocs(): List<Pair<File, TocMeGradleOptions>> = registeredDocs
 

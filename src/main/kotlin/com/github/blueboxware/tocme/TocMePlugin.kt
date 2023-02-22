@@ -25,7 +25,7 @@ class TocMePlugin: Plugin<Project> {
 
   override fun apply(project: Project) {
 
-    val tocmeExtension = project.extensions.create(TOCME_EXTENSION_NAME, TocMeExtension::class.java, project)
+    val tocmeExtension = project.extensions.create(TOCME_EXTENSION_NAME, TocMeExtension::class.java)
 
     project.tasks.create(INSERT_TOCS_TASK, InsertTocsTask::class.java) {
       it.tocMeExtension = tocmeExtension

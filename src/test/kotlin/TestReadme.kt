@@ -24,7 +24,7 @@ internal object TestReadme: BehaviorSpec({
   lateinit var fixture: ProjectFixture
 
   beforeContainer {
-    fixture = ProjectFixture(tempdir())
+    fixture = ProjectFixture(tempdir(), useConfigurationCache = false)
   }
 
   fun loadTests(type: String) = File("README.md.src").readText().let { readmeTxt ->

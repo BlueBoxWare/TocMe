@@ -19,10 +19,12 @@ import com.github.blueboxware.tocme.TocMeOptions
 import com.github.blueboxware.tocme.TocMePlugin
 import com.github.blueboxware.tocme.util.insertTocs
 import org.gradle.api.GradleException
+import org.gradle.api.file.ProjectLayout
 import org.gradle.api.tasks.TaskAction
 import java.io.File
+import javax.inject.Inject
 
-open class CheckTocsTask: TocMeTask() {
+open class CheckTocsTask @Inject constructor(private val projectLayout: ProjectLayout): TocMeTask() {
 
   init {
     description = "Checks if TOCs are up-to-date"
@@ -57,7 +59,8 @@ open class CheckTocsTask: TocMeTask() {
 
     didWork = true
 
-    val relativeInputPath = inputFile.relativeToOrSelf(project.rootDir).path
+    val projectDir = projectLayout.projectDirectory.asFile
+    val relativeInputPath = inputFile.relativeToOrSelf(projectDir).path
 
     val (result, warnings, error) = insertTocs(inputFile, outputFile, options)
 
@@ -71,7 +74,7 @@ open class CheckTocsTask: TocMeTask() {
     }
 
     if (!outputFile.exists() || outputFile.readText() != result) {
-      val relativeOutputPath = outputFile.relativeToOrSelf(project.rootDir).path
+      val relativeOutputPath = outputFile.relativeToOrSelf(projectDir).path
       logger.warn("$relativeOutputPath: ${TocMePlugin.OUT_OF_DATE_MSG}")
       return true
     }
