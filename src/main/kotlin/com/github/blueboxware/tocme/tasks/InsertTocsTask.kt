@@ -122,7 +122,7 @@ open class InsertTocsTask @Inject constructor(
     for (file in files) {
       for (pattern in DirectoryScanner.getDefaultExcludes()) {
         if (DirectoryScanner.match(pattern, file.path)) {
-          throw GradleException("The file '${file.relativeToOrSelf(projectLayout.projectDirectory.asFile)}' won't be backed up before changing because it is excluded by DirectoryScanner default rule '$pattern' (https://github.com/gradle/gradle/issues/2985). Please use a different filename.")
+          throw GradleException("The file '${file.relativeToOrSelf(projectLayout.projectDirectory.asFile)}' won't be backed up before changing because it is excluded by DirectoryScanner default rule '$pattern' (https://github.com/gradle/gradle/issues/1348). Please use a different filename.")
         }
       }
     }
