@@ -62,8 +62,8 @@ tasks {
     outputs.file("README.md")
 
     file("README.md").writeText(
-      file("README.md.src").readText().replace("<releasedPluginVersion>",
-        properties("releasedPluginVersion")
+      file("README.md.src").readText().replace(
+        "<releasedPluginVersion>", properties("releasedPluginVersion")
       )
     )
 

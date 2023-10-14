@@ -33,7 +33,7 @@ internal class ProjectFixture(
   private val useConfigurationCache: Boolean
 ) {
 
-  private val GRADLE_VERSION = GradleVersion.version("8.0")
+  private val GRADLE_VERSION = GradleVersion.version("8.4")
   private val TEST_RELEASED_VERSION = false
 
   private val buildFile = File(tempDir, "build.gradle")
