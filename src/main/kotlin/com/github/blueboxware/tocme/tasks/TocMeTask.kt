@@ -41,7 +41,11 @@ abstract class TocMeTask: DefaultTask() {
   override fun getState(): TaskStateInternal {
     val state = super.getState()
     if (state.outcome != null && getOutputFiles().isEmpty()) {
-      state.outcome = TaskExecutionOutcome.NO_SOURCE
+      val newState = TaskStateInternal()
+      newState.outcome = TaskExecutionOutcome.NO_SOURCE
+      newState.executing = state.executing
+      newState.isActionable = state.isActionable
+      return newState
     }
     return state
   }
