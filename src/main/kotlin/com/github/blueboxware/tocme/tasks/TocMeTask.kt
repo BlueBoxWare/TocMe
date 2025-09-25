@@ -20,29 +20,31 @@ import com.github.blueboxware.tocme.TocMePlugin
 import org.gradle.api.DefaultTask
 import org.gradle.api.internal.tasks.TaskExecutionOutcome
 import org.gradle.api.internal.tasks.TaskStateInternal
-import org.gradle.api.tasks.*
+import org.gradle.api.provider.Property
+import org.gradle.api.tasks.CacheableTask
+import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Nested
+import org.gradle.api.tasks.OutputFiles
 
+@CacheableTask
 abstract class TocMeTask: DefaultTask() {
 
   init {
     group = TocMePlugin.TASK_GROUP
   }
 
-  @get:[Internal]
-  internal lateinit var tocMeExtension: TocMeExtension
+  @get:Nested
+  abstract val tocMeExtension: Property<TocMeExtension>
 
   @OutputFiles
-  fun getOutputFiles() = tocMeExtension.getOutputFiles()
-
-  @Input
-  internal fun getOptionsAsString() = tocMeExtension.getOptionsAsString()
+  fun getOutputFiles() = tocMeExtension.map { it.getOutputFiles(alwaysIncludeInputFile = false) }
 
   @Internal
   override fun getState(): TaskStateInternal {
     val state = super.getState()
-    if (state.outcome != null && getOutputFiles().isEmpty()) {
+    if (state.outcome != null && tocMeExtension.get().getOutputFiles(alwaysIncludeInputFile = false).isEmpty()) {
       val newState = TaskStateInternal()
-      newState.outcome = TaskExecutionOutcome.NO_SOURCE
+      newState.setOutcome(TaskExecutionOutcome.NO_SOURCE)
       newState.executing = state.executing
       newState.isActionable = state.isActionable
       return newState

@@ -7,6 +7,7 @@ import com.vladsch.flexmark.parser.ParserEmulationProfile
 import com.vladsch.flexmark.util.data.MutableDataSet
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.datatest.withData
+import io.kotest.engine.spec.tempdir
 import io.kotest.engine.spec.tempfile
 import java.io.File
 import kotlin.test.assertNotNull
@@ -29,7 +30,6 @@ import kotlin.test.assertTrue
  * limitations under the License.
  */
 
-@Suppress("unused")
 internal object TestInsertToc: BehaviorSpec({
 
   val TEST_DATA_DIR = File("src/test/resources")
@@ -44,6 +44,8 @@ internal object TestInsertToc: BehaviorSpec({
     val expected: String
   )
 
+  val factory = ProjectFixture(tempdir()).project.objects
+
   fun loadTests(filename: String): List<Test> = run {
     expectedTestNumber = 0
     File(TEST_DATA_DIR, filename).readText().split(Regex("=====+\n")).flatMap { test ->
@@ -55,7 +57,7 @@ internal object TestInsertToc: BehaviorSpec({
         if (nr.toInt() != expectedTestNumber) {
           throw AssertionError("Test number is $nr, should be $expectedTestNumber")
         }
-        Variant.values().map {
+        Variant.entries.map {
           Test("$nr ($it)", input.trimEnd('\n'), it, expectedOutput.trimEnd('\n'))
         }
 
@@ -63,37 +65,45 @@ internal object TestInsertToc: BehaviorSpec({
     }
   }
 
-  given("a Markdown document with correct toc tags") {
+  Given("a Markdown document with correct toc tags") {
 
     withData(loadTests("valid.data")) { (label, input, variant, expected) ->
 
-      `when`("inserting a toc: $label") {
+      When("inserting a toc: $label") {
 
         val parserOptions = MutableDataSet()
         variant.setIn(parserOptions)
 
-        val tocMeOptions = TocMeOptionsImpl(null).apply { this.variant = variant }
+        val tocMeOptions = TocMeOptionsImpl(null, factory).apply { this.variant.set(variant) }
 
         val parser = Parser.builder(parserOptions).build()
 
         val document = parser.parse(input)
-        val (result, warnings, error) = document.insertTocs(tocMeOptions, checkCurrentContent = true)
+        val (result, warnings, error) = document.insertTocs(
+          tocMeOptions.createStaticOptions(),
+          checkCurrentContent = true,
+          factory
+        )
 
-        then("generates no errors") {
+        Then("generates no errors") {
           assertNull(error, "Unexpected error: $error")
         }
 
-        then("generates no warnings") {
+        Then("generates no warnings") {
           assertTrue(warnings.isEmpty(), "Unexpected warning(s): \n" + warnings.joinToString(separator = "\n"))
         }
 
-        then("generates the correct results") {
+        Then("generates the correct results") {
           ProjectFixture.assertTextEquals(expected, result!!, document = document)
         }
 
-        then("should 'update' without warnings, errors or actual changes") {
+        Then("should 'update' without warnings, errors or actual changes") {
           val document2 = parser.parse(result!!)
-          val (result2, warnings2, error2) = document2.insertTocs(tocMeOptions, checkCurrentContent = true)
+          val (result2, warnings2, error2) = document2.insertTocs(
+            tocMeOptions.createStaticOptions(),
+            checkCurrentContent = true,
+            factory
+          )
           assertNull(error2, "Failed to update. Unexpected error: $error2")
           assertTrue(
             warnings2.isEmpty(),
@@ -106,21 +116,25 @@ internal object TestInsertToc: BehaviorSpec({
 
   }
 
-  given("a Markdown document which should produces warnings") {
+  Given("a Markdown document which should produces warnings") {
 
     withData(loadTests("warning.data")) { (label, input, variant, expected) ->
 
-      `when`("inserting a toc: $label") {
+      When("inserting a toc: $label") {
 
         val parserOptions = MutableDataSet()
         variant.setIn(parserOptions)
 
-        val tocMeOptions = TocMeOptionsImpl(null).apply { this.variant = variant }
+        val tocMeOptions = TocMeOptionsImpl(null, factory).apply { this.variant.set(variant) }
 
         val parser = Parser.builder(parserOptions).build()
 
         val document = parser.parse(input)
-        val (result, warnings, error) = document.insertTocs(tocMeOptions, checkCurrentContent = true)
+        val (result, warnings, error) = document.insertTocs(
+          tocMeOptions.createStaticOptions(),
+          checkCurrentContent = true,
+          factory
+        )
 
         val warningRegex = expected.lines().first().let {
           Regex(
@@ -129,18 +143,18 @@ internal object TestInsertToc: BehaviorSpec({
           )
         }
 
-        then("generates no errors") {
+        Then("generates no errors") {
           assertNull(error, "Unexpected error: $error")
         }
 
-        then("generates the expected warning") {
+        Then("generates the expected warning") {
           assertTrue(
             warnings.any { it.matches(warningRegex) },
             "No warning which matches '$warningRegex' found.\nWarnings:\n" + warnings.joinToString(separator = "\n")
           )
         }
 
-        then("generates the correct result") {
+        Then("generates the correct result") {
           expected.lines().drop(1).joinToString(separator = "\n").let {
             ProjectFixture.assertTextEquals(it, result!!)
           }
@@ -150,25 +164,25 @@ internal object TestInsertToc: BehaviorSpec({
     }
   }
 
-  given("a Markdown document which should produce an error") {
+  Given("a Markdown document which should produce an error") {
 
     withData(loadTests("error.data")) { (label, input, variant, expected) ->
 
-      `when`("inserting a toc: $label") {
+      When("inserting a toc: $label") {
 
         val parserOptions = MutableDataSet()
         variant.setIn(parserOptions)
 
-        val tocMeOptions = TocMeOptionsImpl(null).apply { this.variant = variant }
+        val tocMeOptions = TocMeOptionsImpl(null, factory).apply { this.variant.set(variant) }
 
         val parser = Parser.builder(parserOptions).build()
 
         val document = parser.parse(input)
-        val (_, _, error) = document.insertTocs(tocMeOptions, checkCurrentContent = true)
+        val (_, _, error) = document.insertTocs(tocMeOptions.createStaticOptions(), checkCurrentContent = true, factory)
 
         val errorRegex = expected.lines().first().let { Regex(".*$it.*", RegexOption.IGNORE_CASE) }
 
-        then("generates an error") {
+        Then("generates an error") {
           assertNotNull(error, "No error")
           assertTrue(error.matches(errorRegex), "Actual error ('$error') doesn't match regex ('$errorRegex')")
         }
@@ -177,7 +191,7 @@ internal object TestInsertToc: BehaviorSpec({
     }
   }
 
-  given("a Markdown document from file") {
+  Given("a Markdown document from file") {
 
     val options = MutableDataSet().apply {
       setFrom(ParserEmulationProfile.GITHUB)
@@ -192,26 +206,34 @@ internal object TestInsertToc: BehaviorSpec({
       )
     }.forEach { (absolutePath, input, expected) ->
 
-      `when`("inserting a toc ($absolutePath)") {
+      When("inserting a toc ($absolutePath)") {
 
         val document = parser.parse(input)
-        val (result, warnings, error) = document.insertTocs(TocMeOptionsImpl(null), checkCurrentContent = true)
+        val (result, warnings, error) = document.insertTocs(
+          TocMeOptionsImpl(null, factory).createStaticOptions(),
+          checkCurrentContent = true,
+          factory
+        )
 
-        then("generates no errors") {
+        Then("generates no errors") {
           assertNull(error, "Unexpected error: $error")
         }
 
-        then("generates no warnings") {
+        Then("generates no warnings") {
           assertTrue(warnings.isEmpty(), "Unexpected warning(s): \n" + warnings.joinToString(separator = "\n"))
         }
 
-        then("generates the correct results") {
+        Then("generates the correct results") {
           ProjectFixture.assertTextEquals(expected.trimEnd(), result!!.trimEnd())
         }
 
-        then("should 'update' without warnings, errors or actual changes") {
+        Then("should 'update' without warnings, errors or actual changes") {
           val document2 = parser.parse(result!!)
-          val (result2, warnings2, error2) = document2.insertTocs(TocMeOptionsImpl(null), checkCurrentContent = true)
+          val (result2, warnings2, error2) = document2.insertTocs(
+            TocMeOptionsImpl(null, factory).createStaticOptions(),
+            checkCurrentContent = true,
+            factory
+          )
           assertNull(error2, "Failure on update. Unexpected error: $error2")
           assertTrue(
             warnings2.isEmpty(),
@@ -225,19 +247,19 @@ internal object TestInsertToc: BehaviorSpec({
 
   }
 
-  given("a Markdown document with constructs which are handled different by different markdown variants") {
+  Given("a Markdown document with constructs which are handled different by different markdown variants") {
 
-    Variant.values().map {
+    Variant.entries.map {
       Pair(
         it.name,
         it
       )
     }.forEach { (name, variant) ->
 
-      `when`("inserting a toc with variant $name") {
+      When("inserting a toc with variant $name") {
 
-        val tocmeOptions = TocMeOptionsImpl(null).apply {
-          this.variant = variant
+        val tocmeOptions = TocMeOptionsImpl(null, factory).apply {
+          this.variant.set(variant)
         }
         val tempFile = tempfile()
 
@@ -245,22 +267,23 @@ internal object TestInsertToc: BehaviorSpec({
           insertTocs(
             File(TEST_DATA_FILES_DIR, "variant_issues.md"),
             tempFile,
-            tocmeOptions,
-            writeChanges = true
+            tocmeOptions.createStaticOptions(),
+            factory,
+            writeChanges = true,
           )
 
-        then("generates no errors") {
+        Then("generates no errors") {
           assertNull(error, "Unexpected error: $error")
         }
 
-        then("generates no warnings") {
+        Then("generates no warnings") {
           assertTrue(
             warnings.isEmpty(),
             "Unexpected warning(s): \n" + warnings.joinToString(separator = "\n")
           )
         }
 
-        then("generates the correct result") {
+        Then("generates the correct result") {
 
           File(TEST_DATA_FILES_DIR, "variant_issues.$name.out").let { expectedFile ->
 
@@ -281,36 +304,37 @@ internal object TestInsertToc: BehaviorSpec({
 
   }
 
-  given("a Markdown document with emojis in headers") {
+  Given("a Markdown document with emojis in headers") {
 
     listOf("variant_issues", "nerdfonts").map {
       Pair("$it.md", "${it}_no_emojis.out")
     }.forEach { (file, expected) ->
 
-      `when`("inserting a toc while removing emojis: $file") {
+      When("inserting a toc while removing emojis: $file") {
 
         val tempFile = tempfile()
 
-        val tocmeOptions = TocMeOptionsImpl(null).apply {
-          removeEmojis = true
+        val tocmeOptions = TocMeOptionsImpl(null, factory).apply {
+          removeEmojis.set(true)
         }
 
         val (_, warnings, error) = insertTocs(
           File(TEST_DATA_FILES_DIR, file),
           tempFile,
-          tocmeOptions,
+          tocmeOptions.createStaticOptions(),
+          factory,
           writeChanges = true
         )
 
-        then("generates no errors") {
+        Then("generates no errors") {
           assertNull(error, "Unexpected error: $error")
         }
 
-        then("generates no warnings") {
+        Then("generates no warnings") {
           assertTrue(warnings.isEmpty(), "Unexpected warning(s): \n" + warnings.joinToString(separator = "\n"))
         }
 
-        then("generates the correct result") {
+        Then("generates the correct result") {
           ProjectFixture.assertFileEquals(File(TEST_DATA_FILES_DIR, expected), tempFile)
         }
 
@@ -318,7 +342,7 @@ internal object TestInsertToc: BehaviorSpec({
     }
   }
 
-  given("a simple document with variant issues") {
+  Given("a simple document with variant issues") {
 
     data class Test(
       val label: String,
@@ -354,7 +378,7 @@ internal object TestInsertToc: BehaviorSpec({
       cases = listOf(
         case(
           id = "true",
-          conf = { requireSpace = false },
+          conf = { requireSpace.set(false) },
           expected = """
                                 <!--toc-->
                                 - __[Header1](#header1)__
@@ -366,7 +390,7 @@ internal object TestInsertToc: BehaviorSpec({
         ),
         case(
           id = "false",
-          conf = { requireSpace = true },
+          conf = { requireSpace.set(true) },
           expected = """
                                 <!--toc-->
                                 - __[Header1](#header1)__
@@ -390,8 +414,8 @@ internal object TestInsertToc: BehaviorSpec({
         case(
           id = "true",
           conf = {
-            dupedDashes = true
-            dashChars = "-"
+            dupedDashes.set(true)
+            dashChars.set("-")
           },
           expected = """
                               <!--toc-->
@@ -407,8 +431,8 @@ internal object TestInsertToc: BehaviorSpec({
         case(
           id = "false",
           conf = {
-            dupedDashes = false
-            dashChars = "-"
+            dupedDashes.set(false)
+            dashChars.set("-")
           },
           expected = """
                               <!--toc-->
@@ -424,8 +448,8 @@ internal object TestInsertToc: BehaviorSpec({
         case(
           id = "true + dashChars='_- '",
           conf = {
-            dupedDashes = true
-            dashChars = "_- "
+            dupedDashes.set(true)
+            dashChars.set("_- ")
           },
           expected = """
                               <!--toc-->
@@ -441,8 +465,8 @@ internal object TestInsertToc: BehaviorSpec({
         case(
           id = "false + dashChars='_- '",
           conf = {
-            dupedDashes = false
-            dashChars = "_- "
+            dupedDashes.set(false)
+            dashChars.set("_- ")
           },
           expected = """
                               <!--toc-->
@@ -472,7 +496,7 @@ internal object TestInsertToc: BehaviorSpec({
       cases = listOf(
         case(
           id = "true",
-          conf = { resolveDupes = true },
+          conf = { resolveDupes.set(true) },
           expected = """
                               <!--toc-->
                               - __[Header1](#header1)__
@@ -491,7 +515,7 @@ internal object TestInsertToc: BehaviorSpec({
         ),
         case(
           id = "false",
-          conf = { resolveDupes = false },
+          conf = { resolveDupes.set(false) },
           expected = """
                               <!--toc-->
                               - __[Header1](#header1)__
@@ -522,30 +546,30 @@ internal object TestInsertToc: BehaviorSpec({
       cases = listOf(
         case(
           id = "_+#$/ ",
-          conf = { allowedChars = "_+#$/ " },
+          conf = { allowedChars.set("_+#$/ ") },
           expected = """
                               <!--toc-->
-                              - __[Header_+1()*#${'$'}@!](#header_+1#${'$'})__
-                              - __[Header++2++${'$'}@!###](#header++2++${'$'}###)__
-                              - __[Header 3 (${'$'})/\](#header 3 ${'$'}/)__
+                              - __[Header_+1()*#$@!](#header_+1#$)__
+                              - __[Header++2++$@!###](#header++2++$###)__
+                              - __[Header 3 ($)/\](#header 3 $/)__
                               <!--/toc-->
-                              # Header_+1()*#${'$'}@!
-                              # Header++2++${'$'}@!###
-                              # Header 3 (${'$'})/\
+                              # Header_+1()*#$@!
+                              # Header++2++$@!###
+                              # Header 3 ($)/\
                             """
         ),
         case(
           id = "<none>",
-          conf = { allowedChars = "" },
+          conf = { allowedChars.set("") },
           expected = """
                               <!--toc-->
-                              - __[Header_+1()*#${'$'}@!](#header-1)__
-                              - __[Header++2++${'$'}@!###](#header2)__
-                              - __[Header 3 (${'$'})/\](#header-3-)__
+                              - __[Header_+1()*#$@!](#header-1)__
+                              - __[Header++2++$@!###](#header2)__
+                              - __[Header 3 ($)/\](#header-3-)__
                               <!--/toc-->
-                              # Header_+1()*#${'$'}@!
-                              # Header++2++${'$'}@!###
-                              # Header 3 (${'$'})/\
+                              # Header_+1()*#$@!
+                              # Header++2++$@!###
+                              # Header 3 ($)/\
                             """
         )
 
@@ -569,7 +593,7 @@ internal object TestInsertToc: BehaviorSpec({
       cases = listOf(
         case(
           id = "true",
-          conf = { allowLeadingSpace = true },
+          conf = { allowLeadingSpace.set(true) },
           expected = """
                             <!--toc-->
                             - __[Header2](#header2)__
@@ -592,7 +616,7 @@ internal object TestInsertToc: BehaviorSpec({
         ),
         case(
           id = "false",
-          conf = { allowLeadingSpace = false },
+          conf = { allowLeadingSpace.set(false) },
           expected = """
                               <!--toc-->
                               <!--/toc-->
@@ -646,7 +670,7 @@ internal object TestInsertToc: BehaviorSpec({
       cases = listOf(
         case(
           id = "1",
-          conf = { setextMarkerLength = 1 },
+          conf = { setextMarkerLength.set(1) },
           expected = """
                               <!--toc-->
                               - __[Length 1](#length-1)__
@@ -689,7 +713,7 @@ internal object TestInsertToc: BehaviorSpec({
         ),
         case(
           id = "2",
-          conf = { setextMarkerLength = 2 },
+          conf = { setextMarkerLength.set(2) },
           expected = """
                               <!--toc-->
                               - __[Length 2](#length-2)__
@@ -730,7 +754,7 @@ internal object TestInsertToc: BehaviorSpec({
         ),
         case(
           id = "4",
-          conf = { setextMarkerLength = 4 },
+          conf = { setextMarkerLength.set(4) },
           expected = """
                               <!--toc-->
                               - __[Length 4](#length-4)__
@@ -782,7 +806,7 @@ internal object TestInsertToc: BehaviorSpec({
       cases = listOf(
         case(
           id = "true",
-          conf = { emptyHeadingWithoutSpace = true },
+          conf = { emptyHeadingWithoutSpace.set(true) },
           expected = """
                               <!--toc-->
                               - __[Header1](#header1)__
@@ -801,7 +825,7 @@ internal object TestInsertToc: BehaviorSpec({
         ),
         case(
           id = "false",
-          conf = { emptyHeadingWithoutSpace = false },
+          conf = { emptyHeadingWithoutSpace.set(false) },
           expected = """
                               <!--toc-->
                               - __[Header1](#header1)__
@@ -834,7 +858,7 @@ internal object TestInsertToc: BehaviorSpec({
       cases = listOf(
         case(
           id = "true",
-          conf = { headingInterruptsItemParagraph = true },
+          conf = { headingInterruptsItemParagraph.set(true) },
           expected = """
                               <!--toc-->
                               - __[Header1](#header1)__
@@ -852,7 +876,7 @@ internal object TestInsertToc: BehaviorSpec({
         ),
         case(
           id = "false",
-          conf = { headingInterruptsItemParagraph = false },
+          conf = { headingInterruptsItemParagraph.set(false) },
           expected = """
                               <!--toc-->
                               - __[Header1](#header1)__
@@ -883,7 +907,7 @@ internal object TestInsertToc: BehaviorSpec({
       cases = listOf(
         case(
           id = "",
-          conf = { tag = "foobar" },
+          conf = { tag.set("foobar") },
           expected = """
                               <!----   foobar numbered=true--->
                               1. __[Header1](#header1)__
@@ -898,29 +922,29 @@ internal object TestInsertToc: BehaviorSpec({
 
     withData(tests.associateBy { it.label }) { (name, content, conf, expected) ->
 
-      `when`("inserting a toc: $name") {
+      When("inserting a toc: $name") {
 
-        val parentTocmeOptions = TocMeOptionsImpl(null).apply {
-          variant = Variant.Commonmark
+        val parentTocmeOptions = TocMeOptionsImpl(null, factory).apply {
+          variant.set(Variant.Commonmark)
         }
         conf.let { parentTocmeOptions.it() }
 
-        val tocmeOptions = TocMeOptionsImpl(parentTocmeOptions)
+        val tocmeOptions = TocMeOptionsImpl(parentTocmeOptions, factory).createStaticOptions()
 
         val parser = Parser.builder(tocmeOptions.toParserOptions()).build()
 
         val document = parser.parse(content)
-        val (result, warnings, error) = document.insertTocs(tocmeOptions, checkCurrentContent = true)
+        val (result, warnings, error) = document.insertTocs(tocmeOptions, checkCurrentContent = true, factory)
 
-        then("generates no errors") {
+        Then("generates no errors") {
           assertNull(error, "Unexpected error: $error")
         }
 
-        then("generates no warnings") {
+        Then("generates no warnings") {
           assertTrue(warnings.isEmpty(), "Unexpected warning(s): \n" + warnings.joinToString(separator = "\n"))
         }
 
-        then("generates the correct result") {
+        Then("generates the correct result") {
           ProjectFixture.assertTextEquals(expected, result!!)
         }
 

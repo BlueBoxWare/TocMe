@@ -15,35 +15,34 @@
  */
 package com.github.blueboxware.tocme
 
-import com.github.blueboxware.tocme.util.*
+import com.github.blueboxware.tocme.util.Mode
+import com.github.blueboxware.tocme.util.TocMeGradleOptions
+import com.github.blueboxware.tocme.util.TocMeOptionsImpl
+import com.github.blueboxware.tocme.util.Variant
 import com.vladsch.flexmark.ext.toc.internal.TocOptions
 import org.gradle.api.Action
 import org.gradle.api.internal.file.FileOperations
 import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.MapProperty
+import org.gradle.api.tasks.Nested
+import org.gradle.kotlin.dsl.mapProperty
 import java.io.File
 import javax.inject.Inject
 
-abstract class TocMeExtension @Inject constructor(
-  defaultOptions: TocMeOptionsImpl,
-  private val objectFactory: ObjectFactory,
+abstract class TocMeExtension @Inject @JvmOverloads constructor(
+  defaultOptions: TocMeOptionsImpl? = null,
+  objectFactory: ObjectFactory,
   private val fileOperations: FileOperations
-): TocMeOptionsImpl(defaultOptions) {
+): TocMeOptionsImpl(defaultOptions, objectFactory) {
 
-  @Suppress("unused")
-  @Inject
-  constructor(objectFactory: ObjectFactory, fileOperations: FileOperations): this(
-    TocMeOptionsImpl(null),
-    objectFactory,
-    fileOperations
-  )
-
-  private val registeredDocs = mutableListOf<Pair<File, TocMeGradleOptions>>()
+  @Nested
+  val registeredDocs: MapProperty<File, TocMeGradleOptions> = factory.mapProperty()
 
   @JvmOverloads
   fun doc(inputFile: File, action: Action<TocMeGradleOptions>? = null) {
-    objectFactory.newInstance(TocMeGradleOptions::class.java, this).let { options ->
+    factory.newInstance(TocMeGradleOptions::class.java, this).let { options ->
       action?.execute(options)
-      registeredDocs.add(inputFile to options)
+      registeredDocs.put(inputFile, options)
     }
   }
 
@@ -57,21 +56,14 @@ abstract class TocMeExtension @Inject constructor(
   fun docs(vararg inputFiles: String) =
     docs(*(inputFiles.map { fileOperations.file(it) }.toTypedArray()))
 
-  fun getDocs(): List<Pair<File, TocMeGradleOptions>> = registeredDocs
-
-  internal fun getOutputFiles() =
-    registeredDocs.flatMap { (inputFile, gradleOptions) ->
-      gradleOptions.outputFiles.map { it.key }.toMutableList().apply {
-        add(inputFile)
+  internal fun getOutputFiles(alwaysIncludeInputFile: Boolean) =
+    registeredDocs.get().flatMap { (inputFile, gradleOptions) ->
+      gradleOptions.outputFiles.get().map { it.key }.toMutableList().apply {
+        if (alwaysIncludeInputFile || this.isEmpty()) {
+          add(inputFile)
+        }
       }
     }
-
-  internal fun getOptionsAsString() =
-    super.asString() +
-            TocMeGradleOptions.SEPARATOR +
-            registeredDocs.joinToString(TocMeGradleOptions.SEPARATOR) { (file, options) ->
-              file.hashCode().toString() + TocMeGradleOptions.SEPARATOR + options.asString()
-            }
 
   @Suppress("unused")
   companion object {

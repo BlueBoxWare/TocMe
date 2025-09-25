@@ -16,63 +16,69 @@
 package com.github.blueboxware.tocme
 
 import com.github.blueboxware.tocme.util.Mode
+import com.github.blueboxware.tocme.util.StaticOptions
 import com.github.blueboxware.tocme.util.Variant
 import com.vladsch.flexmark.ext.toc.internal.TocOptions
-import com.vladsch.flexmark.util.data.DataHolder
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Internal
 
-interface TocMeOptions {
+@Suppress("EmptyMethod")
+abstract class TocMeOptions {
 
-  var tag: String?
+  @get:Internal
+  abstract val tag: Property<String>
 
-  var variant: Variant?
+  @get:Internal
+  abstract val variant: Property<Variant>
 
-  var style: TocOptions.ListType?
+  @get:Internal
+  abstract val style: Property<TocOptions.ListType>
 
-  var mode: Mode?
+  @get:Internal
+  abstract val mode: Property<Mode>
 
-  var levels: Collection<Int>?
+  @get:Internal
+  abstract val levels: ListProperty<Int>
 
-  var bold: Boolean?
-  var numbered: Boolean?
-  var plain: Boolean?
+  @get:Internal
+  abstract val dashChars: Property<String>
 
-  var removeEmojis: Boolean?
+  @get:Internal
+  abstract val allowedChars: Property<String>
 
-  var requireSpace: Boolean?
-  var dupedDashes: Boolean?
-  var resolveDupes: Boolean?
-  var dashChars: String?
-  var allowedChars: String?
-  var allowLeadingSpace: Boolean?
-  var setextMarkerLength: Int?
-  var emptyHeadingWithoutSpace: Boolean?
-  var headingInterruptsItemParagraph: Boolean?
+  @get:Internal
+  abstract val setextMarkerLength: Property<Int>
 
-  fun tag(): String
-  fun style(): TocOptions.ListType
-  fun mode(): Mode
-  fun levels(): Collection<Int>
-  fun bold(): Boolean
-  fun numbered(): Boolean
-  fun plain(): Boolean
-  fun variant(): Variant
-  fun removeEmojis(): Boolean
+  @get:Internal
+  abstract val bold: Property<Boolean>
 
-  fun requireSpace(): Boolean?
-  fun dupedDashes(): Boolean?
-  fun resolveDupes(): Boolean?
-  fun dashChars(): String?
-  fun allowedChars(): String?
-  fun allowLeadingSpace(): Boolean?
-  fun setextMarkerLength(): Int?
-  fun emptyHeadingWithoutSpace(): Boolean?
-  fun headingInterruptsItemParagraph(): Boolean?
+  @get:Internal
+  abstract val numbered: Property<Boolean>
 
-  fun isLocal() = mode() == Mode.Local
-  fun isFull() = mode() == Mode.Full
+  @get:Internal
+  abstract val plain: Property<Boolean>
 
-  fun parent(): TocMeOptions?
+  @get:Internal
+  abstract val removeEmojis: Property<Boolean>
 
-  fun toParserOptions(): DataHolder
+  @get:Internal
+  abstract val requireSpace: Property<Boolean>
 
+  @get:Internal
+  abstract val dupedDashes: Property<Boolean>
+
+  @get:Internal
+  abstract val resolveDupes: Property<Boolean>
+
+  @get:Internal
+  abstract val allowLeadingSpace: Property<Boolean>
+
+  @get:Internal
+  abstract val emptyHeadingWithoutSpace: Property<Boolean>
+
+  @get:Internal
+  abstract val headingInterruptsItemParagraph: Property<Boolean>
+
+  abstract fun createStaticOptions(): StaticOptions
 }

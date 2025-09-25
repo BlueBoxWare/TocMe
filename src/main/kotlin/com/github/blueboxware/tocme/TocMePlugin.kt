@@ -17,29 +17,39 @@ package com.github.blueboxware.tocme
 
 import com.github.blueboxware.tocme.tasks.CheckTocsTask
 import com.github.blueboxware.tocme.tasks.InsertTocsTask
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.create
+import org.gradle.kotlin.dsl.register
 import org.gradle.language.base.plugins.LifecycleBasePlugin
+import org.gradle.util.GradleVersion
 
 class TocMePlugin: Plugin<Project> {
 
   override fun apply(project: Project) {
 
-    val tocmeExtension = project.extensions.create(TOCME_EXTENSION_NAME, TocMeExtension::class.java)
-
-    project.tasks.create(INSERT_TOCS_TASK, InsertTocsTask::class.java) {
-      it.tocMeExtension = tocmeExtension
+    if (GradleVersion.current() < GradleVersion.version("8.3")) {
+      throw GradleException("The com.github.blueboxware.tocme plugin requires Gradle version 8.3 or higher")
     }
 
-    project.tasks.create(CHECK_TOCS_TASK, CheckTocsTask::class.java) { checkTask ->
-      checkTask.tocMeExtension = tocmeExtension
-      project.afterEvaluate {
-        project.tasks.findByName(LifecycleBasePlugin.ASSEMBLE_TASK_NAME)?.let { assembleTask ->
-          assembleTask.dependsOn += checkTask
-        }
+    val extension = project.extensions.create<TocMeExtension>(TOCME_EXTENSION_NAME)
+
+    project.tasks.register<InsertTocsTask>(INSERT_TOCS_TASK) {
+      tocMeExtension.set(extension)
+    }
+
+    project.tasks.register<CheckTocsTask>(CHECK_TOCS_TASK) {
+      tocMeExtension.set(extension)
+    }
+
+
+    project.tasks.findByName(LifecycleBasePlugin.ASSEMBLE_TASK_NAME)?.let { assembleTask ->
+      project.tasks.findByName(CHECK_TOCS_TASK)?.let {
+        assembleTask.dependsOn(it)
       }
-    }
 
+    }
   }
 
   companion object {

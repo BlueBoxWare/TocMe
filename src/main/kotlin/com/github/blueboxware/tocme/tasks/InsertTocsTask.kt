@@ -25,13 +25,17 @@ import org.gradle.api.GradleException
 import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.file.ProjectLayout
 import org.gradle.api.internal.file.FileOperations
+import org.gradle.api.model.ObjectFactory
+import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.TaskAction
 import java.io.File
 import javax.inject.Inject
 
-open class InsertTocsTask @Inject constructor(
+@CacheableTask
+abstract class InsertTocsTask @Inject constructor(
   private val projectLayout: ProjectLayout,
-  private val fileOperations: FileOperations
+  private val fileOperations: FileOperations,
+  private val objectFactory: ObjectFactory
 ): TocMeTask() {
 
   init {
@@ -41,15 +45,17 @@ open class InsertTocsTask @Inject constructor(
   @TaskAction
   fun generateTocs() {
 
-    backupFiles(name, getOutputFiles())
+    val extension = tocMeExtension.get()
+
+    backupFiles(name, extension.getOutputFiles(alwaysIncludeInputFile = true))
 
     didWork = false
 
-    tocMeExtension.getDocs().forEach { (inputFile, options) ->
-      if (options.outputFiles.isEmpty()) {
+    extension.registeredDocs.get().forEach { (inputFile, options) ->
+      if (options.outputFiles.get().isEmpty()) {
         doInsertTocs(inputFile, inputFile, options)
       } else {
-        options.outputFiles.forEach { (outputFile, options) ->
+        options.outputFiles.get().forEach { (outputFile, options) ->
           doInsertTocs(inputFile, outputFile, options)
         }
       }
@@ -61,7 +67,13 @@ open class InsertTocsTask @Inject constructor(
 
     val relativeInputPath = inputFile.relativeToOrSelf(projectLayout.projectDirectory.asFile).path
 
-    val (result, warnings, error) = insertTocs(inputFile, outputFile, options, writeChanges = true)
+    val (result, warnings, error) = insertTocs(
+      inputFile,
+      outputFile,
+      options.createStaticOptions(),
+      objectFactory,
+      writeChanges = true
+    )
 
     if (error != null) {
       throw GradleException("$relativeInputPath: $error")
@@ -99,9 +111,9 @@ open class InsertTocsTask @Inject constructor(
           fileOperations.delete(it.second)
         }
 
-      fileOperations.copy { copySpec ->
-        copySpec.duplicatesStrategy = DuplicatesStrategy.FAIL
-        copySpec.into(backupdir)
+      fileOperations.copy {
+        duplicatesStrategy = DuplicatesStrategy.FAIL
+        into(backupdir)
         fileMap.forEach { (file, name) ->
           if (file.exists()) {
             logger.lifecycle(
@@ -109,8 +121,8 @@ open class InsertTocsTask @Inject constructor(
                 projectDir
               ).path + File.separator + name
             )
-            copySpec.from(file.parentFile) {
-              it.include(file.name).rename { name }
+            from(file.parentFile) {
+              include(file.name).rename { name }
             }
           }
         }

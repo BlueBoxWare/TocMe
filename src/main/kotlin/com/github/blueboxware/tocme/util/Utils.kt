@@ -28,6 +28,8 @@ import com.vladsch.flexmark.util.ast.Node
 import com.vladsch.flexmark.util.ast.NodeCollectingVisitor
 import com.vladsch.flexmark.util.ast.TextCollectingVisitor
 import com.vladsch.flexmark.util.sequence.BasedSequence
+import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.Property
 import java.io.File
 import java.lang.Integer.min
 import java.util.*
@@ -60,10 +62,16 @@ private const val INDENT = "   "
 
 internal const val BACKUP_DIR = "tocme/backups/"
 
+private fun <T: Any> Property<T>.default(default: T): T = if (isPresent) get() else default
+
+private fun Property<TocOptions.ListType>.default(): TocOptions.ListType =
+  if (isPresent) get() else TocOptions.ListType.HIERARCHY
+
 internal fun insertTocs(
   inputFile: File,
   outputFile: File?,
-  options: TocMeOptions,
+  options: StaticOptions,
+  objectFactory: ObjectFactory,
   writeChanges: Boolean = false
 ): Triple<String?, List<String>, String?> {
 
@@ -74,8 +82,7 @@ internal fun insertTocs(
   }
 
   val (result, warnings, error) = document.insertTocs(
-    options,
-    checkCurrentContent = writeChanges && inputFile == outputFile
+    options, checkCurrentContent = writeChanges && inputFile == outputFile, objectFactory
   )
 
   if (writeChanges) {
@@ -89,8 +96,7 @@ internal fun insertTocs(
 }
 
 internal fun Document.insertTocs(
-  options: TocMeOptions,
-  checkCurrentContent: Boolean
+  options: StaticOptions, checkCurrentContent: Boolean, objectFactory: ObjectFactory
 ): Triple<String?, List<String>, String?> {
 
   val headings by lazy {
@@ -100,8 +106,9 @@ internal fun Document.insertTocs(
 
   val str = StringBuilder(chars)
   val warnings = mutableListOf<String>()
+  val tag = options.tag.default(TOC_TAG)
 
-  val (tags, tagError) = collectTags(options.tag())
+  val (tags, tagError) = collectTags(tag)
 
   if (tagError != null) {
     return Triple(null, warnings, tagError)
@@ -112,17 +119,18 @@ internal fun Document.insertTocs(
     checkBounds(startTag, endTag) { return Triple(null, warnings, "something went horribly wrong") }
 
     if (checkCurrentContent && !checkCurrentContent(startTag, endTag)) {
-      warnings.add("It doesn't look like the current content between the ${options.tag()} tags online ${startTag.lineNumber()} and line ${endTag.lineNumber()} is a toc. Not making changes here, just in case.")
+      warnings.add("It doesn't look like the current content between the $tag tags online ${startTag.lineNumber()} and line ${endTag.lineNumber()} is a toc. Not making changes here, just in case.")
       return@forEach
     }
 
-    val (tocOptions, optionErrors) = parseArgs(TocMeOptionsImpl(options), startTag.args)
+    val (tocOptions, optionErrors) = parseArgs(TocMeOptionsImpl(options, objectFactory), startTag.args)
+
 
     warnings.addAll(0, optionErrors.map { "line ${startTag.lineNumber()}: $it" })
 
     var startHeader: Heading? = null
     var endHeader: Heading? = null
-    if (tocOptions.isLocal()) {
+    if (tocOptions.mode.default(Mode.Normal) == Mode.Local) {
       getEnclosingHeaders(headings, startTag, endTag)?.let {
         startHeader = it.first
         endHeader = it.second
@@ -174,41 +182,43 @@ private fun getEnclosingHeaders(headings: List<Heading>, startTag: Tag, endTag: 
 
 private fun filterHeadings(
   headings: List<Heading>,
-  options: TocMeOptions,
+  options: StaticOptions,
   endTag: HtmlCommentBlock,
   startHeader: Heading? = null,
   endHeader: Heading? = null
-): List<Heading> =
-  headings.filter { header ->
-    (options.levels().contains(header.level)
-            && (options.isFull() || header.startOffset > endTag.startOffset)
-            && (!options.isLocal() || (header.startOffset > (startHeader?.startOffset
+): List<Heading> {
+  val levels = if (options.levels.isPresent) options.levels.get() else setOf(1, 2, 3)
+  return headings.filter { header ->
+    (levels.contains(header.level) && (options.mode.default(Mode.Normal) == Mode.Full || header.startOffset > endTag.startOffset) && (options.mode.default(
+      Mode.Normal
+    ) != Mode.Local || (header.startOffset > (startHeader?.startOffset
       ?: 0) && header.startOffset < (endHeader?.startOffset ?: Int.MAX_VALUE))))
   }
+}
 
-private fun getHeaderTexts(headings: List<Heading>, options: TocMeOptions): List<String> {
+private fun getHeaderTexts(headings: List<Heading>, options: StaticOptions): List<String> {
 
-  val isReversed =
-    options.style() == TocOptions.ListType.SORTED_REVERSED || options.style() == TocOptions.ListType.FLAT_REVERSED
-  val isSorted = options.style() == TocOptions.ListType.SORTED || options.style() == TocOptions.ListType.SORTED_REVERSED
+  val style = options.style.default()
+  val isReversed = style == TocOptions.ListType.SORTED_REVERSED || style == TocOptions.ListType.FLAT_REVERSED
+  val isSorted = style == TocOptions.ListType.SORTED || style == TocOptions.ListType.SORTED_REVERSED
 
   val texts = mutableListOf<String>()
 
   for (header in headings) {
 
     var text = TextCollectingVisitor().collectAndGetText(header).let {
-      if (options.plain()) {
+      if (options.plain.default(false)) {
         it
       } else {
         "[$it](#${header.anchorRefId})"
       }
     }
 
-    if (options.removeEmojis()) {
+    if (options.removeEmojis.default(false)) {
       text = text.removeEmojis()
     }
 
-    if (options.bold()) {
+    if (options.bold.default(true)) {
       texts.add("__${text}__")
     } else {
       texts.add(text)
@@ -226,31 +236,29 @@ private fun getHeaderTexts(headings: List<Heading>, options: TocMeOptions): List
   return texts
 }
 
-private fun parseArgs(options: TocMeOptions, text: String): Pair<TocMeOptions, List<String>> {
+private fun parseArgs(options: TocMeOptions, text: String): Pair<StaticOptions, List<String>> {
 
   val warnings = mutableListOf<String>()
 
-  Regex("""\b([^\s=]+)\s*(?:=\s*(["'][^"']*["']|\S+))?""")
-    .findAll(text)
+  Regex("""\b([^\s=]+)\s*(?:=\s*(["'][^"']*["']|\S+))?""").findAll(text)
     .map { matchResult -> matchResult.groupValues.let { it -> it[1] to it[2].trim { it.isWhitespace() || it == '"' || it == '\'' } } }
     .forEach { (key, value) ->
 
-      fun boolean(): Boolean =
-        when {
-          value.lowercase(Locale.getDefault()) == "true" -> true
-          value.lowercase(Locale.getDefault()) == "false" -> false
-          value.isBlank() -> warnings.add("No value specified for option '$key'")
-          else -> warnings.add("Option '$key' should be 'true' or 'false'")
-        }
+      fun boolean(): Boolean = when {
+        value.lowercase(Locale.getDefault()) == "true" -> true
+        value.lowercase(Locale.getDefault()) == "false" -> false
+        value.isBlank() -> warnings.add("No value specified for option '$key'")
+        else -> warnings.add("Option '$key' should be 'true' or 'false'")
+      }
 
       when (key) {
 
         OPT_STYLE -> when (value) {
-          STYLE_HIERARCHY -> options.style = TocOptions.ListType.HIERARCHY
-          STYLE_FLAT -> options.style = TocOptions.ListType.FLAT
-          STYLE_REVERSED -> options.style = TocOptions.ListType.FLAT_REVERSED
-          STYLE_INCREASING -> options.style = TocOptions.ListType.SORTED
-          STYLE_DECREASING -> options.style = TocOptions.ListType.SORTED_REVERSED
+          STYLE_HIERARCHY -> options.style.set(TocOptions.ListType.HIERARCHY)
+          STYLE_FLAT -> options.style.set(TocOptions.ListType.FLAT)
+          STYLE_REVERSED -> options.style.set(TocOptions.ListType.FLAT_REVERSED)
+          STYLE_INCREASING -> options.style.set(TocOptions.ListType.SORTED)
+          STYLE_DECREASING -> options.style.set(TocOptions.ListType.SORTED_REVERSED)
           else -> {
             warnings.add(
               if (value.isBlank()) {
@@ -262,9 +270,9 @@ private fun parseArgs(options: TocMeOptions, text: String): Pair<TocMeOptions, L
           }
         }
 
-        OPT_NUMBERED -> options.numbered = boolean()
-        OPT_PLAIN -> options.plain = boolean()
-        OPT_BOLD -> options.bold = boolean()
+        OPT_NUMBERED -> options.numbered.set(boolean())
+        OPT_PLAIN -> options.plain.set(boolean())
+        OPT_BOLD -> options.bold.set(boolean())
 
         OPT_LEVELS -> {
           if (value.isBlank()) {
@@ -272,7 +280,7 @@ private fun parseArgs(options: TocMeOptions, text: String): Pair<TocMeOptions, L
           } else {
 
             parseLevels(value)?.let {
-              options.levels = it
+              options.levels.set(it)
             } ?: run {
               warnings.add("Invalid value for parameter levels: '$value'")
             }
@@ -281,9 +289,9 @@ private fun parseArgs(options: TocMeOptions, text: String): Pair<TocMeOptions, L
         }
 
         OPT_MODE -> when (value) {
-          MODE_FULL -> options.mode = Mode.Full
-          MODE_NORMAL -> options.mode = Mode.Normal
-          MODE_LOCAL -> options.mode = Mode.Local
+          MODE_FULL -> options.mode.set(Mode.Full)
+          MODE_NORMAL -> options.mode.set(Mode.Normal)
+          MODE_LOCAL -> options.mode.set(Mode.Local)
           else -> {
             warnings.add(
               if (value.isBlank()) {
@@ -295,7 +303,13 @@ private fun parseArgs(options: TocMeOptions, text: String): Pair<TocMeOptions, L
           }
         }
 
-        OPT_VARIANT -> warnings.add("The option '$OPT_VARIANT' can only be specified in Gradle, not in the '${options.tag()}' tag")
+        OPT_VARIANT -> warnings.add(
+          "The option '$OPT_VARIANT' can only be specified in Gradle, not in the '${
+            options.tag.default(
+              TOC_TAG
+            )
+          }' tag"
+        )
 
         else -> warnings.add("Unknown option: '$key'")
 
@@ -303,7 +317,7 @@ private fun parseArgs(options: TocMeOptions, text: String): Pair<TocMeOptions, L
 
     }
 
-  return Pair(options, warnings)
+  return Pair(options.createStaticOptions(), warnings)
 
 }
 
@@ -311,8 +325,7 @@ internal fun parseLevels(text: String): Set<Int>? {
 
   val levels = mutableSetOf<Int>()
 
-  fun String?.int(): Int? =
-    this?.trim()?.toIntOrNull()
+  fun String?.int(): Int? = this?.trim()?.toIntOrNull()
 
   text.split(',').forEach { item ->
     if (item.contains('-')) {
@@ -364,7 +377,7 @@ private fun Document.collectTags(tagName: String): Pair<Map<Tag, Tag>?, String?>
       if (startTag != null) {
         return Pair(
           null,
-          "Opening $tagName tag found online ${tag.lineNumber()} while previous $tagName tag (online ${startTag?.lineNumber()}) wasn't closed yet"
+          "Opening $tagName tag found online ${tag.lineNumber()} while previous $tagName tag (online ${startTag.lineNumber()}) wasn't closed yet"
         )
       } else {
         startTag = tag
@@ -373,7 +386,7 @@ private fun Document.collectTags(tagName: String): Pair<Map<Tag, Tag>?, String?>
       if (startTag == null) {
         return Pair(null, "Closing $tagName tag online ${tag.lineNumber()} does not have a corresponding opening tag")
       }
-      startTag?.let {
+      startTag.let {
         result[it] = tag
       }
       startTag = null
@@ -416,7 +429,7 @@ private fun renderToc(headings: List<Heading>, headingTexts: List<String>, optio
 
   fun listOpen(level: Int): String {
     openedItems[level] = true
-    return if (options.numbered()) {
+    return if (options.numbered.default(false)) {
       val v = ++headingNumbers[level]
       "$v. "
     } else {
@@ -424,7 +437,7 @@ private fun renderToc(headings: List<Heading>, headingTexts: List<String>, optio
     }
   }
 
-  if (options.style() == TocOptions.ListType.HIERARCHY) {
+  if (options.style.default() == TocOptions.ListType.HIERARCHY) {
     headings.firstOrNull()?.level?.let { firstLevel ->
       headings.minByOrNull { it.level }?.level?.let { minLevel ->
         repeat((minLevel until firstLevel).count()) { writer.indent() }
@@ -435,7 +448,7 @@ private fun renderToc(headings: List<Heading>, headingTexts: List<String>, optio
   for (i in headings.indices) {
     val header = headings[i]
     val headerText = headingTexts[i]
-    val headerLevel = if (options.style() == TocOptions.ListType.HIERARCHY) {
+    val headerLevel = if (options.style.default() == TocOptions.ListType.HIERARCHY) {
       header.level
     } else {
       1
@@ -495,9 +508,7 @@ internal fun uniquifyFileNames(files: Collection<File>): Map<File, String> {
           it.toPath().toAbsolutePath().let { absolutePath ->
             val nameCount = absolutePath.nameCount
             val filePrefixLength = min(prefixLength, nameCount)
-            absolutePath
-              .subpath(nameCount - filePrefixLength, nameCount)
-              .joinToString(".")
+            absolutePath.subpath(nameCount - filePrefixLength, nameCount).joinToString(".")
               .replace(Regex("""\.+"""), ".")
           }
         }.let { grouped ->
@@ -533,20 +544,7 @@ internal fun uniquifyFileNames(files: Collection<File>): Map<File, String> {
 
 }
 
-private val EMOJI_REGEX = Regex(""":[\w\d_+-]+:""")
+private val EMOJI_REGEX = Regex(""":[\w+-]+:""")
 private val SPACES_REGEX = Regex(""" +""")
 
-internal fun String.removeEmojis() =
-  EMOJI_REGEX.replace(this, "").let { SPACES_REGEX.replace(it, " ") }
-
-fun Boolean?.asString() = this?.toString()?.take(1) ?: "_"
-
-fun Int?.asString() = this?.toString() ?: "_"
-
-fun String?.asString() = "\"" + (this ?: "") + "\""
-
-fun Variant?.asString() = this?.ordinal?.toString() ?: "_"
-
-fun TocOptions.ListType?.asString() = this?.ordinal?.toString() ?: "_"
-
-fun Mode?.asString() = this?.ordinal?.toString() ?: "_"
+internal fun String.removeEmojis() = EMOJI_REGEX.replace(this, "").let { SPACES_REGEX.replace(it, " ") }

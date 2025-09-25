@@ -17,130 +17,90 @@ package com.github.blueboxware.tocme.util
 
 import com.github.blueboxware.tocme.TocMeOptions
 import com.vladsch.flexmark.ext.toc.internal.TocOptions
-import com.vladsch.flexmark.html.HtmlRenderer.*
-import com.vladsch.flexmark.parser.Parser.*
-import com.vladsch.flexmark.util.data.DataHolder
-import com.vladsch.flexmark.util.data.MutableDataSet
 import org.gradle.api.GradleException
+import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
+import org.gradle.kotlin.dsl.listProperty
+import org.gradle.kotlin.dsl.newInstance
+import org.gradle.kotlin.dsl.property
 import javax.inject.Inject
+import kotlin.reflect.KProperty1
 
-open class TocMeOptionsImpl @Inject constructor(private val parent: TocMeOptions?): TocMeOptions {
+open class TocMeOptionsImpl @Inject constructor(
+  private val parent: TocMeOptions?, @get:Internal protected val factory: ObjectFactory
+): TocMeOptions() {
 
-  override var tag: String? = null
+  override val tag: Property<String> = factory.property()
+  override val style: Property<TocOptions.ListType> = factory.property()
+  override val mode: Property<Mode> = factory.property()
+  override val bold: Property<Boolean> = factory.property()
+  override val numbered: Property<Boolean> = factory.property()
+  override val plain: Property<Boolean> = factory.property()
+  override val removeEmojis: Property<Boolean> = factory.property()
+  override val requireSpace: Property<Boolean> = factory.property()
+  override val dupedDashes: Property<Boolean> = factory.property()
+  override val resolveDupes: Property<Boolean> = factory.property()
+  override val dashChars: Property<String> = factory.property()
+  override val allowedChars: Property<String> = factory.property()
+  override val allowLeadingSpace: Property<Boolean> = factory.property()
+  override val setextMarkerLength: Property<Int> = factory.property()
+  override val emptyHeadingWithoutSpace: Property<Boolean> = factory.property()
+  override val headingInterruptsItemParagraph: Property<Boolean> = factory.property()
+  override val variant: Property<Variant> = factory.property()
 
-  override var variant: Variant? = null
+  // https://github.com/gradle/gradle/issues/12222#issuecomment-674741780
+  override val levels: ListProperty<Int> = factory.listProperty<Int>().convention(null)
 
-  override var style: TocOptions.ListType? = null
+  private inline fun <reified T: Any> set(
+    options: TocMeOptions, parent: TocMeOptions?, property: KProperty1<TocMeOptions, Property<T>>
+  ) = property.get(options).set(
+    if (!property.get(this).isPresent && parent != null) {
+      property.get(parent)
+    } else {
+      property.get(this)
+    }
+  )
 
-  override var mode: Mode? = null
 
-  override var levels: Collection<Int>? = null
+  @Input
+  override fun createStaticOptions(): StaticOptions {
 
-  override var bold: Boolean? = null
-  override var numbered: Boolean? = null
-  override var plain: Boolean? = null
+    val parentOptions = (parent as? TocMeOptionsImpl)?.createStaticOptions() ?: parent
+    val options = factory.newInstance<StaticOptions>()
 
-  override var removeEmojis: Boolean? = null
+    set(options, parentOptions, TocMeOptions::tag)
+    set(options, parentOptions, TocMeOptions::variant)
+    set(options, parentOptions, TocMeOptions::style)
+    set(options, parentOptions, TocMeOptions::mode)
+    set(options, parentOptions, TocMeOptions::bold)
+    set(options, parentOptions, TocMeOptions::numbered)
+    set(options, parentOptions, TocMeOptions::plain)
+    set(options, parentOptions, TocMeOptions::removeEmojis)
+    set(options, parentOptions, TocMeOptions::requireSpace)
+    set(options, parentOptions, TocMeOptions::resolveDupes)
+    set(options, parentOptions, TocMeOptions::dupedDashes)
+    set(options, parentOptions, TocMeOptions::allowedChars)
+    set(options, parentOptions, TocMeOptions::dashChars)
+    set(options, parentOptions, TocMeOptions::allowLeadingSpace)
+    set(options, parentOptions, TocMeOptions::setextMarkerLength)
+    set(options, parentOptions, TocMeOptions::emptyHeadingWithoutSpace)
+    set(options, parentOptions, TocMeOptions::headingInterruptsItemParagraph)
 
-  override var requireSpace: Boolean? = null
-  override var dupedDashes: Boolean? = null
-  override var resolveDupes: Boolean? = null
-  override var dashChars: String? = null
-  override var allowedChars: String? = null
-  override var allowLeadingSpace: Boolean? = null
-  override var setextMarkerLength: Int? = null
-  override var emptyHeadingWithoutSpace: Boolean? = null
-  override var headingInterruptsItemParagraph: Boolean? = null
+    options.levels.set(
+      if (!levels.isPresent && parentOptions != null) {
+        parentOptions.levels
+      } else {
+        levels
+      }
+    )
 
-  override fun parent(): TocMeOptions? = parent
-
-  override fun tag(): String = tag ?: parent?.tag() ?: TOC_TAG
-
-  override fun variant(): Variant = variant ?: parent?.variant() ?: Variant.GitHub
-
-  override fun style(): TocOptions.ListType = style ?: parent?.style() ?: TocOptions.ListType.HIERARCHY
-
-  override fun mode(): Mode = mode ?: parent?.mode() ?: Mode.Normal
-
-  override fun levels(): Collection<Int> = levels ?: parent?.levels() ?: setOf(1, 2, 3)
+    return options
+  }
 
   open fun levels(str: String): Collection<Int> =
     parseLevels(str) ?: throw GradleException("Invalid level specification: '$str'")
 
-  override fun bold(): Boolean = bold ?: parent?.bold() ?: true
-  override fun numbered(): Boolean = numbered ?: parent?.numbered() ?: false
-  override fun plain(): Boolean = plain ?: parent?.plain() ?: false
-
-  override fun removeEmojis(): Boolean = removeEmojis ?: parent?.removeEmojis() ?: false
-
-  override fun requireSpace(): Boolean? = requireSpace ?: parent?.requireSpace()
-  override fun dupedDashes(): Boolean? = dupedDashes ?: parent?.dupedDashes()
-  override fun resolveDupes(): Boolean? = resolveDupes ?: parent?.resolveDupes()
-  override fun dashChars(): String? = dashChars ?: parent?.dashChars()
-  override fun allowedChars(): String? = allowedChars ?: parent?.allowedChars
-  override fun allowLeadingSpace(): Boolean? = allowLeadingSpace ?: parent?.allowLeadingSpace()
-  override fun setextMarkerLength(): Int? = setextMarkerLength ?: parent?.setextMarkerLength()
-  override fun emptyHeadingWithoutSpace(): Boolean? = emptyHeadingWithoutSpace ?: parent?.emptyHeadingWithoutSpace()
-  override fun headingInterruptsItemParagraph(): Boolean? =
-    headingInterruptsItemParagraph ?: parent?.headingInterruptsItemParagraph()
-
-  override fun toParserOptions(): DataHolder =
-    MutableDataSet().apply {
-      variant().setIn(this)
-
-      requireSpace()?.let {
-        set(HEADING_NO_ATX_SPACE, !it)
-      }
-
-      allowLeadingSpace()?.let {
-        set(HEADING_NO_LEAD_SPACE, !it)
-      }
-
-      setextMarkerLength()?.let {
-        set(HEADING_SETEXT_MARKER_LENGTH, it)
-      }
-
-      emptyHeadingWithoutSpace()?.let {
-        set(HEADING_NO_EMPTY_HEADING_WITHOUT_SPACE, !it)
-      }
-
-      headingInterruptsItemParagraph()?.let {
-        set(HEADING_CAN_INTERRUPT_ITEM_PARAGRAPH, it)
-      }
-
-      dupedDashes()?.let {
-        set(HEADER_ID_GENERATOR_NO_DUPED_DASHES, !it)
-      }
-
-      resolveDupes()?.let {
-        set(HEADER_ID_GENERATOR_RESOLVE_DUPES, it)
-      }
-
-      dashChars()?.let {
-        set(HEADER_ID_GENERATOR_TO_DASH_CHARS, it)
-      }
-
-      allowedChars()?.let {
-        set(HEADER_ID_GENERATOR_NON_DASH_CHARS, it)
-      }
-    }
-
-  open fun asString(): String =
-    variant.asString() +
-            plain.asString() +
-            levels.toString() +
-            numbered.asString() +
-            style.asString() +
-            bold.asString() +
-            mode.asString() +
-            removeEmojis.asString() +
-            requireSpace.asString() +
-            dupedDashes.asString() +
-            resolveDupes.asString() +
-            dashChars.asString() +
-            allowLeadingSpace.asString() +
-            allowedChars.asString() +
-            setextMarkerLength.asString() +
-            emptyHeadingWithoutSpace.asString() +
-            headingInterruptsItemParagraph.asString()
 }

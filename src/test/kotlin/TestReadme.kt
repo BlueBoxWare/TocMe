@@ -18,42 +18,42 @@ import java.io.File
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@Suppress("unused")
 internal object TestReadme: BehaviorSpec({
 
   lateinit var fixture: ProjectFixture
-
-  beforeContainer {
-    fixture = ProjectFixture(tempdir(), useConfigurationCache = false)
-  }
 
   fun loadTests(type: String) = File("README.md.src").readText().let { readmeTxt ->
     Regex("""```$type(.*?)```""", RegexOption.DOT_MATCHES_ALL).findAll(readmeTxt).map { it.groupValues[1] }
   }
 
-  given("a Gradle fragment from the README") {
+  Given("a Gradle fragment from the README") {
 
-    beforeContainer {
-      File(fixture.project.rootDir, "doc").mkdir()
-      listOf(
-        "README.md",
-        "doc/reference.md",
-        "doc/intro.md",
-        "doc/notes.md",
-        "notes.in.md",
-        "notes.md",
-        "notes.src.md"
-      ).forEach {
-        fixture.createFile(it, "")
+    withData(
+      nameFn = { "Kotlin: ${it.first}, ${it.second}" },
+      loadTests("gradle").flatMap { listOf(true to it, false to it) }) { (useKotlin, content) ->
+
+      beforeContainer {
+        fixture = ProjectFixture(tempdir(), useKotlin = useKotlin)
+        File(fixture.project.rootDir, "doc").mkdir()
+        listOf(
+          "README.md",
+          "doc/reference.md",
+          "doc/intro.md",
+          "doc/notes.md",
+          "notes.in.md",
+          "notes.md",
+          "notes.src.md"
+        ).forEach {
+          fixture.createFile(it, "")
+        }
       }
-    }
-    withData(loadTests("gradle")) { content ->
-      `when`("building ($content)") {
+
+      When("building") {
 
         fixture.buildFile(content)
         fixture.build()
 
-        then("should succeed") {
+        Then("should succeed") {
           fixture.assertBuildSuccess()
         }
 
@@ -62,7 +62,7 @@ internal object TestReadme: BehaviorSpec({
     }
   }
 
-  given("a MarkDown fragment from the README") {
+  Given("a MarkDown fragment from the README") {
 
     beforeContainer {
       fixture.buildFile(
@@ -76,16 +76,16 @@ internal object TestReadme: BehaviorSpec({
 
     withData(loadTests("markdown")) { content ->
 
-      `when`("building ($content)") {
+      When("building ($content)") {
 
         fixture.createFile("test.md", content)
         fixture.build()
 
-        then("should succeed") {
+        Then("should succeed") {
           fixture.assertBuildSuccess()
         }
 
-        then("should generate no warnings") {
+        Then("should generate no warnings") {
           fixture.assertOutputContainsNot(Regex("^test.md:", RegexOption.MULTILINE))
         }
 

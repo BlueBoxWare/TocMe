@@ -15,27 +15,42 @@
  */
 package com.github.blueboxware.tocme.util
 
-import com.github.blueboxware.tocme.TocMeOptions
 import org.gradle.api.Action
 import org.gradle.api.internal.file.FileOperations
 import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.MapProperty
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
+import org.gradle.kotlin.dsl.mapProperty
 import java.io.File
 import javax.inject.Inject
 
 abstract class TocMeGradleOptions @Inject constructor(
   defaultOptions: TocMeOptionsImpl,
-  private val objectFactory: ObjectFactory,
+  objectFactory: ObjectFactory,
   private val fileOperations: FileOperations
-): TocMeOptionsImpl(defaultOptions) {
+): TocMeOptionsImpl(defaultOptions, objectFactory) {
 
-  internal val outputFiles: MutableMap<File, TocMeOptions> = mutableMapOf()
+  @get:Internal
+  internal val outputFiles: MapProperty<File, TocMeOptionsImpl> = objectFactory.mapProperty()
+
+  @Input
+  fun getOutputSpecs(): Provider<Map<File, StaticOptions>> =
+    outputFiles.flatMap { map ->
+      val newMap = factory.mapProperty<File, StaticOptions>()
+      map.forEach { (file, options) -> newMap.put(file, options.createStaticOptions()) }
+      newMap
+    }
+
+  @Input
+  fun getThisSpec(): StaticOptions = createStaticOptions()
 
   @JvmOverloads
   fun output(outputFile: File, action: Action<TocMeOptionsImpl>? = null) {
-    objectFactory.newInstance(TocMeOptionsImpl::class.java, this).let { options ->
+    factory.newInstance(TocMeOptionsImpl::class.java, this).let { options ->
       action?.execute(options)
-      outputFiles[outputFile] = options
+      outputFiles.put(outputFile, options)
     }
   }
 
@@ -51,17 +66,4 @@ abstract class TocMeGradleOptions @Inject constructor(
   fun outputs(vararg outputFiles: String) =
     outputs(*(outputFiles.map { fileOperations.file(it) }.toTypedArray()))
 
-  @Input
-  override fun asString(): String =
-    super.asString() +
-            SEPARATOR +
-            outputFiles.map { (file, options) ->
-              file.hashCode().toString() + SEPARATOR + (options as? TocMeOptionsImpl)?.asString()
-            }.joinToString(SEPARATOR)
-
-  companion object {
-
-    internal const val SEPARATOR = ";"
-
-  }
 }

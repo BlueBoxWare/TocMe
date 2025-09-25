@@ -23,6 +23,7 @@ import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import org.gradle.util.GradleVersion
 import java.io.File
+import kotlin.test.DefaultAsserter.assertTrue
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
@@ -30,40 +31,80 @@ import kotlin.test.assertTrue
 
 internal class ProjectFixture(
   private val tempDir: File,
-  private val useConfigurationCache: Boolean
+  useKotlin: Boolean = false
 ) {
 
-  private val GRADLE_VERSION = GradleVersion.version("8.4")
   private val TEST_RELEASED_VERSION = false
-
-  private val buildFile = File(tempDir, "build.gradle")
 
   val project: Project = ProjectBuilder.builder().withProjectDir(tempDir).build()
 
+  var latestBuildResult: BuildResult? = null
+
+  private val gradleVersion: String = System.getProperty("gdxplugin.gradle.version") ?: GradleVersion.current().version
+
+  private val useBuildCache = System.getProperty("gdxplugin.cache.build") == "true"
+  private val useConfigurationCache = System.getProperty("gdxplugin.cache.configuration") == "true"
+
+  private val buildFile = File(tempDir, if (useKotlin) "build.gradle.kts" else "build.gradle")
+  private var cache = File(tempDir, "cache")
+  private var settingsFile = File(tempDir, if (useKotlin) "settings.gradle.kts" else "settings.gradle")
+
   private val backupDir = "build/tocme/backups/${TocMePlugin.INSERT_TOCS_TASK}/"
 
-  private var latestBuildResult: BuildResult? = null
   private var latestTask: String? = null
 
   private val testDataDir = File("src/test/resources")
 
-  private val header = """
-
+  private val header = if (useKotlin)
+    """
+      plugins {
+          id("com.github.blueboxware.tocme") version "${getPluginVersion(TEST_RELEASED_VERSION)}"
+      }
+          
+      import com.github.blueboxware.tocme.TocMeExtension.Companion.Flat
+      import com.github.blueboxware.tocme.TocMeExtension.Companion.Kramdown
+      import com.github.blueboxware.tocme.TocMeExtension.Companion.Local
+    """
+  else
+    """
         plugins {
           id 'com.github.blueboxware.tocme' version '${getPluginVersion(TEST_RELEASED_VERSION)}'
         }
 
-  """.trimIndent()
+    """
+
+  private val settings = """
+    
+        buildCache {
+            local {
+                directory = "${cache.toURI()}"
+            }
+        }      
+
+    
+  """ + if (useKotlin)
+    """
+        pluginManagement {
+          repositories {
+            mavenLocal()
+            mavenCentral()
+          }
+        }
+  """ else ""
+
+  init {
+    settingsFile.writeText(settings)
+  }
 
   fun addFile(fileName: String) {
     // https://github.com/gradle/gradle/issues/2986
     DirectoryScanner.getDefaultExcludes().forEach { DirectoryScanner.removeDefaultExclude(it) }
     DirectoryScanner.addDefaultExclude("_Dummy McDummface_")
-    project.copy { copySpec ->
-      copySpec.from(testDataDir.absolutePath) {
-        it.include(fileName)
+    project.copy {
+      from(testDataDir.absolutePath) {
+        include(fileName)
       }
-      copySpec.into(tempDir)
+      into(tempDir)
     }
     DirectoryScanner.resetDefaultExcludes()
   }
@@ -99,12 +140,16 @@ internal class ProjectFixture(
       .create()
       .withDebug(!useConfigurationCache)
       .withProjectDir(tempDir)
-      .withGradleVersion(GRADLE_VERSION.version)
+      .withGradleVersion(gradleVersion)
       .withArguments(
         *args.toTypedArray(),
+        "-Dorg.gradle.caching.debug=true",
+        "-Dorg.gradle.configuration-cache.integrity-check=true",
+        "--info",
+        "--warning-mode",
+        "all",
+        if (useBuildCache) "--build-cache" else "--no-build-cache",
         if (useConfigurationCache) "--configuration-cache" else "--no-configuration-cache",
-        "--stacktrace",
-        "--info"
       )
 
     if (!TEST_RELEASED_VERSION) {
@@ -169,26 +214,26 @@ internal class ProjectFixture(
   fun assertBuildSuccess(task: String? = latestTask) =
     assertTaskOutcome(TaskOutcome.SUCCESS, task)
 
-  @Suppress("unused")
-  fun assertBuildFailure(task: String? = latestTask) =
-    assertTaskOutcome(TaskOutcome.FAILED, task)
-
   fun assertBuildUpToDate(task: String? = latestTask) =
     assertTaskOutcome(TaskOutcome.UP_TO_DATE, task)
 
-  fun assertConfigCacheUsed() {
-    latestBuildResult!!.output.contains("Reusing configuration cache.")
+  fun assertBuildFromCache(task: String = latestTask ?: throw AssertionError()) = if (useBuildCache) {
+    assertTaskOutcome(TaskOutcome.FROM_CACHE, task)
+  } else {
+    assertBuildSuccess(task)
   }
 
-  fun assertConfigCacheNotUsed() {
-    !latestBuildResult!!.output.contains("Reusing configuration cache.")
+  fun assertConfigurationCacheUsed() {
+    if (useConfigurationCache) {
+      assertTrue(latestBuildResult?.output, latestBuildResult?.output?.contains("Reusing configuration cache.") == true)
+    }
   }
 
   private fun assertBuildNoSource(task: String? = latestTask) =
     assertTaskOutcome(TaskOutcome.NO_SOURCE, task)
 
   fun assertBuildNoSourceAfter33(task: String? = latestTask) =
-    if (GRADLE_VERSION < GradleVersion.version("3.4"))
+    if (GradleVersion.version(gradleVersion) < GradleVersion.version("3.4"))
       assertBuildUpToDate(task)
     else
       assertBuildNoSource()
@@ -204,7 +249,7 @@ internal class ProjectFixture(
               file
             )
             return
-          } catch (e: AssertionError) {
+          } catch (_: AssertionError) {
             // Keep going
           }
         }
@@ -220,7 +265,7 @@ internal class ProjectFixture(
           assertEquals(
             expectedOutcome,
             it.outcome,
-            "Expected task outcome: $expectedOutcome, actual outcome: ${it.outcome}"
+            "Expected task outcome: $expectedOutcome, actual outcome: ${it.outcome}\n${latestBuildResult?.output}"
           )
         }
       }

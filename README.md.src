@@ -20,6 +20,7 @@ This plugin uses the great and powerful [flexmark-java](https://github.com/vsch/
       - __[Specifying options](#specifying-options)__
       - __[Available options](#available-options)__
 - __[Changelog](#changelog)__
+   - __[1.9](#19)__
    - __[1.8](#18)__
    - __[1.7](#17)__
    - __[1.6](#16)__
@@ -237,6 +238,11 @@ The following options can be used in `build.gradle`:
 in `dashChars`, which are replaced by a dash, and characters in `allowedChars`, which are not removed or replaced but left as is.
 
 # Changelog
+## 1.9
+* Compatibility with the Build Cache
+* Compatibility with the Configuration Cache
+* Use lazy properties for everything
+
 ## 1.8
 * Fix AssertionError sometimes being thrown.
 

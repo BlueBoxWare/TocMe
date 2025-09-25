@@ -20,31 +20,38 @@ import com.github.blueboxware.tocme.TocMePlugin
 import com.github.blueboxware.tocme.util.insertTocs
 import org.gradle.api.GradleException
 import org.gradle.api.file.ProjectLayout
+import org.gradle.api.model.ObjectFactory
+import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.TaskAction
 import java.io.File
 import javax.inject.Inject
 
-open class CheckTocsTask @Inject constructor(private val projectLayout: ProjectLayout): TocMeTask() {
+@CacheableTask
+abstract class CheckTocsTask @Inject constructor(
+  private val projectLayout: ProjectLayout,
+  private val objectFactory: ObjectFactory
+): TocMeTask() {
 
   init {
     description = "Checks if TOCs are up-to-date"
 
-    outputs.upToDateWhen { getOutputFiles().isEmpty() }
+    outputs.upToDateWhen { tocMeExtension.get().getOutputFiles(alwaysIncludeInputFile = false).isEmpty() }
   }
 
   @TaskAction
   fun checkTocs() {
 
     var outOfDate = false
+    val extension = tocMeExtension.get()
 
     didWork = false
 
-    tocMeExtension.getDocs().forEach { (inputFile, options) ->
-      if (options.outputFiles.isEmpty()) {
-        outOfDate = doCheckTocs(inputFile, inputFile, options) || outOfDate
+    extension.registeredDocs.get().forEach { (inputFile, options) ->
+      if (options.outputFiles.get().isEmpty()) {
+        outOfDate = doCheckTocs(inputFile, inputFile, options, objectFactory) || outOfDate
       } else {
-        options.outputFiles.forEach { (outputFile, options) ->
-          outOfDate = doCheckTocs(inputFile, outputFile, options) || outOfDate
+        options.outputFiles.get().forEach { (outputFile, options) ->
+          outOfDate = doCheckTocs(inputFile, outputFile, options, objectFactory) || outOfDate
         }
       }
     }
@@ -55,14 +62,19 @@ open class CheckTocsTask @Inject constructor(private val projectLayout: ProjectL
 
   }
 
-  private fun doCheckTocs(inputFile: File, outputFile: File, options: TocMeOptions): Boolean {
+  private fun doCheckTocs(
+    inputFile: File,
+    outputFile: File,
+    options: TocMeOptions,
+    objectFactory: ObjectFactory
+  ): Boolean {
 
     didWork = true
 
     val projectDir = projectLayout.projectDirectory.asFile
     val relativeInputPath = inputFile.relativeToOrSelf(projectDir).path
 
-    val (result, warnings, error) = insertTocs(inputFile, outputFile, options)
+    val (result, warnings, error) = insertTocs(inputFile, outputFile, options.createStaticOptions(), objectFactory)
 
     if (error != null) {
       logger.error("$relativeInputPath: $error")

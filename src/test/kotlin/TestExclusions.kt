@@ -18,17 +18,16 @@ import io.kotest.engine.spec.tempdir
  * limitations under the License.
  */
 
-@Suppress("unused")
 internal object TestExclusions: BehaviorSpec({
 
   lateinit var fixture: ProjectFixture
 
   beforeContainer {
-    fixture = ProjectFixture(tempdir(), useConfigurationCache = false)
+    fixture = ProjectFixture(tempdir())
     fixture.addFile("files/gdx.md")
   }
 
-  given("a spec with excluded file") {
+  Given("a spec with excluded file") {
 
     withData(
       Pair("SCCS", true),
@@ -37,7 +36,7 @@ internal object TestExclusions: BehaviorSpec({
       Pair("files/gdx.md", false)
     ) { (filename, excluded) ->
 
-      `when`("building ($filename)") {
+      When("building ($filename)") {
 
         fixture.buildFile(
           """
@@ -48,9 +47,9 @@ internal object TestExclusions: BehaviorSpec({
         )
         fixture.build(shouldFail = excluded)
 
-        then("should fail with an error") {
+        Then("should fail with an error") {
           if (excluded) {
-            fixture.assertOutputContains("GradleException: The file '$filename' won't be backed up")
+            fixture.assertOutputContains("The file '$filename' won't be backed up")
           }
         }
 
